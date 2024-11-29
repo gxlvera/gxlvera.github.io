@@ -157,7 +157,18 @@ html { font-family: var(--ff-poppins); }
 
 body { background: var(--smoky-black); }
 
+footer {
+  position:fixed;
+  right:20px;
+  bottom:10px;
+}
 
+footer a {
+  display:inline;
+  color:white;
+  font-weight: bold;
+  text-decoration: none;
+}
 
 
 
@@ -517,13 +528,14 @@ main {
 .service-title { margin-bottom: 20px; }
 
 .service-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
+  display: flex;
+  flex-direction:column;
 }
 
 .service-item {
   position: relative;
+  display:block;
+  width:80%;
   background: var(--border-gradient-onyx);
   padding: 20px;
   border-radius: 14px;
@@ -1339,7 +1351,7 @@ textarea.form-input::-webkit-resizer { display: none; }
 
   .avatar-box { border-radius: 30px; }
 
-  .avatar-box img { width: 120px; }
+  .avatar-box img { width: 220px; }
 
   .info-content .name { margin-bottom: 15px; }
 
@@ -1835,7 +1847,7 @@ textarea.form-input::-webkit-resizer { display: none; }
 
   .sidebar-info { flex-direction: column; }
 
-  .avatar-box img { width: 150px; }
+  .avatar-box img { width: 250px; }
 
   .info-content .name {
     white-space: nowrap;
