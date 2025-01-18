@@ -1275,12 +1275,9 @@ textarea.form-input::-webkit-resizer { display: none; }
  * responsive less than 1024px screen
  */
 
-@media (max-width: 1024px){
-  .contacts-list{
-    display: flex;
-    flex-direction:column;
-  }  
-}
+
+ 
+
 /**
  * responsive larger than 580px screen
  */
@@ -1398,7 +1395,10 @@ textarea.form-input::-webkit-resizer { display: none; }
 
   .separator { margin: 32px 0; }
 
-  .contacts-list { gap: 20px; }
+  .contacts-list {
+    display: flex;
+    flex-direction:column;
+  } 
 
   .contact-info {
     max-width: calc(100% - 64px);
@@ -1800,6 +1800,7 @@ textarea.form-input::-webkit-resizer { display: none; }
   aside {
     display:flex;
     flex-direction: row;
+    
  }
 
  .separator {
