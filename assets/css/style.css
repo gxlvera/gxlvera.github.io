@@ -1905,11 +1905,17 @@ textarea.form-input::-webkit-resizer { display: none; }
 
   .sidebar-info { flex-direction: column; }
 
-
+  .avatar-box img {
+    width:100%;
+  }
 
   .info-content .name {
     white-space: nowrap;
     text-align: center;
+  }
+
+  .separator {
+    display:block
   }
 
   .info-content .title { margin: auto; }
@@ -1936,7 +1942,7 @@ textarea.form-input::-webkit-resizer { display: none; }
 
   .separator:last-of-type {
     margin: 15px 0;
-    opacity: 0;
+
     visibility: visible;
   }
 
