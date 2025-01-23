@@ -155,10 +155,10 @@ input, textarea {
 
 html { font-family: var(--ff-poppins); }
 
-body { background: var(--smoky-black); }
+body { background: var(--smoky-black); position:relative;padding-bottom:30px;}
 
 footer {
-  position:fixed;
+  position:absolute;
   right:20px;
   bottom:10px;
 }
@@ -1278,13 +1278,13 @@ textarea.form-input::-webkit-resizer { display: none; }
  
 
 /**
- * responsive larger than 580px screen
+ * responsive larger than 576px screen
  */
 
 
   
 
-@media (min-width: 580px)  {
+@media (min-width: 576px)  {
 
   /**
    * CUSTOM PROPERTY
@@ -1345,7 +1345,7 @@ textarea.form-input::-webkit-resizer { display: none; }
    */
 
   main {
-    margin-top: 60px;
+    margin-top: 50px;
     margin-bottom: 100px;
     display:flex;
     gap:15px;
@@ -1371,11 +1371,9 @@ textarea.form-input::-webkit-resizer { display: none; }
 
   .sidebar-info { gap: 10px; }
 
-  .avatar-box { border-radius: 30px; }
 
   .avatar-box img { 
     width: 150px; 
-    border-radius:10%;
   }
 
   .info-content .name { margin-bottom: 15px; }
@@ -1417,7 +1415,11 @@ textarea.form-input::-webkit-resizer { display: none; }
 
   .navbar-list { gap: 20px; }
 
-  .navbar-link { --fs-8: 14px; }
+  .navbar-link { 
+    display: flex;
+    align-items: center;
+    max-height:40px;
+   }
 
 
 
