@@ -113,6 +113,18 @@ for (let i = 0; i < filterBtn.length; i++) {
 
 }
 
+// Highlight text animation
+document.addEventListener('DOMContentLoaded', function() {
+  const highlightTexts = document.querySelectorAll('.highlight-text');
+  
+  highlightTexts.forEach((text, index) => {
+    // Add delay based on index
+    setTimeout(() => {
+      text.classList.add('animate-complete');
+    }, (index + 1) * 200 + 600); // 600ms for initial animation + staggered delays
+  });
+});
+
 
 
 // contact form variables
