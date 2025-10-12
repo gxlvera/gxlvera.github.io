@@ -125,6 +125,59 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+// Visitor Counter
+document.addEventListener('DOMContentLoaded', function() {
+  const visitorCountElement = document.getElementById('visitor-count');
+  
+  // Function to get visitor count from localStorage
+  function getVisitorCount() {
+    const count = localStorage.getItem('website-visitor-count');
+    return count ? parseInt(count) : 0;
+  }
+  
+  // Function to update visitor count
+  function updateVisitorCount() {
+    let currentCount = getVisitorCount();
+    currentCount += 1;
+    localStorage.setItem('website-visitor-count', currentCount.toString());
+    return currentCount;
+  }
+  
+  // Function to animate counter
+  function animateCounter(targetCount) {
+    const startCount = 0;
+    const duration = 2000; // 2 seconds
+    const startTime = performance.now();
+    
+    function updateCounter(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Easing function for smooth animation
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+      const currentCount = Math.floor(startCount + (targetCount - startCount) * easeOutQuart);
+      
+      visitorCountElement.textContent = currentCount.toLocaleString();
+      
+      if (progress < 1) {
+        requestAnimationFrame(updateCounter);
+      } else {
+        visitorCountElement.textContent = targetCount.toLocaleString();
+      }
+    }
+    
+    requestAnimationFrame(updateCounter);
+  }
+  
+  // Update and display visitor count
+  const newCount = updateVisitorCount();
+  
+  // Add a small delay before starting animation
+  setTimeout(() => {
+    animateCounter(newCount);
+  }, 500);
+});
+
 
 
 // contact form variables
