@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Xiaole Guo's Website</title>
 
   <!--
@@ -228,7 +228,6 @@
           <ul class="service-list">
 
             <li class="service-item">
-
               <!-- <div class="service-icon-box">
                 <img src="./assets/images/xlang.png" alt="opencua" width="70">
               </div> -->
@@ -248,6 +247,29 @@
               </div>
             </li>
           </ul>
+        </section>
+
+        <section class="service" id="open-source">
+
+          <h3 class="h3 service-title">Open Source Projects</h3>
+
+          <ul class="service-list">
+
+            <li class="service-item">
+
+              <div class="service-content-box">
+                <h4 class="h4 service-item-title">
+                  SGLang RL - <a href="https://github.com/THUDM/slime" target="_blank" class="contact-link" style="color: var(--deep-blue);">Slime</a> Contributor
+                </h4>
+                <p class="service-item-text">
+                  Implemented a VLM multi-turn rollout framework <a href="https://github.com/THUDM/slime/pull/1141" target="_blank" class="contact-link" style="color: var(--deep-blue);">PR #1141</a> with a custom rollout generation function supporting 'assistant generation → environment feedback → context appending' iteration. Designed a pluggable interaction environment interface and optimized token-level training control with proper loss masking, achieving stable policy convergence on Geo3k dataset with Qwen3-VL-2B-Instruct.
+                </p>
+              </div>
+
+            </li>
+
+          </ul>
+
         </section>
 
         <section class="service" id="experience">

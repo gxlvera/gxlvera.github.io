@@ -2009,8 +2009,239 @@ textarea.form-input::-webkit-resizer { display: none; }
 
 
 
-@media (max-width: 1249px) {
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+  
+  /* Main layout adjustments */
+  main {
+    margin: 10px 8px;
+    margin-bottom: 60px;
+  }
+  
+  .sidebar, article {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  
+  /* Sidebar mobile optimization */
+  .sidebar {
+    height: fit-content;
+    padding: 15px;
+  }
+  
+  .sidebar-info {
+    margin: 10px;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .avatar-box img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 15px;
+  }
+  
+  .info-content .name {
+    font-size: 18px !important;
+    margin: 8px 0;
+    text-align: center;
+  }
+  
+  .info-content .title {
+    font-size: 11px;
+    margin: 0 auto;
+  }
+  
+  /* Contact info mobile optimization */
+  .contact-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .icon-box {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+  }
+  
+  .contact-info {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .contact-info .contact-text {
+    font-size: 12px;
+    word-break: break-all;
+  }
+  
+  .contact-title {
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+  
+  /* Navigation mobile optimization */
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(248, 249, 250, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-light);
+    border-radius: 0;
+    box-shadow: var(--shadow-2);
+    z-index: 5;
+  }
+  
+  .navbar-list {
+    padding: 0 5px;
+    gap: 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .navbar-link {
+    font-size: 11px;
+    padding: 15px 8px;
+    white-space: nowrap;
+    min-width: fit-content;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Content area mobile optimization */
+  .main-content {
+    margin-top: 60px;
+  }
+  
+  .article-title {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .about-text p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+  }
+  
+  /* Highlight section mobile optimization */
+  .highlight-section {
+    padding: 12px 15px;
+    margin: 15px 0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  /* Service items mobile optimization */
+  .service-item {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 15px;
+    flex-direction: column;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Touch optimization for links */
+  .contact-link, .service-item-title a {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  .service-icon-box {
+    margin-bottom: 10px;
+  }
+  
+  .service-content-box {
+    text-align: center;
+  }
+  
+  .service-item-title {
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  
+  .service-item-text {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  /* Visitor counter mobile optimization */
+  .visitor-counter {
+    bottom: 10px;
+    left: 10px;
+    padding: 8px 12px;
+  }
+  
+  .counter-number {
+    font-size: 16px;
+  }
+  
+  .counter-label {
+    font-size: 9px;
+  }
+}
 
+@media (max-width: 480px) {
+  
+  /* Extra small mobile devices */
+  main {
+    margin: 5px;
+  }
+  
+  .sidebar, article {
+    padding: 12px;
+  }
+  
+  .avatar-box img {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .info-content .name {
+    font-size: 16px !important;
+  }
+  
+  .navbar-list {
+    gap: 5px;
+  }
+  
+  .navbar-link {
+    font-size: 10px;
+    padding: 12px 3px;
+  }
+  
+  .article-title {
+    font-size: 18px;
+  }
+  
+  .about-text p {
+    font-size: 13px;
+  }
+  
+  .highlight-section {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+  
+  .service-item {
+    padding: 12px;
+  }
+  
+  .service-item-title {
+    font-size: 15px;
+  }
+  
+  .service-item-text {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 1249px) and (min-width: 769px) {
 
  .sidebar{
   height:fit-content;
@@ -2039,9 +2270,6 @@ textarea.form-input::-webkit-resizer { display: none; }
   font-size:13px;
   color: var(--dark-blue-ink);
  }
-
-
-
 
 }
 
@@ -2121,7 +2349,7 @@ textarea.form-input::-webkit-resizer { display: none; }
 
   .sidebar-info { flex-direction: column; }
 
-.avatar-box img { 
+  .avatar-box img {
     width:100%;
     height: 80%;
     object-fit: cover;
