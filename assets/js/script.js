@@ -209,16 +209,17 @@ const pages = document.querySelectorAll("[data-page]");
 for (let i = 0; i < navigationLinks.length; i++) {
   navigationLinks[i].addEventListener("click", function () {
 
-    for (let i = 0; i < pages.length; i++) {
-      if (this.innerHTML.toLowerCase() === pages[i].dataset.page) {
-        pages[i].classList.add("active");
-        navigationLinks[i].classList.add("active");
-        window.scrollTo(0, 0);
-      } else {
-        pages[i].classList.remove("active");
-        navigationLinks[i].classList.remove("active");
-      }
+    const target = this.innerHTML.toLowerCase();
+
+    for (let j = 0; j < pages.length; j++) {
+      pages[j].classList.toggle("active", pages[j].dataset.page === target);
     }
+
+    for (let k = 0; k < navigationLinks.length; k++) {
+      navigationLinks[k].classList.toggle("active", navigationLinks[k] === this);
+    }
+
+    window.scrollTo(0, 0);
 
   });
 }
