@@ -978,30 +978,6 @@
     .actor-node .node-name,
     .critic-node .node-name { font-size: 18px; }
 
-    .worker-strip {
-      display: flex;
-      gap: 4px;
-      margin-top: 10px;
-    }
-
-    .worker-strip i {
-      display: block;
-      width: 14px;
-      height: 10px;
-      border: 1px solid currentColor;
-      background: rgba(255, 255, 255, 0.68);
-    }
-
-    .node-controller {
-      margin-top: 6px;
-      color: #667a74;
-      font-size: 8px;
-      line-height: 1;
-      font-weight: 820;
-      letter-spacing: 0.72px;
-      text-transform: uppercase;
-    }
-
     .ppo-flow {
       position: absolute;
       z-index: 2;
@@ -3948,38 +3924,26 @@
 
               <article class="ppo-node gen-node">
                 <div class="node-name">Gen</div>
-                <div class="worker-strip" aria-hidden="true"><i></i><i></i><i></i></div>
-                <div class="node-controller mono">multi-controller</div>
               </article>
 
               <article class="ppo-node ref-node">
                 <div class="node-name">Ref</div>
-                <div class="worker-strip" aria-hidden="true"><i></i><i></i><i></i></div>
-                <div class="node-controller mono">multi-controller</div>
               </article>
 
               <article class="ppo-node rm-node">
                 <div class="node-name">RM</div>
-                <div class="worker-strip" aria-hidden="true"><i></i><i></i><i></i></div>
-                <div class="node-controller mono">multi-controller</div>
               </article>
 
               <article class="ppo-node value-node">
                 <div class="node-name">Value</div>
-                <div class="worker-strip" aria-hidden="true"><i></i><i></i><i></i></div>
-                <div class="node-controller mono">multi-controller</div>
               </article>
 
               <article class="ppo-node actor-node">
                 <div class="node-name">Actor<br />Training</div>
-                <div class="worker-strip" aria-hidden="true"><i></i><i></i><i></i></div>
-                <div class="node-controller mono">multi-controller</div>
               </article>
 
               <article class="ppo-node critic-node">
                 <div class="node-name">Critic<br />Training</div>
-                <div class="worker-strip" aria-hidden="true"><i></i><i></i><i></i></div>
-                <div class="node-controller mono">multi-controller</div>
               </article>
 
               <svg class="ppo-flow" viewBox="0 0 1040 628" preserveAspectRatio="none" aria-hidden="true">
