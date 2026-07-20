@@ -587,6 +587,23 @@
       min-height: 0;
     }
 
+    .intro-fragment {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(18px);
+      transition:
+        opacity 360ms ease,
+        transform 360ms ease,
+        visibility 0s linear 360ms;
+    }
+
+    .intro-fragment.is-visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      transition-delay: 0s;
+    }
+
     .intro-experience-stack .oss-card,
     .research-card {
       padding: 18px 22px;
@@ -3756,6 +3773,7 @@
       .stage { width: 1600px; height: auto; transform: none !important; box-shadow: none; }
       .slide { position: relative; display: block !important; page-break-after: always; }
       .reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .intro-fragment { opacity: 1 !important; visibility: visible !important; transform: none !important; }
       .gen-focus { opacity: 0.28 !important; }
       .training-focus,
       .backend-popover,
@@ -3820,7 +3838,7 @@
             </div>
           </section>
 
-          <section class="quadrant education-card reveal" style="--delay: 120ms" aria-label="Education">
+          <section class="quadrant education-card intro-fragment" data-intro-step="1" aria-label="Education" aria-hidden="true">
             <div class="quad-title mono">Education <span>02 schools</span></div>
             <div class="education-list">
               <article class="school-item" style="--school-color: #c41230">
@@ -3839,7 +3857,7 @@
             </div>
           </section>
 
-          <section class="quadrant work-card reveal" style="--delay: 170ms" aria-label="Work experience">
+          <section class="quadrant work-card intro-fragment" data-intro-step="2" aria-label="Work experience" aria-hidden="true">
             <div class="quad-title mono">Work experience</div>
             <div class="work-list">
               <article class="work-item" style="--work-color: #118d85">
@@ -3860,15 +3878,15 @@
             </div>
           </section>
 
-          <div class="intro-experience-stack reveal" style="--delay: 220ms">
-            <section class="quadrant oss-card" aria-label="Open-source experience">
+          <div class="intro-experience-stack">
+            <section class="quadrant oss-card intro-fragment" data-intro-step="3" aria-label="Open-source experience" aria-hidden="true">
               <div class="quad-title mono">Open-source experience</div>
               <div class="oss-inline" aria-label="verl, slime, miles, and SGLang">
                 <span>verl</span><i>·</i><span>slime</span><i>·</i><span>miles</span><i>·</i><span>SGLang</span>
               </div>
             </section>
 
-            <section class="quadrant research-card" aria-label="Research experience">
+            <section class="quadrant research-card intro-fragment" data-intro-step="4" aria-label="Research experience" aria-hidden="true">
               <div class="quad-title mono">Research experience</div>
               <div class="research-entry">
                 <div>
@@ -4529,6 +4547,7 @@
       const fullscreenButton = document.getElementById("fullscreen");
       const status = document.getElementById("status");
       let current = Number.parseInt(location.hash.slice(1), 10);
+      let introStep = 0;
       let ppoStep = 0;
       let comparatorStep = 0;
 
@@ -4539,6 +4558,18 @@
       function fitStage() {
         const scale = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
         document.documentElement.style.setProperty("--scale", scale.toFixed(4));
+      }
+
+      function setIntroStep(slide, step) {
+        slide.classList.remove("intro-step-1", "intro-step-2", "intro-step-3", "intro-step-4");
+        if (step > 0) slide.classList.add(`intro-step-${step}`);
+
+        slide.querySelectorAll(".intro-fragment").forEach((fragment) => {
+          const requiredStep = Number.parseInt(fragment.dataset.introStep, 10);
+          const isVisible = Number.isInteger(requiredStep) && requiredStep <= step;
+          fragment.classList.toggle("is-visible", isVisible);
+          fragment.setAttribute("aria-hidden", String(!isVisible));
+        });
       }
 
       function setComparatorStep(slide, step) {
@@ -4552,9 +4583,11 @@
       }
 
       function resetFragmentInteractions() {
+        introStep = 0;
         ppoStep = 0;
         comparatorStep = 0;
         slides.forEach((slide) => {
+          if (slide.classList.contains("intro")) setIntroStep(slide, 0);
           slide.classList.remove("ppo-step-1", "ppo-step-2", "ppo-step-3", "ppo-step-4");
           slide.classList.remove("compare-step-1", "compare-step-2", "compare-step-3");
         });
@@ -4562,6 +4595,11 @@
 
       function advancePresentation() {
         const slide = slides[current];
+        if (slide.classList.contains("intro") && introStep < 4) {
+          introStep += 1;
+          setIntroStep(slide, introStep);
+          return;
+        }
         if (slide.classList.contains("what-is-verl") && ppoStep < 4) {
           ppoStep += 1;
           setPpoStep(slide, ppoStep);
@@ -4577,6 +4615,11 @@
 
       function retreatPresentation() {
         const slide = slides[current];
+        if (slide.classList.contains("intro") && introStep > 0) {
+          introStep -= 1;
+          setIntroStep(slide, introStep);
+          return;
+        }
         if (slide.classList.contains("what-is-verl") && ppoStep > 0) {
           ppoStep -= 1;
           setPpoStep(slide, ppoStep);
@@ -4643,7 +4686,7 @@
 
       document.addEventListener("click", (event) => {
         if (event.target.closest("button, a")) return;
-        if (slides[current].classList.contains("what-is-verl") || slides[current].classList.contains("verification-slide")) {
+        if (slides[current].classList.contains("intro") || slides[current].classList.contains("what-is-verl") || slides[current].classList.contains("verification-slide")) {
           if (event.clientX >= window.innerWidth * 0.5) {
             advancePresentation();
           } else {
