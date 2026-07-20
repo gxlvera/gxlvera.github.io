@@ -1640,10 +1640,14 @@
     .blackbox .harness-logos { gap: 5px; }
 
     .blackbox .agent-example svg,
-    .blackbox .agent-example > img,
-    .blackbox .codex-logo {
+    .blackbox .agent-example > img {
       width: 42px;
       height: 42px;
+    }
+
+    .blackbox .agent-example > img {
+      display: block;
+      object-fit: contain;
     }
 
     .agent-example {
@@ -1676,24 +1680,6 @@
       font-weight: 820;
       letter-spacing: 0.8px;
       text-transform: uppercase;
-    }
-
-    .codex-logo {
-      position: relative;
-      width: 48px;
-      height: 48px;
-      overflow: hidden;
-      border-radius: 50%;
-      background: #fff;
-    }
-
-    .codex-logo img {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 149px;
-      height: auto;
-      transform: translate(-50%, -50%);
     }
 
     .runtime-row {
@@ -4119,28 +4105,16 @@
                 <section class="harness-type blackbox" aria-label="Black-box Agent">
                   <h4>Black-box Agent</h4>
                   <div class="harness-logos">
-                    <div class="agent-example" aria-label="OpenClaw">
-                      <img src="assets/openclaw-pixel-lobster.svg" alt="" />
-                    </div>
-
-                    <div class="agent-example" aria-label="Cloud Code">
-                      <svg viewBox="0 0 80 80" aria-hidden="true">
-                        <defs>
-                          <linearGradient id="cloud-code-gradient" x1="14" y1="10" x2="68" y2="68" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="#c7b9ff"></stop>
-                            <stop offset="0.5" stop-color="#8f84ef"></stop>
-                            <stop offset="1" stop-color="#586fd8"></stop>
-                          </linearGradient>
-                        </defs>
-                        <path d="M24 65c-10 0-17-7-17-16 0-8 5-14 13-16 2-12 11-20 23-20 11 0 20 7 23 17 7 2 12 8 12 16 0 10-8 19-19 19Z" fill="url(#cloud-code-gradient)"></path>
-                        <path d="m27 34 8 8-8 8M43 50h11" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                      </svg>
+                    <div class="agent-example" aria-label="Claude Code">
+                      <img src="assets/claude-code.svg" alt="" />
                     </div>
 
                     <div class="agent-example" aria-label="Codex">
-                      <div class="codex-logo" aria-hidden="true">
-                        <img src="assets/codex.png" alt="" />
-                      </div>
+                      <img src="assets/codex-app.png" alt="" />
+                    </div>
+
+                    <div class="agent-example" aria-label="OpenClaw">
+                      <img src="assets/openclaw-lobster.svg" alt="" />
                     </div>
                   </div>
                 </section>
