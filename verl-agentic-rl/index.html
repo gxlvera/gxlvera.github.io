@@ -1980,6 +1980,15 @@
       letter-spacing: -1.15px;
     }
 
+    .advantage-head-subtitle {
+      margin: 7px 0 0;
+      color: #3e6568;
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 680;
+      letter-spacing: -0.3px;
+    }
+
     .advantages-grid {
       position: absolute;
       left: 82px;
@@ -2304,6 +2313,1235 @@
       line-height: 1;
       font-weight: 780;
       text-transform: uppercase;
+    }
+
+    /* Slide 4 — backend-flexible execution */
+    .backend-flexible-body {
+      position: absolute;
+      left: 82px;
+      right: 78px;
+      top: 178px;
+      bottom: 56px;
+    }
+
+    .backend-flexible-subtitle {
+      margin: 0;
+      color: #425f69;
+      font-size: 24px;
+      line-height: 1.15;
+      font-weight: 620;
+      letter-spacing: -0.35px;
+      text-align: center;
+    }
+
+    .backend-flexible-diagram {
+      position: absolute;
+      inset: 58px 0 0;
+    }
+
+    .backend-loop-card {
+      position: absolute;
+      z-index: 3;
+      left: 50%;
+      top: 0;
+      width: 370px;
+      min-height: 92px;
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      align-items: center;
+      gap: 16px;
+      padding: 15px 24px;
+      border: 2px solid #168d86;
+      border-radius: 16px;
+      background: #eaf7f4;
+      color: #176b67;
+      box-shadow: 0 12px 28px rgba(24, 91, 88, 0.12);
+      margin-left: -185px;
+    }
+
+    .backend-loop-icon {
+      display: grid;
+      place-items: center;
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      background: #168d86;
+      color: #fff;
+    }
+
+    .backend-loop-icon svg {
+      width: 34px;
+      height: 34px;
+    }
+
+    .backend-loop-copy small {
+      display: block;
+      margin-bottom: 5px;
+      color: #568a85;
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 1.15px;
+      text-transform: uppercase;
+    }
+
+    .backend-loop-copy strong {
+      display: block;
+      color: #164f4c;
+      font-size: 25px;
+      line-height: 1;
+      font-weight: 770;
+      letter-spacing: -0.45px;
+    }
+
+    .backend-loop-copy span {
+      display: block;
+      margin-top: 7px;
+      color: #5f817d;
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 650;
+    }
+
+    .backend-route-trunk {
+      position: absolute;
+      z-index: 1;
+      left: 50%;
+      top: 92px;
+      width: 3px;
+      height: 49px;
+      background: #76949c;
+      transform: translateX(-50%);
+    }
+
+    .backend-route-trunk::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -1px;
+      width: 8px;
+      height: 8px;
+      border: 3px solid #76949c;
+      border-radius: 50%;
+      background: var(--paper);
+      transform: translate(-50%, 50%);
+    }
+
+    .backend-route-bar {
+      position: absolute;
+      z-index: 1;
+      left: 12.5%;
+      right: 12.5%;
+      top: 140px;
+      height: 3px;
+      background: #76949c;
+    }
+
+    .backend-mode-grid {
+      position: absolute;
+      z-index: 2;
+      left: 0;
+      right: 0;
+      top: 166px;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .backend-mode-card {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      padding: 22px 22px 18px;
+      border: 1px solid var(--mode-line);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 12px 28px rgba(18, 47, 54, 0.07);
+      --mode-accent: #269a82;
+      --mode-soft: #e8f6f1;
+      --mode-line: #a9d0c4;
+      --mode-ink: #176a5a;
+    }
+
+    .backend-mode-card::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -26px;
+      width: 3px;
+      height: 26px;
+      background: #76949c;
+      transform: translateX(-50%);
+    }
+
+    .backend-mode-card::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 6px;
+      border-radius: 15px 15px 0 0;
+      background: var(--mode-accent);
+    }
+
+    .backend-mode-card.ray {
+      --mode-accent: #4f79be;
+      --mode-soft: #edf2fb;
+      --mode-line: #b5c5e1;
+      --mode-ink: #3d5d91;
+    }
+
+    .backend-mode-card.k8s {
+      --mode-accent: #7166b0;
+      --mode-soft: #f0eef9;
+      --mode-line: #c5bfe0;
+      --mode-ink: #554b8d;
+    }
+
+    .backend-mode-card.sandbox {
+      --mode-accent: #d18a31;
+      --mode-soft: #fff4df;
+      --mode-line: #e2c594;
+      --mode-ink: #8b5b1d;
+    }
+
+    .backend-mode-head {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .backend-mode-icon {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--mode-soft);
+      color: var(--mode-accent);
+    }
+
+    .backend-mode-icon svg {
+      width: 30px;
+      height: 30px;
+    }
+
+    .backend-mode-name small {
+      display: block;
+      margin-bottom: 4px;
+      color: #8a9995;
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+    }
+
+    .backend-mode-name h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 25px;
+      line-height: 1;
+      font-weight: 760;
+      letter-spacing: -0.45px;
+    }
+
+    .backend-runtime-box {
+      margin-top: 18px;
+      padding: 14px;
+      border: 1px solid var(--mode-line);
+      border-radius: 10px;
+      background: var(--mode-soft);
+    }
+
+    .backend-runtime-label {
+      display: block;
+      margin-bottom: 9px;
+      color: var(--mode-ink);
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 1.05px;
+      text-transform: uppercase;
+    }
+
+    .backend-runtime-chips {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .backend-runtime-chips span {
+      display: grid;
+      min-height: 34px;
+      place-items: center;
+      padding: 5px 7px;
+      border: 1px solid color-mix(in srgb, var(--mode-line), #fff 25%);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.86);
+      color: var(--mode-ink);
+      font-size: 11px;
+      line-height: 1.12;
+      font-weight: 740;
+      text-align: center;
+    }
+
+    .backend-runtime-chips span.wide { grid-column: 1 / -1; }
+
+    .backend-mode-position {
+      margin: 17px 0 0;
+      color: var(--mode-ink);
+      font-size: 15px;
+      line-height: 1.2;
+      font-weight: 740;
+    }
+
+    .backend-mode-description {
+      margin: 7px 0 0;
+      color: #657974;
+      font-size: 11px;
+      line-height: 1.38;
+      font-weight: 560;
+    }
+
+    .backend-mode-footer {
+      margin-top: auto;
+      padding-top: 15px;
+      border-top: 1px solid #dce4e1;
+    }
+
+    .backend-scale-row,
+    .backend-fit-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .backend-scale-label {
+      color: #879691;
+      font-size: 8px;
+      font-weight: 830;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .backend-scale-value,
+    .backend-fit-value {
+      color: var(--mode-ink);
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .backend-scale-meter {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      margin-top: 9px;
+    }
+
+    .backend-scale-meter i {
+      height: 6px;
+      border-radius: 999px;
+      background: #dce5e2;
+    }
+
+    .backend-scale-meter i.on { background: var(--mode-accent); }
+
+    /* Slide 5 — task-level control */
+    .task-control-slide {
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 91% 12%, rgba(83, 126, 196, 0.08), transparent 24%),
+        linear-gradient(90deg, rgba(15, 62, 69, 0.04) 1px, transparent 1px),
+        linear-gradient(rgba(15, 62, 69, 0.04) 1px, transparent 1px),
+        var(--paper);
+      background-size: auto, 52px 52px, 52px 52px, auto;
+    }
+
+    .task-control-slide::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 16px;
+      background: var(--navy-2);
+    }
+
+    .task-control-slide .standard-head { top: 40px; }
+
+    .task-control-slide .standard-head h2 {
+      font-size: 40px;
+      letter-spacing: -1.15px;
+    }
+
+    .task-control-body {
+      position: absolute;
+      left: 82px;
+      right: 78px;
+      top: 178px;
+      bottom: 56px;
+    }
+
+    .task-control-subtitle {
+      margin: 0;
+      color: #425f69;
+      font-size: 24px;
+      line-height: 1.15;
+      font-weight: 620;
+      letter-spacing: -0.35px;
+      text-align: center;
+    }
+
+    .task-control-grid {
+      position: absolute;
+      inset: 58px 0 0;
+      display: grid;
+      grid-template-columns: 490px 1fr;
+      gap: 22px;
+    }
+
+    .task-control-panel,
+    .task-inspector {
+      overflow: hidden;
+      border: 1px solid #c4d2d1;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 13px 34px rgba(18, 47, 54, 0.07);
+    }
+
+    .task-control-panel {
+      display: flex;
+      flex-direction: column;
+      padding: 21px 22px 18px;
+    }
+
+    .task-panel-head,
+    .task-inspector-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #d7e1de;
+    }
+
+    .task-panel-title small,
+    .task-inspector-title small {
+      display: block;
+      margin-bottom: 6px;
+      color: #7b8f89;
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 1.15px;
+      text-transform: uppercase;
+    }
+
+    .task-panel-title h3,
+    .task-inspector-title h3 {
+      margin: 0;
+      font-size: 23px;
+      line-height: 1;
+      font-weight: 760;
+      letter-spacing: -0.45px;
+    }
+
+    .task-count {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #e9f5f2;
+      color: #17736d;
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .task-control-list {
+      flex: 1;
+      display: grid;
+      grid-template-rows: repeat(3, 1fr);
+      gap: 11px;
+      margin-top: 15px;
+    }
+
+    .task-control-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto 1fr auto;
+      column-gap: 13px;
+      padding: 15px 15px 13px 18px;
+      border: 1px solid var(--task-line);
+      border-left: 5px solid var(--task-accent);
+      border-radius: 10px;
+      background: var(--task-soft);
+      --task-accent: #1a978b;
+      --task-soft: #eff8f6;
+      --task-line: #b7d8d2;
+      --task-ink: #176d65;
+    }
+
+    .task-control-item.stale {
+      --task-accent: #cf7659;
+      --task-soft: #fff3ed;
+      --task-line: #e6bdaa;
+      --task-ink: #8e482f;
+    }
+
+    .task-control-item.hanging {
+      --task-accent: #c98a2f;
+      --task-soft: #fff7e8;
+      --task-line: #dfbf85;
+      --task-ink: #895b1e;
+      box-shadow: 0 0 0 2px rgba(201, 138, 47, 0.13);
+    }
+
+    .task-control-item code {
+      color: #243a43;
+      font-family: var(--mono);
+      font-size: 15px;
+      line-height: 1;
+      font-weight: 780;
+    }
+
+    .task-control-status {
+      align-self: start;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: var(--task-accent);
+      color: #fff;
+      font-size: 7.5px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 0.65px;
+      text-transform: uppercase;
+    }
+
+    .task-control-meta {
+      grid-column: 1 / -1;
+      align-self: center;
+      margin-top: 9px;
+      color: #637771;
+      font-size: 11.5px;
+      line-height: 1.3;
+      font-weight: 600;
+    }
+
+    .task-control-action {
+      grid-column: 1 / -1;
+      justify-self: start;
+      margin-top: 9px;
+      padding: 6px 10px;
+      border: 1px solid var(--task-line);
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--task-ink);
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+    }
+
+    .task-control-api {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 14px;
+      color: #7e918b;
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .task-control-api::after {
+      content: "query · cancel · inspect";
+      flex: 1;
+      padding: 7px 9px;
+      border-radius: 5px;
+      background: #edf3f1;
+      color: #47645d;
+      font-size: 9px;
+      letter-spacing: 0.45px;
+      text-align: center;
+    }
+
+    .task-inspector {
+      display: flex;
+      flex-direction: column;
+      padding: 21px 24px 20px;
+    }
+
+    .task-inspector-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #8b5b1d;
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .task-inspector-badge::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #d09234;
+      box-shadow: 0 0 0 5px #fff2d9;
+    }
+
+    .task-stage-section {
+      margin-top: 17px;
+      padding: 15px 16px 14px;
+      border: 1px solid #d4dfdc;
+      border-radius: 11px;
+      background: #f8fbfa;
+    }
+
+    .task-stage-label {
+      color: #657b74;
+      font-size: 8px;
+      font-weight: 830;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .task-stage-track {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0;
+      margin-top: 18px;
+    }
+
+    .task-stage-track::before {
+      content: "";
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 10px;
+      height: 3px;
+      background: linear-gradient(90deg, #269a82 0 61%, #d6b16a 61% 78%, #dce4e1 78% 100%);
+    }
+
+    .task-stage {
+      position: relative;
+      z-index: 1;
+      min-width: 0;
+      text-align: center;
+    }
+
+    .task-stage-dot {
+      display: block;
+      width: 20px;
+      height: 20px;
+      margin: 0 auto 9px;
+      border: 4px solid #f8fbfa;
+      border-radius: 50%;
+      background: #269a82;
+      box-shadow: 0 0 0 2px #269a82;
+    }
+
+    .task-stage.current .task-stage-dot {
+      background: #d09234;
+      box-shadow: 0 0 0 3px #d09234, 0 0 0 8px #fff2d9;
+    }
+
+    .task-stage.pending .task-stage-dot {
+      background: #dce4e1;
+      box-shadow: 0 0 0 2px #c9d4d1;
+    }
+
+    .task-stage strong {
+      display: block;
+      color: #344b53;
+      font-size: 9.5px;
+      line-height: 1.15;
+      font-weight: 760;
+    }
+
+    .task-stage small {
+      display: block;
+      margin-top: 4px;
+      color: #84948f;
+      font-size: 7.5px;
+      line-height: 1;
+      font-weight: 650;
+    }
+
+    .task-stage.current strong,
+    .task-stage.current small { color: #8b5b1d; }
+
+    .task-current-phase {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 16px;
+      margin-top: 14px;
+      padding: 13px 16px;
+      border: 1px solid #e0bf82;
+      border-left: 5px solid #d09234;
+      border-radius: 9px;
+      background: #fff8e9;
+    }
+
+    .task-current-phase small {
+      display: block;
+      margin-bottom: 5px;
+      color: #96713a;
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+    }
+
+    .task-current-phase strong {
+      color: #64451c;
+      font-size: 17px;
+      line-height: 1;
+      font-weight: 760;
+    }
+
+    .task-phase-duration {
+      color: #a2661e;
+      font-family: var(--mono);
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 780;
+    }
+
+    .task-diagnosis-title {
+      margin: 16px 0 10px;
+      color: #334b53;
+      font-size: 13px;
+      line-height: 1;
+      font-weight: 760;
+      text-align: center;
+    }
+
+    .task-diagnosis-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 13px;
+    }
+
+    .task-diagnosis-card {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      padding: 14px 15px 13px;
+      border: 1px solid #b8cce6;
+      border-radius: 10px;
+      background: #f1f5fb;
+      --diagnosis-accent: #527fc1;
+      --diagnosis-ink: #385c93;
+    }
+
+    .task-diagnosis-card.agent-slow {
+      border-color: #c9bfdf;
+      background: #f5f2fa;
+      --diagnosis-accent: #7666ad;
+      --diagnosis-ink: #56488a;
+    }
+
+    .task-diagnosis-signal {
+      color: var(--diagnosis-accent);
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+    }
+
+    .task-diagnosis-card h4 {
+      margin: 8px 0 0;
+      color: var(--diagnosis-ink);
+      font-size: 16px;
+      line-height: 1.12;
+      font-weight: 760;
+      letter-spacing: -0.2px;
+    }
+
+    .task-diagnosis-card p {
+      margin: 7px 0 0;
+      color: #657771;
+      font-size: 9.5px;
+      line-height: 1.32;
+      font-weight: 560;
+    }
+
+    .task-diagnosis-action {
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px solid color-mix(in srgb, var(--diagnosis-accent), #fff 65%);
+      color: var(--diagnosis-ink);
+      font-size: 9px;
+      line-height: 1.2;
+      font-weight: 800;
+    }
+
+    .task-level-scenarios {
+      position: absolute;
+      inset: 58px 0 0;
+      display: grid;
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .task-scenario {
+      position: relative;
+      overflow: hidden;
+      padding: 19px 24px 18px;
+      border: 1px solid #c4d2d1;
+      border-left: 7px solid var(--scenario-accent);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 30px rgba(18, 47, 54, 0.065);
+      --scenario-accent: #547fc4;
+      --scenario-soft: #edf2fb;
+      --scenario-line: #b8c8e3;
+      --scenario-ink: #3e6098;
+    }
+
+    .task-scenario.stale {
+      --scenario-accent: #c57b35;
+      --scenario-soft: #fff4e7;
+      --scenario-line: #dfbd91;
+      --scenario-ink: #89591f;
+    }
+
+    .task-scenario-label {
+      color: var(--scenario-accent);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 1.15px;
+      text-transform: uppercase;
+    }
+
+    .task-query-flow,
+    .task-stale-flow {
+      display: grid;
+      align-items: stretch;
+      gap: 14px;
+      margin-top: 13px;
+    }
+
+    .task-query-flow {
+      grid-template-columns: 255px 115px 180px 70px 1fr;
+    }
+
+    .task-stale-flow {
+      grid-template-columns: 355px 155px 1fr;
+    }
+
+    .task-query-flow .task-flow-arrow span {
+      padding: 7px 10px;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+    }
+
+    .task-scenario.stale .task-flow-status {
+      padding: 7px 10px;
+      font-size: 11px;
+      letter-spacing: 0.45px;
+    }
+
+    .task-flow-card {
+      display: flex;
+      min-width: 0;
+      min-height: 165px;
+      flex-direction: column;
+      justify-content: center;
+      padding: 17px 18px;
+      border: 1px solid var(--scenario-line);
+      border-radius: 10px;
+      background: var(--scenario-soft);
+    }
+
+    .task-flow-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .task-flow-card code {
+      color: #263c45;
+      font-family: var(--mono);
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .task-flow-status {
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: var(--scenario-accent);
+      color: #fff;
+      font-size: 10.5px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 0.65px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .task-flow-time {
+      margin: 15px 0 0;
+      color: var(--scenario-ink);
+      font-size: 16px;
+      line-height: 1.25;
+      font-weight: 720;
+    }
+
+    .task-flow-caption {
+      margin: 7px 0 0;
+      color: #6b7c77;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 580;
+    }
+
+    .task-flow-arrow {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      color: #718a91;
+    }
+
+    .task-flow-arrow::before {
+      content: "";
+      width: 100%;
+      height: 2px;
+      background: currentColor;
+    }
+
+    .task-flow-arrow::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      width: 9px;
+      height: 9px;
+      border: solid currentColor;
+      border-width: 2px 2px 0 0;
+      transform: rotate(45deg);
+    }
+
+    .task-flow-arrow span {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      padding: 7px 10px;
+      border-radius: 4px;
+      background: var(--paper);
+      color: #566e75;
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 0.65px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      transform: translate(-50%, -50%);
+    }
+
+    .task-query-result {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #5e85c4;
+      border-radius: 10px;
+      background: #f3f6fc;
+      color: #3e6098;
+      text-align: center;
+    }
+
+    .task-query-result small {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 830;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .task-query-result strong {
+      margin-top: 10px;
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+    }
+
+    .task-capacity-diagnosis {
+      display: grid;
+      min-width: 0;
+      grid-template-columns: 58px 1fr;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border: 1px solid #b7cee9;
+      border-radius: 10px;
+      background: #f1f5fb;
+    }
+
+    .task-diagnosis-icon {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      background: #547fc4;
+      color: #fff;
+    }
+
+    .task-diagnosis-icon svg {
+      width: 33px;
+      height: 33px;
+    }
+
+    .task-capacity-diagnosis small,
+    .task-policy-explanation small {
+      display: block;
+      color: #6c82a8;
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 0.85px;
+      text-transform: uppercase;
+    }
+
+    .task-capacity-diagnosis h3 {
+      margin: 7px 0 0;
+      color: #365c96;
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 780;
+      letter-spacing: -0.35px;
+    }
+
+    .task-capacity-signals {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .task-capacity-signals span {
+      padding: 6px 8px;
+      border: 1px solid #c4d3e9;
+      border-radius: 5px;
+      background: #fff;
+      color: #536d98;
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .task-policy-explanation {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      justify-content: center;
+      padding: 15px 18px;
+      border: 1px solid #e1c49f;
+      border-radius: 10px;
+      background: #fff9ef;
+    }
+
+    .task-policy-explanation small { color: #9a713d; }
+
+    .task-policy-explanation h3 {
+      margin: 7px 0 0;
+      color: #81551f;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 780;
+      letter-spacing: -0.25px;
+    }
+
+    .task-policy-rail {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 12px;
+      color: #97703f;
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .task-policy-rail span {
+      padding: 5px 7px;
+      border: 1px solid #dfc299;
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .task-policy-rail i {
+      color: #b58b54;
+      font-style: normal;
+    }
+
+    .task-policy-explanation p {
+      margin: 10px 0 0;
+      color: #74634d;
+      font-size: 10px;
+      line-height: 1.35;
+      font-weight: 590;
+    }
+
+    .task-stale-version-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 12px;
+      color: #97703f;
+      font-family: var(--mono);
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .task-stale-version-row span {
+      padding: 5px 7px;
+      border: 1px solid #dfc299;
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .task-stale-version-row i {
+      color: #b58b54;
+      font-style: normal;
+    }
+
+    .task-release-card {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 26px;
+      border: 2px solid #299687;
+      border-radius: 10px;
+      background: #eff9f6;
+      color: #176b64;
+    }
+
+    .task-release-icon {
+      display: grid;
+      place-items: center;
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      background: #299687;
+      color: #fff;
+    }
+
+    .task-release-icon svg {
+      width: 40px;
+      height: 40px;
+    }
+
+    .task-release-card small {
+      display: block;
+      color: #5b8983;
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+    }
+
+    .task-release-card h3 {
+      margin: 9px 0 0;
+      color: #176b64;
+      font-size: 24px;
+      line-height: 1.05;
+      font-weight: 790;
+      letter-spacing: -0.45px;
+    }
+
+    .task-release-resources {
+      display: flex;
+      gap: 8px;
+      margin-top: 13px;
+    }
+
+    .task-release-resources span {
+      padding: 6px 10px;
+      border: 1px solid #a9d3cc;
+      border-radius: 5px;
+      background: #fff;
+      color: #27766e;
+      font-family: var(--mono);
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 820;
+      text-transform: uppercase;
+    }
+
+    .task-cancel-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #cc6f59;
+      border-radius: 10px;
+      background: #fff3ef;
+      color: #9b4e3b;
+      text-align: center;
+    }
+
+    .task-cancel-icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #cc6f59;
+      color: #fff;
+      font-size: 21px;
+      line-height: 1;
+      font-weight: 500;
+    }
+
+    .task-cancel-card strong {
+      margin-top: 12px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 0.75px;
+      text-transform: uppercase;
+    }
+
+    .task-cancel-card small {
+      margin-top: 7px;
+      color: #af6b59;
+      font-size: 9px;
+      line-height: 1.2;
+      font-weight: 620;
     }
 
     /* Slide 5 — Token-in-Token-out */
@@ -3537,6 +4775,553 @@
       font-weight: 600;
     }
 
+    /* Slide 6 — TITO overview */
+    .tito-overview-slide {
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 93% 9%, rgba(43, 155, 148, 0.08), transparent 22%),
+        linear-gradient(90deg, rgba(15, 62, 69, 0.04) 1px, transparent 1px),
+        linear-gradient(rgba(15, 62, 69, 0.04) 1px, transparent 1px),
+        var(--paper);
+      background-size: auto, 52px 52px, 52px 52px, auto;
+    }
+
+    .tito-overview-slide::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 16px;
+      background: var(--navy-2);
+    }
+
+    .tito-overview-slide .standard-head { top: 31px; }
+
+    .tito-overview-slide .standard-head h2 {
+      font-size: 38px;
+      letter-spacing: -1.05px;
+    }
+
+    .tito-overview-subtitle {
+      margin: 7px 0 0;
+      color: #3e6568;
+      font-size: 25px;
+      line-height: 1;
+      font-weight: 680;
+      letter-spacing: -0.25px;
+    }
+
+    .tito-overview-grid {
+      position: absolute;
+      left: 82px;
+      right: 78px;
+      top: 174px;
+      bottom: 56px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .tito-overview-grid .tito-card {
+      padding: 24px 24px 20px;
+    }
+
+    .tito-overview-grid .tito-card h3 {
+      font-size: 28px;
+    }
+
+    .tito-overview-grid .tito-card-intro {
+      font-size: 15px;
+    }
+
+    .tito-overview-grid .pipeline-node { font-size: 14px; }
+    .tito-overview-grid .bpe-label { font-size: 15px; }
+    .tito-overview-grid .tito-drift-list li { font-size: 13.5px; }
+    .tito-overview-grid .bpe-owner { font-size: 10.5px; }
+    .tito-overview-grid .bpe-token small { font-size: 9.5px; }
+    .tito-overview-grid .bpe-token strong { font-size: 14px; }
+    .tito-overview-grid .bpe-roundtrip { font-size: 14px; }
+    .tito-overview-grid .bpe-mismatch { font-size: 15px; }
+    .tito-overview-grid .tito-closing { font-size: 15px; }
+
+    .tito-definition-card .bpe-label,
+    .tito-definition-card .tito-drift-list li,
+    .tito-definition-card .bpe-owner,
+    .tito-definition-card .bpe-roundtrip {
+      color: #176b67;
+    }
+
+    .tito-definition-card .tito-drift-list li::before { background: #168f86; }
+
+    .tito-definition-card .bpe-example {
+      border-left-color: #168f86;
+      background: #f0f9f7;
+    }
+
+    .tito-definition-card .bpe-token {
+      border-color: #91c8c1;
+      color: #176b67;
+    }
+
+    .tito-definition-card .bpe-token small { color: #39857e; }
+
+    .tito-definition-card .bpe-mismatch { color: #c83e32; }
+
+    .tito-combined-card .tito-card-intro { min-height: 0; }
+
+    .tito-append-rule {
+      margin: 8px 0 0;
+      color: #3f6199;
+      font-size: 14px;
+      line-height: 1.25;
+      font-weight: 730;
+    }
+
+    .tito-overview-grid .append-equation {
+      margin-top: 13px;
+      font-size: 17px;
+    }
+
+    .compact-turn-stack {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 13px;
+      border: 1px solid #cfdaed;
+      border-radius: 9px;
+      background: #f7f9fd;
+    }
+
+    .compact-turn-row {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .compact-turn-row > strong {
+      color: #5d729a;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 820;
+      text-transform: uppercase;
+    }
+
+    .compact-turn-tokens {
+      display: flex;
+      min-width: 0;
+      height: 32px;
+    }
+
+    .compact-turn-tokens span {
+      display: grid;
+      min-width: 0;
+      place-items: center;
+      padding: 0 7px;
+      border: solid #a4b7d7;
+      border-width: 1px 1px 1px 0;
+      background: #e7eef9;
+      color: #45618e;
+      font-size: 9.5px;
+      line-height: 1;
+      font-weight: 760;
+      text-align: center;
+    }
+
+    .compact-turn-tokens span:first-child {
+      border-left-width: 1px;
+      border-radius: 4px 0 0 4px;
+    }
+
+    .compact-turn-tokens span:last-child { border-radius: 0 4px 4px 0; }
+
+    .compact-turn-tokens span.delta {
+      border-color: #547fc4;
+      background: #547fc4;
+      color: #fff;
+    }
+
+    .compact-locked-prefix {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 59px;
+      color: #5573a0;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 800;
+    }
+
+    .compact-locked-prefix::before {
+      content: "";
+      width: 138px;
+      height: 6px;
+      border: solid #7791ba;
+      border-width: 0 1px 1px;
+    }
+
+    .tito-merge-divider {
+      margin-top: 14px;
+      padding-top: 13px;
+      border-top: 1px solid #d7dfeb;
+    }
+
+    .tito-merge-divider strong {
+      display: block;
+      color: var(--ink);
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 780;
+    }
+
+    .tito-merge-divider p {
+      margin: 6px 0 0;
+      color: #6d6172;
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 580;
+    }
+
+    .compact-adapter-cases {
+      display: grid;
+      gap: 8px;
+      margin-top: 11px;
+    }
+
+    .compact-adapter-case {
+      display: grid;
+      grid-template-columns: 46px 1fr auto;
+      align-items: center;
+      gap: 9px;
+      min-height: 53px;
+      padding: 8px 10px;
+      border: 1px solid #c5d4ec;
+      border-radius: 7px;
+      background: #f7f9fd;
+    }
+
+    .compact-adapter-case > strong {
+      color: #3f6199;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 830;
+    }
+
+    .compact-adapter-case > span {
+      color: #5d6f91;
+      font-size: 11px;
+      line-height: 1.25;
+      font-weight: 620;
+    }
+
+    .compact-adapter-case code {
+      padding: 5px 7px;
+      border: 1px solid #8fa9d3;
+      border-radius: 4px;
+      background: #eaf0fa;
+      color: #3f6199;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 820;
+    }
+
+    .tito-merge-rules {
+      display: grid;
+      gap: 7px;
+      margin-top: auto;
+      padding-top: 13px;
+    }
+
+    .tito-merge-rule {
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      align-items: center;
+      gap: 8px;
+      color: #526a73;
+      font-size: 10.5px;
+      line-height: 1.25;
+      font-weight: 650;
+    }
+
+    .tito-merge-rule::before {
+      content: "✓";
+      display: grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #e9f2fb;
+      color: #547fc4;
+      font-size: 9px;
+      font-weight: 850;
+    }
+
+    .tito-guardrail-card .tito-card-intro { min-height: 0; }
+
+    .tito-guardrail-stack {
+      flex: 1;
+      display: grid;
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+      margin-top: 14px;
+    }
+
+    .tito-guardrail-panel {
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+      padding: 13px 13px 12px;
+      border: 1px solid #c9bfe0;
+      border-radius: 9px;
+      background: #f7f4fa;
+      --guard-accent: #8f64a8;
+      --guard-soft: #efe8f5;
+      --guard-ink: #6f4e83;
+    }
+
+    .tito-guardrail-panel.template {
+      border-color: #c9bfe0;
+      background: #f7f4fa;
+      --guard-accent: #8f64a8;
+      --guard-soft: #efe8f5;
+      --guard-ink: #6f4e83;
+    }
+
+    .tito-guardrail-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .tito-guardrail-head h4 {
+      margin: 0;
+      color: var(--guard-ink);
+      font-size: 17px;
+      line-height: 1;
+      font-weight: 780;
+      letter-spacing: -0.2px;
+    }
+
+    .tito-guardrail-head span {
+      padding: 5px 7px;
+      border-radius: 999px;
+      background: var(--guard-soft);
+      color: var(--guard-ink);
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+
+    .tito-guardrail-panel > p {
+      margin: 7px 0 0;
+      color: #667873;
+      font-size: 11.5px;
+      line-height: 1.3;
+      font-weight: 580;
+    }
+
+    .mini-comparator {
+      display: grid;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .mini-compare-row {
+      display: grid;
+      grid-template-columns: 116px 1fr;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mini-compare-row > strong {
+      color: #6f7976;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      font-weight: 650;
+      text-transform: uppercase;
+    }
+
+    .mini-compare-vs {
+      margin: -1px 0 -1px 116px;
+      color: #818b88;
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 650;
+      text-align: center;
+    }
+
+    .mini-compare-track {
+      display: flex;
+      height: 28px;
+    }
+
+    .mini-compare-track span {
+      display: grid;
+      place-items: center;
+      padding: 0 7px;
+      border: solid #c5b6d2;
+      border-width: 1px 1px 1px 0;
+      background: #fff;
+      color: #6f4e83;
+      font-family: var(--mono);
+      font-size: 10.5px;
+      font-weight: 760;
+    }
+
+    .mini-compare-track span:first-child {
+      border-left-width: 1px;
+      border-radius: 4px 0 0 4px;
+    }
+
+    .mini-compare-track span:last-child { border-radius: 0 4px 4px 0; }
+
+    .mini-compare-track span.assistant {
+      border-color: #c5b6d2;
+      background: #f1ebf5;
+      color: #735887;
+    }
+
+    .mini-compare-track span.strict {
+      border-color: #a985bb;
+      background: #eadff1;
+      color: #674379;
+    }
+
+    .mini-comparator-policy {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 9px;
+      padding-top: 0;
+    }
+
+    .mini-mismatch-title {
+      margin-top: 9px;
+      color: #6f4e83;
+      font-family: var(--mono);
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 0.65px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .mini-policy-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      padding: 8px 10px;
+      border: 1px solid #cbbdd6;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    .mini-policy-card span {
+      color: #6f7976;
+      font-size: 10.5px;
+      line-height: 1.15;
+      font-weight: 620;
+    }
+
+    .mini-policy-card strong {
+      padding: 5px 7px;
+      border-radius: 4px;
+      background: #eee7f2;
+      color: #6f4e83;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      line-height: 1;
+      font-weight: 830;
+      letter-spacing: 0.45px;
+    }
+
+    .mini-policy-card.error {
+      border-color: #e0a6a1;
+      background: #fff8f7;
+    }
+
+    .mini-policy-card.error strong {
+      background: #fbe2df;
+      color: #c23f34;
+    }
+
+    .tito-guardrail-panel.template > p {
+      font-size: 13.5px;
+    }
+
+    .mini-verifier {
+      display: grid;
+      grid-template-columns: 1fr 35px 1fr;
+      align-items: stretch;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .mini-verifier-path {
+      display: flex;
+      min-height: 54px;
+      flex-direction: column;
+      justify-content: center;
+      padding: 7px 8px;
+      border: 1px solid #c5b6d2;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    .mini-verifier-path small {
+      color: #8a6b9a;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 830;
+      text-transform: uppercase;
+    }
+
+    .mini-verifier-path strong {
+      margin-top: 5px;
+      color: #6f4e83;
+      font-size: 12px;
+      line-height: 1.18;
+      font-weight: 760;
+    }
+
+    .mini-verifier-align {
+      display: grid;
+      place-items: center;
+      color: #8f64a8;
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 780;
+    }
+
+    .mini-verifier-result {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      margin-top: 10px;
+      padding-top: 0;
+    }
+
+    .mini-verifier-result span {
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: #ede5f2;
+      color: #6f4e83;
+      font-family: var(--mono);
+      font-size: 10.5px;
+      font-weight: 830;
+    }
+
+    .mini-verifier-result span.fail {
+      background: #e4d8eb;
+      color: #674379;
+    }
+
     /* Slide 7 — closing */
     .thank-you-slide {
       overflow: hidden;
@@ -4206,148 +5991,250 @@
         </div>
       </section>
 
-      <section class="slide advantages-slide" data-title="Agent Service advantages" aria-hidden="true">
+      <section class="slide advantages-slide" data-title="Backend Flexible Execution" aria-hidden="true">
         <header class="standard-head reveal" style="--delay: 20ms">
           <div>
             <p class="slide-kicker mono">Agent Service · Advantages</p>
-            <h2>verl Agent Service: three design advantages</h2>
+            <h2>verl Agent Service Design Advantage 1</h2>
+            <p class="advantage-head-subtitle">Backend Flexible Execution</p>
           </div>
           <div class="page-index mono">04 / 07</div>
         </header>
 
-        <div class="advantages-grid">
-          <article class="advantage-card reveal" style="--delay: 90ms">
-            <div class="advantage-number mono" aria-hidden="true">01</div>
-            <div class="advantage-symbol" aria-hidden="true">
-              <svg viewBox="0 0 48 48">
-                <rect x="4" y="9" width="15" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"></rect>
-                <rect x="4" y="27" width="15" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"></rect>
-                <rect x="30" y="17" width="14" height="14" rx="4" fill="currentColor" opacity=".18" stroke="currentColor" stroke-width="2.5"></rect>
-                <path d="M19 15h6a5 5 0 0 1 5 5v4M19 33h6a5 5 0 0 0 5-5v-4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"></path>
-              </svg>
-            </div>
-            <h3>Self-contained service</h3>
-            <p class="advantage-lead">One service, many RL frameworks.</p>
-            <p class="advantage-body">The agentic runtime is decoupled from the RL framework.</p>
+        <div class="backend-flexible-body">
+          <p class="backend-flexible-subtitle reveal" style="--delay: 70ms">Run the same agent loop in any mode, and scale</p>
 
-            <div class="advantage-visual integration-visual" aria-label="Multiple RL frameworks connect to the same Agent Service">
-              <div class="framework-rail">
-                <span>verl</span>
-                <span>slime</span>
-                <span>other RL framework</span>
+          <div class="backend-flexible-diagram" aria-label="One agent loop runs across Local, Ray, Kubernetes, and Sandbox execution modes">
+            <div class="backend-loop-card reveal" style="--delay: 110ms">
+              <div class="backend-loop-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48">
+                  <path d="M37 18a14 14 0 0 0-25-3" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+                  <path d="m9 8 2 8 8-2" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+                  <path d="M11 30a14 14 0 0 0 25 3" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+                  <path d="m39 40-2-8-8 2" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
               </div>
-              <div class="integration-arrow" aria-hidden="true">→</div>
-              <div class="service-hub">Agent Service</div>
-            </div>
-          </article>
-
-          <article class="advantage-card reveal" style="--delay: 180ms">
-            <div class="advantage-number mono" aria-hidden="true">02</div>
-            <div class="advantage-symbol" aria-hidden="true">
-              <svg viewBox="0 0 48 48">
-                <rect x="16" y="4" width="16" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"></rect>
-                <rect x="3" y="32" width="12" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.5"></rect>
-                <rect x="18" y="32" width="12" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.5"></rect>
-                <rect x="33" y="32" width="12" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.5"></rect>
-                <path d="M24 15v9M9 32v-5h30v5M24 24v8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
-              </svg>
-            </div>
-            <h3>Backend-flexible execution</h3>
-            <p class="advantage-lead">Run the same agent loop in any mode.</p>
-            <p class="advantage-body advantage-capacity">Scale capacity with flexibility.</p>
-
-            <div class="advantage-visual backend-visual" aria-label="Agent loop scales across Local, Ray, and Kubernetes backends">
-              <div class="agent-loop-hub">Agent Loop</div>
-              <div class="backend-trunk" aria-hidden="true"></div>
-              <div class="backend-route">
-                <span>Local</span>
-                <span>Ray</span>
-                <span>K8s</span>
+              <div class="backend-loop-copy">
+                <small class="mono">One implementation</small>
+                <strong>Agent Loop</strong>
+                <span>same loop · same interface</span>
               </div>
             </div>
-          </article>
 
-          <article class="advantage-card reveal" style="--delay: 270ms">
-            <div class="advantage-number mono" aria-hidden="true">03</div>
-            <div class="advantage-symbol" aria-hidden="true">
-              <svg viewBox="0 0 48 48">
-                <rect x="7" y="5" width="34" height="38" rx="5" fill="none" stroke="currentColor" stroke-width="2.5"></rect>
-                <path d="M15 15h18M15 23h12M15 31h8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"></path>
-                <circle cx="34" cy="31" r="7" fill="var(--advantage-soft)" stroke="currentColor" stroke-width="2.5"></circle>
-                <path d="m31 31 2 2 4-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-              </svg>
-            </div>
-            <h3>Task-level operations</h3>
-            <p class="advantage-lead">Control every rollout independently.</p>
-            <p class="advantage-body">Query or cancel each task independently to control resources.</p>
+            <div class="backend-route-trunk reveal" style="--delay: 170ms" aria-hidden="true"></div>
+            <div class="backend-route-bar reveal" style="--delay: 200ms" aria-hidden="true"></div>
 
-            <div class="advantage-visual task-visual" aria-label="Task-level query and cancellation controls">
-              <div class="task-row">
-                <code>task_081</code><span class="task-state">running</span>
-                <div class="task-actions"><span>query</span></div>
-              </div>
-              <div class="task-row">
-                <code>task_082</code><span class="task-state stale">stale</span>
-                <div class="task-actions"><span>cancel</span></div>
-              </div>
+            <div class="backend-mode-grid">
+              <article class="backend-mode-card local reveal" style="--delay: 240ms">
+                <div class="backend-mode-head">
+                  <div class="backend-mode-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48">
+                      <rect x="5" y="8" width="38" height="29" rx="4" fill="none" stroke="currentColor" stroke-width="2.7"></rect>
+                      <path d="m13 17 6 5-6 5M23 27h10M17 42h14" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  </div>
+                  <div class="backend-mode-name"><small class="mono">Mode 01</small><h3>Local</h3></div>
+                </div>
+                <div class="backend-runtime-box">
+                  <span class="backend-runtime-label mono">Execution modes</span>
+                  <div class="backend-runtime-chips mono">
+                    <span>coroutine</span><span>thread</span><span>process</span><span>docker</span>
+                  </div>
+                </div>
+                <p class="backend-mode-position">Lightweight</p>
+                <p class="backend-mode-description">Small-scale execution for fast local debugging.</p>
+                <div class="backend-mode-footer">
+                  <div class="backend-scale-row"><span class="backend-scale-label mono">Scale</span><strong class="backend-scale-value">Small · Debug</strong></div>
+                  <div class="backend-scale-meter" aria-label="Small scale"><i class="on"></i><i></i><i></i><i></i></div>
+                </div>
+              </article>
+
+              <article class="backend-mode-card ray reveal" style="--delay: 320ms">
+                <div class="backend-mode-head">
+                  <div class="backend-mode-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48">
+                      <rect x="18" y="5" width="12" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2.7"></rect>
+                      <rect x="5" y="31" width="12" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2.7"></rect>
+                      <rect x="31" y="31" width="12" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2.7"></rect>
+                      <path d="M24 17v7M11 31v-7h26v7" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  </div>
+                  <div class="backend-mode-name"><small class="mono">Mode 02</small><h3>Ray</h3></div>
+                </div>
+                <div class="backend-runtime-box">
+                  <span class="backend-runtime-label mono">Runtime</span>
+                  <div class="backend-runtime-chips mono"><span class="wide">remote Ray worker</span></div>
+                </div>
+                <p class="backend-mode-position">Distributed, moderate scale</p>
+                <p class="backend-mode-description">Scale beyond one host.</p>
+                <div class="backend-mode-footer">
+                  <div class="backend-scale-row"><span class="backend-scale-label mono">Scale</span><strong class="backend-scale-value">Moderate</strong></div>
+                  <div class="backend-scale-meter" aria-label="Moderate scale"><i class="on"></i><i class="on"></i><i></i><i></i></div>
+                </div>
+              </article>
+
+              <article class="backend-mode-card k8s reveal" style="--delay: 400ms">
+                <div class="backend-mode-head">
+                  <div class="backend-mode-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48">
+                      <path d="m24 4 17 10v20L24 44 7 34V14Z" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linejoin="round"></path>
+                      <circle cx="24" cy="24" r="8" fill="none" stroke="currentColor" stroke-width="2.7"></circle>
+                      <path d="M24 11v5M24 32v5M11 24h5M32 24h5M15 15l4 4M29 29l4 4M33 15l-4 4M19 29l-4 4" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"></path>
+                    </svg>
+                  </div>
+                  <div class="backend-mode-name"><small class="mono">Mode 03</small><h3>K8s</h3></div>
+                </div>
+                <div class="backend-runtime-box">
+                  <span class="backend-runtime-label mono">Runtime</span>
+                  <div class="backend-runtime-chips mono"><span class="wide">pod</span></div>
+                </div>
+                <p class="backend-mode-position">Production-level execution</p>
+                <p class="backend-mode-description">Large-scale workloads with production scheduling and isolation.</p>
+                <div class="backend-mode-footer">
+                  <div class="backend-scale-row"><span class="backend-scale-label mono">Scale</span><strong class="backend-scale-value">Large · Production</strong></div>
+                  <div class="backend-scale-meter" aria-label="Large production scale"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+                </div>
+              </article>
+
+              <article class="backend-mode-card sandbox reveal" style="--delay: 480ms">
+                <div class="backend-mode-head">
+                  <div class="backend-mode-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48">
+                      <path d="m24 5 18 10-18 10L6 15Z" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linejoin="round"></path>
+                      <path d="M6 15v19l18 9 18-9V15M24 25v18" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linejoin="round"></path>
+                      <path d="m16 10 18 10" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"></path>
+                    </svg>
+                  </div>
+                  <div class="backend-mode-name"><small class="mono">Mode 04</small><h3>Sandbox</h3></div>
+                </div>
+                <div class="backend-runtime-box">
+                  <span class="backend-runtime-label mono">Providers</span>
+                  <div class="backend-runtime-chips mono"><span>Modal</span><span>E2B</span><span class="wide">Volcano Engine Sandbox</span></div>
+                </div>
+                <p class="backend-mode-position">Black-box agent runtime</p>
+                <p class="backend-mode-description">Run the entire agent, such as Claude Code or Codex, inside an isolated sandbox.</p>
+                <div class="backend-mode-footer">
+                  <div class="backend-fit-row"><span class="backend-scale-label mono">Best fit</span><strong class="backend-fit-value">Black-box Agents</strong></div>
+                </div>
+              </article>
             </div>
-          </article>
+          </div>
         </div>
       </section>
 
-      <section class="slide tito-slide" data-title="Token-in-Token-out" aria-hidden="true">
+      <section class="slide task-control-slide" data-title="Task Level Control" aria-hidden="true">
         <header class="standard-head reveal" style="--delay: 20ms">
           <div>
-            <p class="slide-kicker mono">Faithful Trajectories · TITO</p>
-            <h2>verl Agent Service: Zero-drift Multi-turn Token-in-Token-out (TITO)</h2>
+            <p class="slide-kicker mono">Agent Service · Advantages</p>
+            <h2>verl Agent Service Design Advantage 2</h2>
+            <p class="advantage-head-subtitle">Task Level Control</p>
           </div>
           <div class="page-index mono">05 / 07</div>
         </header>
 
-        <div class="tito-grid">
-          <article class="tito-card reveal" style="--delay: 90ms">
+        <div class="task-control-body">
+          <p class="task-control-subtitle reveal" style="--delay: 70ms">Control every rollout independently</p>
+
+          <div class="task-level-scenarios">
+            <section class="task-scenario reveal" style="--delay: 110ms" aria-label="Query a running task and diagnose a queued result">
+              <div class="task-scenario-label mono">01 · Query a Running Task</div>
+              <div class="task-query-flow">
+                <article class="task-flow-card">
+                  <div class="task-flow-card-head"><code>task_081</code><span class="task-flow-status mono">Running</span></div>
+                  <p class="task-flow-time">Submitted 10 Minutes Ago</p>
+                </article>
+
+                <div class="task-flow-arrow"><span>Query Task</span></div>
+
+                <div class="task-query-result"><small>Query Result</small><strong>QUEUED</strong></div>
+
+                <div class="task-flow-arrow" aria-hidden="true"></div>
+
+                <article class="task-capacity-diagnosis">
+                  <div class="task-diagnosis-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48">
+                      <rect x="7" y="8" width="34" height="8" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"></rect>
+                      <rect x="7" y="20" width="25" height="8" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"></rect>
+                      <rect x="7" y="32" width="17" height="8" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"></rect>
+                      <path d="M36 24v14M31 33l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <small>Diagnosis</small>
+                    <h3>Capacity Bottleneck</h3>
+                    <div class="task-capacity-signals"><span>Too many concurrent tasks</span><span>Not enough worker capacity</span></div>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="task-scenario stale reveal" style="--delay: 190ms" aria-label="Cancel a stale off-policy task">
+              <div class="task-scenario-label mono">02 · Cancel a Stale Task</div>
+              <div class="task-stale-flow">
+                <article class="task-flow-card">
+                  <div class="task-flow-card-head"><code>task_082</code><span class="task-flow-status mono">Stale (Off-Policy)</span></div>
+                  <p class="task-flow-caption">This sample has crossed too many policy versions.</p>
+                </article>
+
+                <div class="task-flow-arrow"><span>Cancel Task</span></div>
+
+                <article class="task-release-card">
+                  <div class="task-release-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48">
+                      <rect x="7" y="8" width="34" height="25" rx="5" fill="none" stroke="currentColor" stroke-width="2.7"></rect>
+                      <path d="M15 40h18M20 33v7M28 33v7M16 16h16M16 23h10" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"></path>
+                      <path d="m33 22 3 3 5-7" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <small>Cancel Result</small>
+                    <h3>Release CPU and GPU Resources</h3>
+                  </div>
+                </article>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide tito-overview-slide" data-title="Token-In Token-Out" aria-hidden="true">
+        <header class="standard-head reveal" style="--delay: 20ms">
+          <div>
+            <p class="slide-kicker mono">Agent Service · Advantages</p>
+            <h2>verl Agent Service Design Advantage 3</h2>
+            <p class="tito-overview-subtitle">Zero Drift Token In Token Out</p>
+          </div>
+          <div class="page-index mono">06 / 07</div>
+        </header>
+
+        <div class="tito-overview-grid">
+          <article class="tito-card tito-definition-card reveal" style="--delay: 90ms">
             <div class="tito-card-index mono">01 · Definition</div>
-            <h3>Token IDs, end to end</h3>
+            <h3>Token IDs, End to End</h3>
             <p class="tito-card-intro">What the server <strong>receives</strong>, <strong>generates</strong>, and <strong>sends to training</strong> stays in token ID form.</p>
 
             <div class="token-pipeline" aria-label="Token IDs flow through the LLM server into the RL trainer">
               <div class="pipeline-node">
                 <span>Prompt IDs</span>
-                <span class="micro-token-row" aria-hidden="true">
-                  <i style="--token-index: 0"></i><i style="--token-index: 1"></i><i style="--token-index: 2"></i>
-                </span>
               </div>
               <div class="pipeline-arrow" aria-hidden="true">→</div>
-              <div class="pipeline-node server">
-                <span>LLM Server</span>
-                <span class="mono" style="font-size:10px">token in / token out</span>
-              </div>
+              <div class="pipeline-node server"><span>LLM Server</span><span class="mono" style="font-size:10px">token in / token out</span></div>
               <div class="pipeline-arrow" aria-hidden="true">→</div>
               <div class="pipeline-node">
                 <span>RL Trainer</span>
-                <span class="micro-token-row" aria-hidden="true">
-                  <i style="--token-index: 3"></i><i style="--token-index: 4"></i><i style="--token-index: 5"></i>
-                </span>
               </div>
             </div>
 
             <div class="tito-why">
               <div class="bpe-label">Why shouldn’t we use text-in, text-out?</div>
-              <ul class="tito-drift-list">
-                <li>Tokenizer config drift</li>
-                <li>BPE boundary drift</li>
-              </ul>
+              <ul class="tito-drift-list"><li>Tokenizer config drift</li><li>BPE boundary drift</li></ul>
             </div>
 
             <div class="bpe-example">
-              <div class="bpe-example-label mono">Example · same text, different token IDs</div>
               <div class="bpe-flow">
                 <div class="bpe-token-group">
                   <div class="bpe-owner">Model generates</div>
-                  <div class="bpe-sequence">
-                    <i class="bpe-token"><small>token ID 3</small><strong>“he”</strong></i>
-                    <i class="bpe-token"><small>token ID 7</small><strong>“llo”</strong></i>
-                  </div>
+                  <div class="bpe-sequence"><i class="bpe-token"><small>token ID 3</small><strong>“he”</strong></i><i class="bpe-token"><small>token ID 7</small><strong>“llo”</strong></i></div>
                 </div>
                 <div class="bpe-roundtrip">Decode / Encode</div>
                 <div class="bpe-token-group">
@@ -4361,152 +6248,57 @@
             <p class="tito-closing">With TITO, the trainer sees exactly what inference sampled.</p>
           </article>
 
-          <article class="tito-card reveal" style="--delay: 180ms">
-            <div class="tito-card-index mono">02 · Multi-turn invariant</div>
-            <h3>Append-only across turns</h3>
-            <p class="tito-card-intro"><strong>What does append-only mean?</strong><br>For every turn, retain the token IDs produced by the LLM. For the next turn, tokenize only the new delta—never retokenize the full message history.</p>
+          <article class="tito-card tito-combined-card reveal" style="--delay: 170ms">
+            <div class="tito-card-index mono">02 · Multi-Turn Correctness</div>
+            <h3>Append-Only</h3>
+            <p class="tito-append-rule">Never retokenize the full message history.</p>
 
             <div class="append-equation">Token IDs<sub>n</sub> = Token IDs<sub>n−1</sub> ⊕ Delta IDs<sub>n</sub></div>
-
-            <div class="turn-stack" aria-label="The previous token prefix is preserved and only the new turn is appended">
-              <div class="turn-row">
-                <div class="turn-label">turn n−1</div>
-                <div class="turn-tokens"><span>Prompt</span><span>Assistant Response</span></div>
-              </div>
-              <div class="prefix-brace">locked prefix</div>
-              <div class="turn-row">
-                <div class="turn-label">turn n</div>
-                <div class="turn-tokens"><span>Prompt</span><span>Assistant Response</span><span class="new-delta">Tool Response</span></div>
-              </div>
+            <div class="compact-turn-stack" aria-label="Previous token IDs remain locked and only the new delta is appended">
+              <div class="compact-turn-row"><strong>turn n−1</strong><div class="compact-turn-tokens"><span>Prompt</span><span>Assistant Response</span></div></div>
+              <div class="compact-locked-prefix">locked prefix</div>
+              <div class="compact-turn-row"><strong>turn n</strong><div class="compact-turn-tokens"><span>Prompt</span><span>Assistant Response</span><span class="delta">New Delta</span></div></div>
             </div>
 
-            <div class="tito-rule-list">
-              <div class="tito-rule">Never retokenize history.</div>
-              <div class="tito-rule">Tokenize only this turn’s delta, then append.</div>
+            <div class="tito-merge-divider">
+              <strong>Model-Specific Merge</strong>
+              <p>Correct the boundary when a model emits EOS incorrectly or incompletely.</p>
             </div>
-
-          </article>
-
-          <article class="tito-card reveal" style="--delay: 270ms">
-            <div class="tito-card-index mono">03 · Boundary correctness</div>
-            <h3>Model-specific adapter</h3>
-            <p class="tito-card-intro">Model may emit EOS incorrectly or insufficiently.</p>
-
-            <p class="adapter-explanation">When merging delta token IDs with the existing sequence, the adapter fixes the model-specific boundary.</p>
-
-            <div class="boundary-examples">
-              <div class="boundary-example">
-                <div class="boundary-example-head"><strong>Qwen</strong><span>insert the missing boundary token</span></div>
-                <div class="boundary-token-rail" aria-label="Qwen adapter inserts a newline between im end and im start">
-                  <span class="boundary-token">…</span>
-                  <span class="boundary-token">&lt;/tool_call&gt;</span>
-                  <span class="boundary-token">&lt;|im_end|&gt;</span>
-                  <span class="boundary-token inserted">\n</span>
-                  <span class="boundary-token next">&lt;|im_start|&gt;</span>
-                  <span class="boundary-token next">user</span>
-                </div>
-                <div class="boundary-callout">adapter inserts <code>\n</code></div>
-              </div>
-
-              <div class="boundary-example">
-                <div class="boundary-example-head"><strong>GLM</strong><span>replace the wrong next-role boundary</span></div>
-                <div class="boundary-token-rail" aria-label="GLM adapter removes observation and continues with a user boundary">
-                  <span class="boundary-token">…</span>
-                  <span class="boundary-token">&lt;/tool_call&gt;</span>
-                  <span class="boundary-token removed">&lt;|observation|&gt;</span>
-                  <span class="boundary-token next">&lt;|user|&gt;</span>
-                  <span class="boundary-token next">\n</span>
-                </div>
-                <div class="boundary-callout">If tool call failed, adapter removes <code>&lt;|observation|&gt;</code></div>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section class="slide verification-slide" data-title="TITO verification" aria-hidden="true">
-        <header class="standard-head reveal" style="--delay: 20ms">
-          <div>
-            <p class="slide-kicker mono">Faithful Trajectories · TITO</p>
-            <h2>verl Agent Service: Zero Drift Multi-Turn Token In Token Out (TITO)</h2>
-          </div>
-          <div class="page-index mono">06 / 07</div>
-        </header>
-
-        <div class="verification-stack">
-          <article class="verify-panel reveal" style="--delay: 90ms">
-            <div class="verify-panel-copy">
-              <div class="verify-mode">01 · Online guardrail</div>
-              <h3>Token Sequence Comparator</h3>
-              <p>Checks the assembled token sequence for every trajectory—while the rollout is still observable.</p>
-              <div class="verify-frequency">online checking during rollout</div>
-            </div>
-
-            <div class="comparator-visual" aria-label="Token comparison revealed step by step with slide navigation">
-              <div class="animated-comparator" aria-label="The comparator first checks assistant output softly, then checks the tool response and boundary strictly">
-                <div class="animated-sequence-row">
-                  <div class="animated-row-label">actual</div>
-                  <div class="animated-token-track">
-                    <span class="compare-token boundary">&lt;A&gt;</span>
-                    <span class="compare-region assistant-region"><span class="compare-token assistant">assistant output</span></span>
-                    <span class="compare-region strict-region"><span class="compare-token boundary">&lt;T&gt;</span><span class="compare-token tool">tool response</span><span class="compare-token boundary">&lt;/T&gt;</span></span>
-                  </div>
-                </div>
-                <div class="animated-compare-link"><span>compare by semantic region</span></div>
-                <div class="animated-sequence-row">
-                  <div class="animated-row-label">expected</div>
-                  <div class="animated-token-track">
-                    <span class="compare-token boundary">&lt;A&gt;</span>
-                    <span class="compare-region assistant-region"><span class="compare-token assistant">assistant text</span></span>
-                    <span class="compare-region strict-region"><span class="compare-token boundary">&lt;T&gt;</span><span class="compare-token tool">tool response</span><span class="compare-token boundary">&lt;/T&gt;</span></span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="comparison-stage" aria-live="polite">
-                <div class="animated-callout soft-callout">
-                  <em>Soft mismatch warning</em>
-                  <strong>Assistant content</strong>
-                  <span>Log as a soft mismatch warning.</span>
-                </div>
-                <div class="animated-callout strict-callout">
-                  <em>strict</em>
-                  <strong>Tool response + boundary</strong>
-                  <span>Hard mismatch detected. <b>Raise error on invalid trajectory.</b></span>
-                </div>
-              </div>
+            <div class="compact-adapter-cases">
+              <div class="compact-adapter-case"><strong>Qwen</strong><span>Insert the missing boundary token</span><code>+ \n</code></div>
+              <div class="compact-adapter-case"><strong>GLM</strong><span>Replace an invalid next-role boundary</span><code>fix EOS</code></div>
             </div>
           </article>
 
-          <article class="verify-panel reveal" style="--delay: 190ms">
-            <div class="verify-panel-copy">
-              <div class="verify-mode">02 · Pre-flight check</div>
-              <h3>Chat Template Verifier</h3>
-              <p>Quickly proves whether a model’s chat template and adapter preserve the append-only property.</p>
-              <div class="verify-frequency">before model onboarding</div>
-            </div>
+          <article class="tito-card tito-guardrail-card reveal" style="--delay: 250ms">
+            <div class="tito-card-index mono">03 · Verification</div>
+            <h3>Two Verification Checks</h3>
+            <p class="tito-card-intro">Catch token drift during rollout and validate new chat templates before model onboarding.</p>
 
-            <div class="verifier-visual">
-              <div class="append-proof">
-                <div class="verifier-pair" aria-label="The verifier compares a canonical full render with a continuous-token merge result">
-                  <div class="verifier-path reference-path">
-                    <small>reference</small>
-                    <strong>Full canonical render</strong>
-                    <span>complete message history</span>
-                  </div>
-                  <div class="verifier-align" aria-hidden="true"><b>↔</b><small>align</small></div>
-                  <div class="verifier-path candidate-path">
-                    <small>candidate</small>
-                    <strong>Continuous-token merge</strong>
-                    <span>incremental token IDs</span>
-                  </div>
+            <div class="tito-guardrail-stack">
+              <section class="tito-guardrail-panel" aria-label="Token Sequence Comparator">
+                <div class="tito-guardrail-head"><h4>Token Sequence Comparator</h4><span class="mono">Online</span></div>
+                <div class="mini-comparator">
+                  <div class="mini-compare-row"><strong>Assembled Sequence</strong><div class="mini-compare-track"><span>&lt;A&gt;</span><span class="assistant">assistant output</span><span class="strict">boundary + tool</span></div></div>
+                  <div class="mini-compare-vs">VS</div>
+                  <div class="mini-compare-row"><strong>Canonical Render</strong><div class="mini-compare-track"><span>&lt;A&gt;</span><span class="assistant">assistant text</span><span class="strict">boundary + tool</span></div></div>
                 </div>
-              </div>
+                <div class="mini-comparator-policy">
+                  <div class="mini-policy-card"><span>Assistant Mismatch</span><strong>WARN</strong></div>
+                  <div class="mini-policy-card error"><span>Boundary + Tool Mismatch</span><strong>ERROR</strong></div>
+                </div>
+              </section>
 
-              <div class="verifier-result">
-                <div class="result-row pass"><b>PASS</b><span>Merged sequence aligns with reference.</span></div>
-                <div class="result-row fail"><b>FAIL</b><span>User should fix the template or adapter.</span></div>
-              </div>
+              <section class="tito-guardrail-panel template" aria-label="Chat Template Verifier">
+                <div class="tito-guardrail-head"><h4>Chat Template Verifier</h4><span class="mono">Pre-Flight</span></div>
+                <p>Prove that the template and adapter preserve append-only behavior.</p>
+                <div class="mini-verifier">
+                  <div class="mini-verifier-path"><small>Reference</small><strong>Full Canonical Render</strong></div>
+                  <div class="mini-verifier-align">↔</div>
+                  <div class="mini-verifier-path"><small>Candidate</small><strong>Continuous-Token Merge</strong></div>
+                </div>
+                <div class="mini-verifier-result"><span>PASS · Aligned</span><span class="fail">FAIL · Fix Template</span></div>
+              </section>
             </div>
           </article>
         </div>
