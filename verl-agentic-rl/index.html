@@ -1406,6 +1406,50 @@
       box-shadow: inset 0 0 0 7px rgba(198, 221, 239, 0.18);
     }
 
+    .self-contained-emphasis {
+      position: absolute;
+      z-index: 7;
+      inset: -8px;
+      border: 6px solid #377cad;
+      border-radius: 29px;
+      background: transparent;
+      box-shadow:
+        0 0 0 11px rgba(75, 145, 198, 0.18),
+        0 24px 70px rgba(37, 91, 132, 0.3),
+        inset 0 0 34px rgba(88, 163, 218, 0.08);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: scale(0.985);
+      transition:
+        opacity 320ms ease,
+        visibility 320ms ease,
+        transform 420ms cubic-bezier(0.2, 0.78, 0.26, 1);
+    }
+
+    .self-contained-emphasis strong {
+      position: absolute;
+      right: 24px;
+      top: -48px;
+      display: block;
+      padding: 13px 27px 15px;
+      border-radius: 13px;
+      background: #326f9f;
+      box-shadow: 0 18px 42px rgba(29, 75, 111, 0.3);
+      color: #fff;
+      font-size: 38px;
+      line-height: 1;
+      font-weight: 790;
+      letter-spacing: -1.2px;
+    }
+
+    .agent-service-slide.service-step-1 .self-contained-emphasis {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1);
+    }
+
+
     .service-scope-label {
       position: absolute;
       z-index: 8;
@@ -6007,6 +6051,9 @@
           </aside>
 
           <section class="functional-boundary reveal" style="--delay: 70ms" aria-label="Decoupled Agent Service">
+            <div class="self-contained-emphasis" aria-hidden="true">
+              <strong>Self-contained</strong>
+            </div>
             <div class="service-scope-label mono">Decoupled Agent Service</div>
             <div class="session-note mono">one task · one isolated session</div>
 
@@ -6512,6 +6559,7 @@
       let introStep = 0;
       let ppoStep = 0;
       let comparatorStep = 0;
+      let agentServiceStep = 0;
       let resizeFrame = 0;
       let touchStart = null;
       let suppressClickUntil = 0;
@@ -6579,12 +6627,18 @@
         if (step > 0) slide.classList.add(`ppo-step-${step}`);
       }
 
+      function setAgentServiceStep(slide, step) {
+        slide.classList.toggle("service-step-1", step > 0);
+      }
+
       function resetFragmentInteractions() {
         introStep = 0;
         ppoStep = 0;
         comparatorStep = 0;
+        agentServiceStep = 0;
         slides.forEach((slide) => {
           if (slide.classList.contains("intro")) setIntroStep(slide, 0);
+          if (slide.classList.contains("agent-service-slide")) setAgentServiceStep(slide, 0);
           slide.classList.remove("ppo-step-1", "ppo-step-2", "ppo-step-3", "ppo-step-4");
           slide.classList.remove("compare-step-1", "compare-step-2", "compare-step-3");
         });
@@ -6600,6 +6654,11 @@
         if (slide.classList.contains("what-is-verl") && ppoStep < 4) {
           ppoStep += 1;
           setPpoStep(slide, ppoStep);
+          return;
+        }
+        if (slide.classList.contains("agent-service-slide") && agentServiceStep < 1) {
+          agentServiceStep += 1;
+          setAgentServiceStep(slide, agentServiceStep);
           return;
         }
         if (slide.classList.contains("verification-slide") && comparatorStep < 2) {
@@ -6620,6 +6679,11 @@
         if (slide.classList.contains("what-is-verl") && ppoStep > 0) {
           ppoStep -= 1;
           setPpoStep(slide, ppoStep);
+          return;
+        }
+        if (slide.classList.contains("agent-service-slide") && agentServiceStep > 0) {
+          agentServiceStep -= 1;
+          setAgentServiceStep(slide, agentServiceStep);
           return;
         }
         if (slide.classList.contains("verification-slide") && comparatorStep > 0) {
@@ -6729,7 +6793,7 @@
       document.addEventListener("click", (event) => {
         if (performance.now() < suppressClickUntil) return;
         if (event.target.closest("button, a")) return;
-        if (slides[current].classList.contains("intro") || slides[current].classList.contains("what-is-verl") || slides[current].classList.contains("verification-slide")) {
+        if (slides[current].classList.contains("intro") || slides[current].classList.contains("what-is-verl") || slides[current].classList.contains("agent-service-slide") || slides[current].classList.contains("verification-slide")) {
           if (event.clientX >= window.innerWidth * 0.5) {
             advancePresentation();
           } else {
