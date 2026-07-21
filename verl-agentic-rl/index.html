@@ -6502,6 +6502,7 @@
     (() => {
       const slides = Array.from(document.querySelectorAll(".slide"));
       const stageShell = document.getElementById("stage-shell");
+      const stage = document.getElementById("stage");
       const viewport = document.querySelector(".viewport");
       const previousButton = document.getElementById("previous");
       const nextButton = document.getElementById("next");
@@ -6519,23 +6520,36 @@
         current = 0;
       }
 
+      function readPixelValue(value) {
+        const parsed = Number.parseFloat(value);
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
+
       function fitStage() {
         const visualViewport = window.visualViewport;
         const layoutWidth = document.documentElement.clientWidth || window.innerWidth;
         const layoutHeight = document.documentElement.clientHeight || window.innerHeight;
-        const viewportWidth = Math.min(visualViewport?.width || layoutWidth, layoutWidth);
-        const viewportHeight = Math.min(visualViewport?.height || layoutHeight, layoutHeight);
+        const viewportWidth = Math.min((visualViewport && visualViewport.width) || layoutWidth, layoutWidth);
+        const viewportHeight = Math.min((visualViewport && visualViewport.height) || layoutHeight, layoutHeight);
         const viewportStyle = window.getComputedStyle(viewport);
-        const horizontalPadding = Number.parseFloat(viewportStyle.paddingLeft) + Number.parseFloat(viewportStyle.paddingRight);
-        const verticalPadding = Number.parseFloat(viewportStyle.paddingTop) + Number.parseFloat(viewportStyle.paddingBottom);
+        const horizontalPadding = readPixelValue(viewportStyle.paddingLeft) + readPixelValue(viewportStyle.paddingRight);
+        const verticalPadding = readPixelValue(viewportStyle.paddingTop) + readPixelValue(viewportStyle.paddingBottom);
         const availableWidth = Math.max(1, viewportWidth - horizontalPadding);
         const availableHeight = Math.max(1, viewportHeight - verticalPadding);
-        const scale = Math.min(availableWidth / 1600, availableHeight / 900);
+        const calculatedScale = Math.min(availableWidth / 1600, availableHeight / 900);
+        const fallbackScale = Math.min(Math.max(1, layoutWidth) / 1600, Math.max(1, layoutHeight) / 900);
+        const scale = Number.isFinite(calculatedScale) && calculatedScale > 0 ? calculatedScale : fallbackScale;
+        const displayWidth = 1600 * scale;
+        const displayHeight = 900 * scale;
         const rootStyle = document.documentElement.style;
 
         rootStyle.setProperty("--scale", scale.toFixed(5));
-        rootStyle.setProperty("--stage-display-w", `${(1600 * scale).toFixed(2)}px`);
-        rootStyle.setProperty("--stage-display-h", `${(900 * scale).toFixed(2)}px`);
+        rootStyle.setProperty("--stage-display-w", `${displayWidth.toFixed(2)}px`);
+        rootStyle.setProperty("--stage-display-h", `${displayHeight.toFixed(2)}px`);
+        stageShell.style.width = `${displayWidth.toFixed(2)}px`;
+        stageShell.style.height = `${displayHeight.toFixed(2)}px`;
+        stage.style.transform = `scale(${scale.toFixed(5)})`;
+        stage.style.webkitTransform = `scale(${scale.toFixed(5)})`;
       }
 
       function scheduleStageFit() {
@@ -6645,16 +6659,20 @@
 
       fullscreenButton.addEventListener("click", async () => {
         if (!document.fullscreenElement) {
-          await document.documentElement.requestFullscreen?.();
+          if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+          }
           if (window.matchMedia("(pointer: coarse) and (orientation: portrait)").matches) {
             try {
-              await screen.orientation?.lock?.("landscape");
+              if (screen.orientation && screen.orientation.lock) {
+                await screen.orientation.lock("landscape");
+              }
             } catch (_) {
               // Orientation locking is not available in every mobile browser.
             }
           }
         } else {
-          await document.exitFullscreen?.();
+          if (document.exitFullscreen) await document.exitFullscreen();
         }
       });
 
@@ -6728,10 +6746,14 @@
         scheduleStageFit();
         window.setTimeout(scheduleStageFit, 180);
       });
-      window.visualViewport?.addEventListener("resize", scheduleStageFit);
-      window.visualViewport?.addEventListener("scroll", scheduleStageFit);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", scheduleStageFit);
+        window.visualViewport.addEventListener("scroll", scheduleStageFit);
+      }
       document.addEventListener("fullscreenchange", () => {
-        if (!document.fullscreenElement) screen.orientation?.unlock?.();
+        if (!document.fullscreenElement && screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        }
         scheduleStageFit();
       });
       window.addEventListener("hashchange", () => {
@@ -6739,7 +6761,24 @@
         if (Number.isInteger(hashIndex)) showSlide(hashIndex, false);
       });
 
-      fitStage();
+      try {
+        fitStage();
+      } catch (_) {
+        const emergencyScale = Math.min(
+          Math.max(1, window.innerWidth) / 1600,
+          Math.max(1, window.innerHeight) / 900
+        );
+        const emergencyWidth = 1600 * emergencyScale;
+        const emergencyHeight = 900 * emergencyScale;
+
+        document.documentElement.style.setProperty("--scale", emergencyScale.toFixed(5));
+        document.documentElement.style.setProperty("--stage-display-w", `${emergencyWidth.toFixed(2)}px`);
+        document.documentElement.style.setProperty("--stage-display-h", `${emergencyHeight.toFixed(2)}px`);
+        stageShell.style.width = `${emergencyWidth.toFixed(2)}px`;
+        stageShell.style.height = `${emergencyHeight.toFixed(2)}px`;
+        stage.style.transform = `scale(${emergencyScale.toFixed(5)})`;
+        stage.style.webkitTransform = `scale(${emergencyScale.toFixed(5)})`;
+      }
       showSlide(current, false);
     })();
   </script>
