@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="dark light" />
   <title>What's New in verl for Agentic RL — Xiaole Guo</title>
   <style>
@@ -10,6 +10,8 @@
       --canvas-w: 1600;
       --canvas-h: 900;
       --scale: 1;
+      --stage-display-w: 1600px;
+      --stage-display-h: 900px;
       --navy: #07151d;
       --navy-2: #0b202a;
       --paper: #f4f7f6;
@@ -29,8 +31,10 @@
     body {
       width: 100%;
       height: 100%;
+      min-height: 100%;
       margin: 0;
       overflow: hidden;
+      overscroll-behavior: none;
     }
 
     body {
@@ -50,15 +54,24 @@
       display: grid;
       place-items: center;
       overflow: hidden;
+      touch-action: pan-y pinch-zoom;
+    }
+
+    .stage-shell {
+      position: relative;
+      width: var(--stage-display-w);
+      height: var(--stage-display-h);
+      flex: 0 0 auto;
     }
 
     .stage {
-      position: relative;
+      position: absolute;
+      inset: 0 auto auto 0;
       width: calc(var(--canvas-w) * 1px);
       height: calc(var(--canvas-h) * 1px);
       flex: 0 0 auto;
       transform: scale(var(--scale));
-      transform-origin: center center;
+      transform-origin: top left;
       overflow: hidden;
       background: var(--paper);
       box-shadow: 0 32px 110px rgba(0, 0, 0, 0.56);
@@ -5628,6 +5641,68 @@
       opacity: 0.35;
     }
 
+    .mobile-view-hint {
+      display: none;
+    }
+
+    @media (hover: none), (pointer: coarse), (max-width: 760px) {
+      .viewport {
+        padding:
+          max(8px, env(safe-area-inset-top))
+          max(8px, env(safe-area-inset-right))
+          max(8px, env(safe-area-inset-bottom))
+          max(8px, env(safe-area-inset-left));
+      }
+
+      .stage {
+        box-shadow: 0 18px 56px rgba(0, 0, 0, 0.5);
+      }
+
+      .controls {
+        right: 50%;
+        bottom: max(10px, env(safe-area-inset-bottom));
+        gap: 10px;
+        padding: 5px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 11px;
+        background: rgba(3, 9, 13, 0.66);
+        opacity: 0.94;
+        transform: translateX(50%);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      .controls button {
+        width: 48px;
+        height: 42px;
+        border-radius: 8px;
+        font-size: 19px;
+      }
+    }
+
+    @media (orientation: portrait) and (max-width: 760px) {
+      .mobile-view-hint {
+        position: fixed;
+        z-index: 19;
+        left: 50%;
+        bottom: max(72px, calc(env(safe-area-inset-bottom) + 68px));
+        display: block;
+        max-width: calc(100vw - 32px);
+        padding: 8px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 999px;
+        background: rgba(4, 14, 20, 0.7);
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 12px;
+        line-height: 1.2;
+        text-align: center;
+        white-space: nowrap;
+        transform: translateX(-50%);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+    }
+
     .sr-only {
       position: absolute;
       width: 1px;
@@ -5652,6 +5727,7 @@
     @media print {
       html, body { width: auto; height: auto; overflow: visible; background: #fff; }
       .viewport { position: static; display: block; overflow: visible; }
+      .stage-shell { width: 1600px; height: auto; }
       .stage { width: 1600px; height: auto; transform: none !important; box-shadow: none; }
       .slide { position: relative; display: block !important; page-break-after: always; }
       .reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
@@ -5667,13 +5743,15 @@
       .agent-arrowhead { opacity: 1 !important; }
       .weight-sync-path { stroke-dashoffset: 0 !important; }
       .agent-flow { stroke-dashoffset: 0 !important; animation: none !important; }
-      .controls { display: none; }
+      .controls,
+      .mobile-view-hint { display: none; }
     }
   </style>
 </head>
 <body>
   <main class="viewport" aria-label="Presentation">
-    <div class="stage" id="stage">
+    <div class="stage-shell" id="stage-shell">
+      <div class="stage" id="stage">
       <section class="slide cover active" data-title="Cover" aria-hidden="false">
         <div class="cover-copy">
           <div class="cover-rule" aria-hidden="true"></div>
@@ -6408,6 +6486,7 @@
         <div class="thank-orbit" aria-hidden="true"></div>
         <div class="thank-index mono">07 / 07</div>
       </section>
+      </div>
     </div>
   </main>
 
@@ -6416,11 +6495,14 @@
     <button type="button" id="next" aria-label="Next slide">→</button>
     <button type="button" id="fullscreen" aria-label="Toggle fullscreen">⛶</button>
   </nav>
+  <div class="mobile-view-hint" aria-hidden="true">Rotate for a larger view · Swipe to navigate</div>
   <div class="sr-only" id="status" aria-live="polite"></div>
 
   <script>
     (() => {
       const slides = Array.from(document.querySelectorAll(".slide"));
+      const stageShell = document.getElementById("stage-shell");
+      const viewport = document.querySelector(".viewport");
       const previousButton = document.getElementById("previous");
       const nextButton = document.getElementById("next");
       const fullscreenButton = document.getElementById("fullscreen");
@@ -6429,14 +6511,36 @@
       let introStep = 0;
       let ppoStep = 0;
       let comparatorStep = 0;
+      let resizeFrame = 0;
+      let touchStart = null;
+      let suppressClickUntil = 0;
 
       if (!Number.isInteger(current) || current < 0 || current >= slides.length) {
         current = 0;
       }
 
       function fitStage() {
-        const scale = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
-        document.documentElement.style.setProperty("--scale", scale.toFixed(4));
+        const visualViewport = window.visualViewport;
+        const layoutWidth = document.documentElement.clientWidth || window.innerWidth;
+        const layoutHeight = document.documentElement.clientHeight || window.innerHeight;
+        const viewportWidth = Math.min(visualViewport?.width || layoutWidth, layoutWidth);
+        const viewportHeight = Math.min(visualViewport?.height || layoutHeight, layoutHeight);
+        const viewportStyle = window.getComputedStyle(viewport);
+        const horizontalPadding = Number.parseFloat(viewportStyle.paddingLeft) + Number.parseFloat(viewportStyle.paddingRight);
+        const verticalPadding = Number.parseFloat(viewportStyle.paddingTop) + Number.parseFloat(viewportStyle.paddingBottom);
+        const availableWidth = Math.max(1, viewportWidth - horizontalPadding);
+        const availableHeight = Math.max(1, viewportHeight - verticalPadding);
+        const scale = Math.min(availableWidth / 1600, availableHeight / 900);
+        const rootStyle = document.documentElement.style;
+
+        rootStyle.setProperty("--scale", scale.toFixed(5));
+        rootStyle.setProperty("--stage-display-w", `${(1600 * scale).toFixed(2)}px`);
+        rootStyle.setProperty("--stage-display-h", `${(900 * scale).toFixed(2)}px`);
+      }
+
+      function scheduleStageFit() {
+        window.cancelAnimationFrame(resizeFrame);
+        resizeFrame = window.requestAnimationFrame(fitStage);
       }
 
       function setIntroStep(slide, step) {
@@ -6542,10 +6646,51 @@
       fullscreenButton.addEventListener("click", async () => {
         if (!document.fullscreenElement) {
           await document.documentElement.requestFullscreen?.();
+          if (window.matchMedia("(pointer: coarse) and (orientation: portrait)").matches) {
+            try {
+              await screen.orientation?.lock?.("landscape");
+            } catch (_) {
+              // Orientation locking is not available in every mobile browser.
+            }
+          }
         } else {
           await document.exitFullscreen?.();
         }
       });
+
+      stageShell.addEventListener("touchstart", (event) => {
+        if (event.touches.length !== 1) {
+          touchStart = null;
+          return;
+        }
+
+        const touch = event.touches[0];
+        touchStart = { x: touch.clientX, y: touch.clientY, time: performance.now() };
+      }, { passive: true });
+
+      stageShell.addEventListener("touchend", (event) => {
+        if (!touchStart || event.changedTouches.length !== 1) {
+          touchStart = null;
+          return;
+        }
+
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - touchStart.x;
+        const deltaY = touch.clientY - touchStart.y;
+        const elapsed = performance.now() - touchStart.time;
+        const swipeThreshold = Math.max(44, window.innerWidth * 0.09);
+        const isHorizontalSwipe = Math.abs(deltaX) >= swipeThreshold && Math.abs(deltaX) > Math.abs(deltaY) * 1.25;
+
+        touchStart = null;
+        if (!isHorizontalSwipe || elapsed > 900) return;
+
+        suppressClickUntil = performance.now() + 500;
+        if (deltaX < 0) {
+          advancePresentation();
+        } else {
+          retreatPresentation();
+        }
+      }, { passive: true });
 
       document.addEventListener("keydown", (event) => {
         if (["ArrowRight", "PageDown", " "].includes(event.key)) {
@@ -6564,6 +6709,7 @@
       });
 
       document.addEventListener("click", (event) => {
+        if (performance.now() < suppressClickUntil) return;
         if (event.target.closest("button, a")) return;
         if (slides[current].classList.contains("intro") || slides[current].classList.contains("what-is-verl") || slides[current].classList.contains("verification-slide")) {
           if (event.clientX >= window.innerWidth * 0.5) {
@@ -6577,7 +6723,17 @@
         if (event.clientX < window.innerWidth * 0.45) changeSlide(-1);
       });
 
-      window.addEventListener("resize", fitStage);
+      window.addEventListener("resize", scheduleStageFit);
+      window.addEventListener("orientationchange", () => {
+        scheduleStageFit();
+        window.setTimeout(scheduleStageFit, 180);
+      });
+      window.visualViewport?.addEventListener("resize", scheduleStageFit);
+      window.visualViewport?.addEventListener("scroll", scheduleStageFit);
+      document.addEventListener("fullscreenchange", () => {
+        if (!document.fullscreenElement) screen.orientation?.unlock?.();
+        scheduleStageFit();
+      });
       window.addEventListener("hashchange", () => {
         const hashIndex = Number.parseInt(location.hash.slice(1), 10);
         if (Number.isInteger(hashIndex)) showSlide(hashIndex, false);
