@@ -600,23 +600,6 @@
       min-height: 0;
     }
 
-    .intro-fragment {
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(18px);
-      transition:
-        opacity 360ms ease,
-        transform 360ms ease,
-        visibility 0s linear 360ms;
-    }
-
-    .intro-fragment.is-visible {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-      transition-delay: 0s;
-    }
-
     .intro-experience-stack .oss-card,
     .research-card {
       padding: 18px 22px;
@@ -715,6 +698,146 @@
     .paper-link:focus-visible {
       border-color: #547fc4;
       background: #edf2fb;
+    }
+
+    /* Slide 1 — simple, single-column About Me list */
+    .intro-body.about-body {
+      left: 112px;
+      right: 112px;
+      top: 176px;
+      bottom: 78px;
+      display: block;
+    }
+
+    .about-layout {
+      display: grid;
+      grid-template-columns: 375px minmax(0, 1fr);
+      align-items: start;
+      gap: 30px;
+    }
+
+    .contact-card {
+      padding: 27px 26px 25px;
+      border: 1px solid #b9cbc5;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .contact-item + .contact-item {
+      margin-top: 24px;
+      padding-top: 23px;
+      border-top: 1px solid rgba(157, 177, 170, 0.48);
+    }
+
+    .contact-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--cyan-dark);
+      font-family: var(--mono);
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 820;
+      letter-spacing: 1.15px;
+      text-transform: uppercase;
+    }
+
+    .contact-link {
+      display: block;
+      overflow-wrap: anywhere;
+      color: var(--ink);
+      font-size: 19px;
+      line-height: 1.35;
+      font-weight: 580;
+      text-decoration-color: rgba(12, 134, 128, 0.46);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+    }
+
+    .contact-link:hover,
+    .contact-link:focus-visible {
+      color: var(--cyan-dark);
+    }
+
+    .about-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 0;
+      padding: 4px 32px 5px 58px;
+      border-top: 1px solid #c6d5d0;
+      border-bottom: 1px solid #c6d5d0;
+      background: rgba(255, 255, 255, 0.58);
+      list-style: disc;
+    }
+
+    .about-item {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 13px 8px 14px 10px;
+      color: var(--ink);
+      font-size: 23px;
+      line-height: 1.3;
+      font-weight: 520;
+      letter-spacing: -0.15px;
+    }
+
+    .about-item:not(:last-child) {
+      border-bottom: 1px solid rgba(157, 177, 170, 0.42);
+    }
+
+    .about-item::marker {
+      color: var(--cyan-dark);
+      font-size: 1.18em;
+    }
+
+    .about-label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--cyan-dark);
+      font-family: var(--mono);
+      font-size: 19px;
+      line-height: 1.2;
+      font-weight: 820;
+      letter-spacing: 1.15px;
+      text-transform: uppercase;
+    }
+
+    .about-items {
+      display: block;
+    }
+
+    .about-entry {
+      display: block;
+      font-size: inherit;
+      line-height: inherit;
+      font-weight: inherit;
+    }
+
+    .about-entry + .about-entry {
+      margin-top: 2px;
+    }
+
+    .about-name {
+      font-size: 30px;
+      line-height: 1.15;
+      font-weight: 760;
+      letter-spacing: -0.45px;
+    }
+
+    .about-link {
+      color: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+    }
+
+    .about-link {
+      text-decoration-color: rgba(12, 134, 128, 0.5);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+    }
+
+    .about-link:hover,
+    .about-link:focus-visible {
+      color: var(--cyan-dark);
     }
 
     /* Slide 2 — PPO dataflow + Hybrid Controller */
@@ -903,16 +1026,16 @@
       position: absolute;
       z-index: 8;
       left: 25px;
-      top: -14px;
+      top: -19px;
       display: inline-flex;
       align-items: center;
-      min-height: 28px;
-      padding: 0 14px;
+      min-height: 38px;
+      padding: 0 20px;
       background: #126f73;
       color: #eff9f7;
-      font-size: 10px;
+      font-size: 15px;
       font-weight: 820;
-      letter-spacing: 1.2px;
+      letter-spacing: 1.35px;
       text-transform: none;
     }
 
@@ -1086,7 +1209,7 @@
       stroke-dasharray: 1;
       stroke-dashoffset: 1;
       vector-effect: non-scaling-stroke;
-      transition: stroke-dashoffset 720ms ease-in-out;
+      transition: stroke-dashoffset 360ms ease-out;
     }
 
     .weight-sync-arrowhead {
@@ -1316,7 +1439,7 @@
     .what-is-verl.ppo-step-3 .weight-sync-arrowhead,
     .what-is-verl.ppo-step-4 .weight-sync-arrowhead {
       opacity: 1;
-      transition-delay: 720ms;
+      transition-delay: 360ms;
     }
 
     .what-is-verl.ppo-step-3 .sync-layer,
@@ -1418,18 +1541,25 @@
     }
 
     .what-is-verl .sync-label {
-      left: -25px;
-      top: 310px;
-      width: 178px;
-      padding: 10px 11px;
-      font-size: 12px;
+      left: -95px;
+      top: 270px;
+      width: 250px;
+      padding: 16px 18px;
+      font-size: 21px;
+      line-height: 1.15;
+    }
+
+    .what-is-verl .sync-label small {
+      margin-top: 9px;
+      font-size: 15px;
+      line-height: 1.15;
     }
 
     .graph-backend-card {
       position: absolute;
       z-index: 10;
-      width: 265px;
-      padding: 13px 14px 14px;
+      width: 310px;
+      padding: 17px 18px 18px;
       border: 2px solid #6e9bb2;
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.97);
@@ -1446,8 +1576,8 @@
     }
 
     .training-backend-card {
-      left: 760px;
-      top: 430px;
+      left: 780px;
+      top: 420px;
       border-color: #b68f3f;
     }
 
@@ -1455,7 +1585,7 @@
       display: block;
       color: #6a7f88;
       font-family: var(--mono);
-      font-size: 9px;
+      font-size: 12px;
       line-height: 1;
       font-weight: 800;
       letter-spacing: 0.8px;
@@ -1463,9 +1593,9 @@
     }
 
     .graph-backend-card h3 {
-      margin: 7px 0 10px;
+      margin: 8px 0 13px;
       color: #254756;
-      font-size: 18px;
+      font-size: 24px;
       line-height: 1;
       font-weight: 780;
       letter-spacing: -0.2px;
@@ -1475,20 +1605,20 @@
 
     .graph-backend-options {
       display: flex;
-      gap: 6px;
+      gap: 8px;
     }
 
     .graph-backend-options span {
       display: grid;
-      min-height: 29px;
+      min-height: 38px;
       flex: 1;
       place-items: center;
-      padding: 4px 6px;
+      padding: 6px 7px;
       border: 1px solid #c8d8df;
       border-radius: 4px;
       background: #edf5f8;
       color: #2d5364;
-      font-size: 10px;
+      font-size: 13px;
       line-height: 1;
       font-weight: 740;
       text-align: center;
@@ -1690,9 +1820,9 @@
     .functional-boundary {
       position: absolute;
       z-index: 1;
-      left: 220px;
+      left: 240px;
       top: 30px;
-      width: 890px;
+      width: 910px;
       height: 620px;
       border: 2px solid #aac9df;
       border-radius: 22px;
@@ -1796,18 +1926,18 @@
     }
 
     .loop-card {
-      left: 250px;
+      left: 270px;
       top: 72px;
-      width: 320px;
+      width: 300px;
       height: 300px;
       --card-line: #aebfe2;
       background: #f5f7fd;
     }
 
     .proxy-card {
-      left: 660px;
+      left: 700px;
       top: 72px;
-      width: 220px;
+      width: 200px;
       height: 300px;
       --card-line: #76beb8;
       background: #f0faf8;
@@ -2075,16 +2205,16 @@
       position: relative;
       padding-left: 17px;
       color: #3e5e5b;
-      font-size: 11px;
-      line-height: 1.15;
-      font-weight: 620;
+      font-size: 16px;
+      line-height: 1.2;
+      font-weight: 700;
     }
 
     .proxy-list li::before {
       content: "";
       position: absolute;
       left: 0;
-      top: 4px;
+      top: 6px;
       width: 8px;
       height: 8px;
       border-radius: 50%;
@@ -2092,7 +2222,7 @@
     }
 
     .trajectory-card {
-      left: 250px;
+      left: 270px;
       top: 463px;
       width: 630px;
       height: 135px;
@@ -2162,9 +2292,9 @@
     }
 
     .external-llm {
-      left: 1170px;
+      left: 1240px;
       top: 105px;
-      width: 240px;
+      width: 170px;
       height: 290px;
       border-color: #9fb6d0;
       background: #f5f8fc;
@@ -2242,41 +2372,41 @@
       padding: 0;
       background: transparent;
       color: #667b74;
-      font-size: 8px;
-      line-height: 1;
+      font-size: 11px;
+      line-height: 1.05;
       font-weight: 820;
       letter-spacing: 0.65px;
       text-transform: uppercase;
     }
 
     .label-submit {
-      left: 182.5px;
-      top: 237px;
+      left: 192.5px;
+      top: 232px;
       transform: translateX(-50%);
     }
     .label-ready {
-      left: 452.5px;
-      top: 237px;
+      left: 482.5px;
+      top: 232px;
       transform: translateX(-50%);
     }
     .label-agent-proxy {
-      left: 835px;
-      top: 227px;
-      width: 174px;
-      font-size: 7.8px;
+      left: 875px;
+      top: 219px;
+      width: 150px;
+      font-size: 10px;
       text-align: center;
-      line-height: 1.3;
+      line-height: 1.35;
       letter-spacing: 0.05px;
       text-transform: none;
       transform: translateX(-50%);
     }
     .label-agent-proxy span { display: block; }
     .label-generate {
-      left: 1135px;
-      top: 237px;
+      left: 1190px;
+      top: 232px;
       transform: translateX(-50%);
     }
-    .label-record { left: 998px; top: 414px; }
+    .label-record { left: 1048px; top: 414px; }
 
     .agent-arrowhead {
       opacity: 0;
@@ -6078,7 +6208,6 @@
       .stage { width: 1600px; height: auto; transform: none !important; box-shadow: none; }
       .slide { position: relative; display: block !important; page-break-after: always; }
       .reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
-      .intro-fragment { opacity: 1 !important; visibility: visible !important; transform: none !important; }
       .gen-focus { opacity: 0.28 !important; }
       .training-focus,
       .backend-popover,
@@ -6122,95 +6251,6 @@
         <div class="cover-index mono">00 / 07</div>
       </section>
 
-      <section class="slide intro" data-title="Self introduction" aria-hidden="true">
-        <header class="intro-head reveal" style="--delay: 20ms">
-          <div>
-            <p class="slide-kicker mono">Self introduction</p>
-            <h2>About me</h2>
-          </div>
-          <div class="page-index mono">01 / 07</div>
-        </header>
-
-        <div class="intro-body">
-          <section class="quadrant profile-card reveal" style="--delay: 80ms" aria-label="Profile">
-            <div class="profile-photo">
-              <img
-                src="assets/about-me-boba.jpg"
-                alt="Portrait of Xiaole Guo"
-              />
-            </div>
-            <div class="profile-copy">
-              <div class="quad-title mono">Profile</div>
-              <h3>Xiaole<br />Guo</h3>
-            </div>
-          </section>
-
-          <section class="quadrant education-card intro-fragment" data-intro-step="1" aria-label="Education" aria-hidden="true">
-            <div class="quad-title mono">Education <span>02 schools</span></div>
-            <div class="education-list">
-              <article class="school-item" style="--school-color: #c41230">
-                <div>
-                  <h3 class="school-name">Carnegie Mellon University</h3>
-                  <p class="school-program">Master, Computer Systems (MSIN)</p>
-                </div>
-              </article>
-
-              <article class="school-item" style="--school-color: #0b756c">
-                <div>
-                  <h3 class="school-name">The University of Hong Kong</h3>
-                  <p class="school-program">Bachelor, Computer Science</p>
-                </div>
-              </article>
-            </div>
-          </section>
-
-          <section class="quadrant work-card intro-fragment" data-intro-step="2" aria-label="Work experience" aria-hidden="true">
-            <div class="quad-title mono">Work experience</div>
-            <div class="work-list">
-              <article class="work-item" style="--work-color: #118d85">
-                <div class="work-company-row">
-                  <div class="work-company">ByteDance SEED</div>
-                  <span class="work-period">Current</span>
-                </div>
-                <h3>Research Engineer Intern</h3>
-                <p>RL Infra</p>
-              </article>
-              <article class="work-item" style="--work-color: #596b74">
-                <div class="work-company-row">
-                  <div class="work-company">Apple</div>
-                  <span class="work-period">Previous</span>
-                </div>
-                <h3>Machine Learning Engineer Intern</h3>
-              </article>
-            </div>
-          </section>
-
-          <div class="intro-experience-stack">
-            <section class="quadrant oss-card intro-fragment" data-intro-step="3" aria-label="Open-source experience" aria-hidden="true">
-              <div class="quad-title mono">Open-source experience</div>
-              <div class="oss-inline" aria-label="verl, slime, miles, and SGLang">
-                <span>verl</span><i>·</i><span>slime</span><i>·</i><span>miles</span><i>·</i><span>SGLang</span>
-              </div>
-            </section>
-
-            <section class="quadrant research-card intro-fragment" data-intro-step="4" aria-label="Research experience" aria-hidden="true">
-              <div class="quad-title mono">Research experience</div>
-              <div class="research-entry">
-                <div>
-                  <h3>HKU XLANG Lab</h3>
-                  <p>Working on Computer Use Agent</p>
-                </div>
-                <a class="paper-link" href="https://arxiv.org/abs/2508.09123" target="_blank" rel="noreferrer">
-                  <strong>OpenCUA</strong>
-                  <span class="paper-venue">NeurIPS 2025 Spotlight</span>
-                  <span class="paper-award">COLM AI Workshop · Best Paper Award</span>
-                </a>
-              </div>
-            </section>
-          </div>
-        </div>
-      </section>
-
       <section class="slide what-is-verl" data-title="verl overview" aria-hidden="true">
         <header class="standard-head reveal" style="--delay: 20ms">
           <div>
@@ -6224,7 +6264,7 @@
             <strong>22k+</strong>
             <span class="mono">GitHub stars</span>
           </div>
-          <div class="page-index mono">02 / 07</div>
+          <div class="page-index mono">01 / 07</div>
         </header>
 
         <div class="ppo-hybrid">
@@ -6241,7 +6281,7 @@
 
               <div class="ppo-diagram-core">
                 <article class="ppo-node gen-node">
-                  <div class="node-name">Gen</div>
+                  <div class="node-name">Actor Gen</div>
                 </article>
 
                 <article class="ppo-node ref-node">
@@ -6249,11 +6289,11 @@
                 </article>
 
                 <article class="ppo-node rm-node">
-                  <div class="node-name">RM</div>
+                  <div class="node-name">Reward</div>
                 </article>
 
                 <article class="ppo-node value-node">
-                  <div class="node-name">Value</div>
+                  <div class="node-name">Critic</div>
                 </article>
 
                 <article class="ppo-node actor-node">
@@ -6304,7 +6344,7 @@
                   <path class="weight-sync-path" pathLength="1" d="M 315 516 C 70 516, 64 118, 451 118"></path>
                   <path class="weight-sync-arrowhead" d="M 440 111 L 453 118 L 440 125 Z"></path>
                 </svg>
-                <div class="sync-label mono">Weight Synchronization<small>Training → Generation</small></div>
+                <div class="sync-label mono">Weight Synchronization<small>Training → Rollout</small></div>
               </div>
             </section>
           </div>
@@ -6316,7 +6356,7 @@
           <div>
             <h2>verl's Agent Service: A Unified And Scalable Execution Layer For Agentic Rollout</h2>
           </div>
-          <div class="page-index mono">03 / 07</div>
+          <div class="page-index mono">02 / 07</div>
         </header>
 
         <div class="agent-service-figure">
@@ -6418,13 +6458,12 @@
             <article class="service-card proxy-card reveal" style="--delay: 420ms">
               <div class="service-card-head">
                 <span class="feature-number mono">03</span>
-                <h3>Proxy &amp; forward</h3>
+                <h3>Proxy Server</h3>
               </div>
               <ul class="proxy-list">
-                <li>Intercept every LLM request</li>
-                <li>Tokenize without drift</li>
-                <li>Route to an LLM replica</li>
-                <li>Record every interaction</li>
+                <li>Tokenize</li>
+                <li>Forward Request</li>
+                <li>Merge Trajectory</li>
               </ul>
             </article>
 
@@ -6456,24 +6495,24 @@
           </aside>
 
           <svg class="agent-arrows" viewBox="0 0 1440 705" preserveAspectRatio="none" aria-hidden="true">
-            <path class="agent-flow" pathLength="1" style="--flow-delay: 130ms" d="M 145 252 H 220"></path>
-            <path class="agent-flow" pathLength="1" style="--flow-delay: 250ms" d="M 435 252 H 470"></path>
-            <path class="agent-flow" pathLength="1" style="--flow-delay: 390ms" d="M 790 252 H 880"></path>
-            <path class="agent-flow" pathLength="1" style="--flow-delay: 540ms" d="M 1100 252 H 1170"></path>
-            <path class="agent-flow reward-flow" pathLength="1" style="--flow-delay: 620ms" d="M 650 402 V 447 H 730"></path>
-            <path class="agent-flow reward-flow" pathLength="1" style="--flow-delay: 760ms" d="M 751 468 V 493"></path>
-            <path class="agent-flow" pathLength="1" style="--flow-delay: 700ms" d="M 990 402 V 493"></path>
-            <path class="agent-flow return-flow" pathLength="1" style="--flow-delay: 860ms" d="M 470 560 H 105 Q 72 560 72 527 V 326"></path>
+            <path class="agent-flow" pathLength="1" style="--flow-delay: 130ms" d="M 145 252 H 240"></path>
+            <path class="agent-flow" pathLength="1" style="--flow-delay: 250ms" d="M 455 252 H 510"></path>
+            <path class="agent-flow" pathLength="1" style="--flow-delay: 390ms" d="M 810 252 H 940"></path>
+            <path class="agent-flow" pathLength="1" style="--flow-delay: 540ms" d="M 1140 252 H 1240"></path>
+            <path class="agent-flow reward-flow" pathLength="1" style="--flow-delay: 620ms" d="M 680 402 V 447 H 750"></path>
+            <path class="agent-flow reward-flow" pathLength="1" style="--flow-delay: 760ms" d="M 771 468 V 493"></path>
+            <path class="agent-flow" pathLength="1" style="--flow-delay: 700ms" d="M 1040 402 V 493"></path>
+            <path class="agent-flow return-flow" pathLength="1" style="--flow-delay: 860ms" d="M 510 560 H 105 Q 72 560 72 527 V 326"></path>
 
-            <path class="agent-arrowhead" style="--arrow-delay: 850ms" d="M 211 247 L 220 252 L 211 257 Z"></path>
-            <path class="agent-arrowhead" style="--arrow-delay: 970ms" d="M 461 247 L 470 252 L 461 257 Z"></path>
-            <path class="agent-arrowhead" style="--arrow-delay: 1110ms" d="M 799 247 L 790 252 L 799 257 Z"></path>
-            <path class="agent-arrowhead" style="--arrow-delay: 1110ms" d="M 871 247 L 880 252 L 871 257 Z"></path>
-            <path class="agent-arrowhead" style="--arrow-delay: 1260ms" d="M 1109 247 L 1100 252 L 1109 257 Z"></path>
-            <path class="agent-arrowhead" style="--arrow-delay: 1260ms" d="M 1161 247 L 1170 252 L 1161 257 Z"></path>
-            <path class="agent-arrowhead reward-head" style="--arrow-delay: 1340ms" d="M 721 442 L 730 447 L 721 452 Z"></path>
-            <path class="agent-arrowhead reward-head" style="--arrow-delay: 1480ms" d="M 746 484 L 751 493 L 756 484 Z"></path>
-            <path class="agent-arrowhead" style="--arrow-delay: 1420ms" d="M 985 484 L 990 493 L 995 484 Z"></path>
+            <path class="agent-arrowhead" style="--arrow-delay: 850ms" d="M 231 247 L 240 252 L 231 257 Z"></path>
+            <path class="agent-arrowhead" style="--arrow-delay: 970ms" d="M 501 247 L 510 252 L 501 257 Z"></path>
+            <path class="agent-arrowhead" style="--arrow-delay: 1110ms" d="M 819 247 L 810 252 L 819 257 Z"></path>
+            <path class="agent-arrowhead" style="--arrow-delay: 1110ms" d="M 931 247 L 940 252 L 931 257 Z"></path>
+            <path class="agent-arrowhead" style="--arrow-delay: 1260ms" d="M 1149 247 L 1140 252 L 1149 257 Z"></path>
+            <path class="agent-arrowhead" style="--arrow-delay: 1260ms" d="M 1231 247 L 1240 252 L 1231 257 Z"></path>
+            <path class="agent-arrowhead reward-head" style="--arrow-delay: 1340ms" d="M 741 442 L 750 447 L 741 452 Z"></path>
+            <path class="agent-arrowhead reward-head" style="--arrow-delay: 1480ms" d="M 766 484 L 771 493 L 776 484 Z"></path>
+            <path class="agent-arrowhead" style="--arrow-delay: 1420ms" d="M 1035 484 L 1040 493 L 1045 484 Z"></path>
             <path class="agent-arrowhead return-head" style="--arrow-delay: 1580ms" d="M 67 335 L 72 326 L 77 335 Z"></path>
           </svg>
 
@@ -6495,7 +6534,7 @@
             <h2>verl Agent Service Design Advantage 1</h2>
             <p class="advantage-head-subtitle">Backend Flexible Execution</p>
           </div>
-          <div class="page-index mono">04 / 07</div>
+          <div class="page-index mono">03 / 07</div>
         </header>
 
         <div class="backend-flexible-body">
@@ -6512,9 +6551,7 @@
                 </svg>
               </div>
               <div class="backend-loop-copy">
-                <small class="mono">One implementation</small>
                 <strong>Agent Loop</strong>
-                <span>same loop · same interface</span>
               </div>
             </div>
 
@@ -6530,7 +6567,7 @@
                       <path d="m13 17 6 5-6 5M23 27h10M17 42h14" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg>
                   </div>
-                  <div class="backend-mode-name"><small class="mono">Mode 01</small><h3>Local</h3></div>
+                  <div class="backend-mode-name"><h3>Local</h3></div>
                 </div>
                 <div class="backend-runtime-box">
                   <span class="backend-runtime-label mono">Execution modes</span>
@@ -6539,7 +6576,6 @@
                   </div>
                 </div>
                 <p class="backend-mode-position">Lightweight</p>
-                <p class="backend-mode-description">Small-scale execution for fast local debugging.</p>
                 <div class="backend-mode-footer">
                   <div class="backend-scale-row"><span class="backend-scale-label mono">Scale</span><strong class="backend-scale-value">Small · Debug</strong></div>
                   <div class="backend-scale-meter" aria-label="Small scale"><i class="on"></i><i></i><i></i><i></i></div>
@@ -6556,14 +6592,13 @@
                       <path d="M24 17v7M11 31v-7h26v7" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg>
                   </div>
-                  <div class="backend-mode-name"><small class="mono">Mode 02</small><h3>Ray</h3></div>
+                  <div class="backend-mode-name"><h3>Ray</h3></div>
                 </div>
                 <div class="backend-runtime-box">
                   <span class="backend-runtime-label mono">Runtime</span>
                   <div class="backend-runtime-chips mono"><span class="wide">remote Ray worker</span></div>
                 </div>
                 <p class="backend-mode-position">Distributed, moderate scale</p>
-                <p class="backend-mode-description">Scale beyond one host.</p>
                 <div class="backend-mode-footer">
                   <div class="backend-scale-row"><span class="backend-scale-label mono">Scale</span><strong class="backend-scale-value">Moderate</strong></div>
                   <div class="backend-scale-meter" aria-label="Moderate scale"><i class="on"></i><i class="on"></i><i></i><i></i></div>
@@ -6579,14 +6614,13 @@
                       <path d="M24 11v5M24 32v5M11 24h5M32 24h5M15 15l4 4M29 29l4 4M33 15l-4 4M19 29l-4 4" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"></path>
                     </svg>
                   </div>
-                  <div class="backend-mode-name"><small class="mono">Mode 03</small><h3>K8s</h3></div>
+                  <div class="backend-mode-name"><h3>K8s</h3></div>
                 </div>
                 <div class="backend-runtime-box">
                   <span class="backend-runtime-label mono">Runtime</span>
                   <div class="backend-runtime-chips mono"><span class="wide">pod</span></div>
                 </div>
                 <p class="backend-mode-position">Production-level execution</p>
-                <p class="backend-mode-description">Large-scale workloads with production scheduling and isolation.</p>
                 <div class="backend-mode-footer">
                   <div class="backend-scale-row"><span class="backend-scale-label mono">Scale</span><strong class="backend-scale-value">Large · Production</strong></div>
                   <div class="backend-scale-meter" aria-label="Large production scale"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
@@ -6602,14 +6636,13 @@
                       <path d="m16 10 18 10" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"></path>
                     </svg>
                   </div>
-                  <div class="backend-mode-name"><small class="mono">Mode 04</small><h3>Sandbox</h3></div>
+                  <div class="backend-mode-name"><h3>Sandbox</h3></div>
                 </div>
                 <div class="backend-runtime-box">
                   <span class="backend-runtime-label mono">Providers</span>
                   <div class="backend-runtime-chips mono"><span>Modal</span><span>E2B</span><span class="wide">Volcano Engine Sandbox</span></div>
                 </div>
                 <p class="backend-mode-position">Black-box agent runtime</p>
-                <p class="backend-mode-description">Run the entire agent, such as Claude Code or Codex, inside an isolated sandbox.</p>
                 <div class="backend-mode-footer">
                   <div class="backend-fit-row"><span class="backend-scale-label mono">Best fit</span><strong class="backend-fit-value">Black-box Agents</strong></div>
                 </div>
@@ -6626,7 +6659,7 @@
             <h2>verl Agent Service Design Advantage 2</h2>
             <p class="advantage-head-subtitle">Task Level Control</p>
           </div>
-          <div class="page-index mono">05 / 07</div>
+          <div class="page-index mono">04 / 07</div>
         </header>
 
         <div class="task-control-body">
@@ -6689,9 +6722,9 @@
           <div>
             <p class="slide-kicker mono">Agent Service · Advantages</p>
             <h2>verl Agent Service Design Advantage 3</h2>
-            <p class="tito-overview-subtitle">Zero Drift Token In Token Out</p>
+            <p class="tito-overview-subtitle">Zero Drift Token In Token Out · PR#6779</p>
           </div>
-          <div class="page-index mono">06 / 07</div>
+          <div class="page-index mono">05 / 07</div>
         </header>
 
         <div class="tito-overview-grid">
@@ -6807,7 +6840,70 @@
         </aside>
 
         <div class="thank-orbit" aria-hidden="true"></div>
-        <div class="thank-index mono">07 / 07</div>
+        <div class="thank-index mono">06 / 07</div>
+      </section>
+
+      <section class="slide intro" data-title="Self introduction" aria-hidden="true">
+        <header class="intro-head">
+          <div>
+            <p class="slide-kicker mono">Self introduction</p>
+            <h2>About Me</h2>
+          </div>
+          <div class="page-index mono">07 / 07</div>
+        </header>
+
+        <div class="intro-body about-body">
+          <div class="about-layout">
+            <aside class="contact-card" aria-label="Contact information">
+              <div class="contact-item">
+                <span class="contact-label">Email</span>
+                <a class="contact-link" href="mailto:xiaoleg@andrew.cmu.edu">xiaoleg@andrew.cmu.edu</a>
+              </div>
+              <div class="contact-item">
+                <span class="contact-label">LinkedIn</span>
+                <a class="contact-link" href="https://www.linkedin.com/in/gxlvera/" target="_blank" rel="noreferrer">https://www.linkedin.com/in/gxlvera</a>
+              </div>
+            </aside>
+
+            <ul class="about-list" aria-label="About Xiaole Guo">
+              <li class="about-item">
+                <span class="about-label">Name</span>
+                <span class="about-items">
+                  <span class="about-entry about-name">Xiaole Guo</span>
+                </span>
+              </li>
+              <li class="about-item">
+                <span class="about-label">Education</span>
+                <span class="about-items">
+                  <span class="about-entry">Carnegie Mellon University — Master, Computer Systems (MSIN)</span>
+                  <span class="about-entry">The University of Hong Kong — Bachelor, Computer Science</span>
+                </span>
+              </li>
+              <li class="about-item">
+                <span class="about-label">Work Experience</span>
+                <span class="about-items">
+                  <span class="about-entry">ByteDance SEED — Research Engineer Intern, RL Infra (Current)</span>
+                  <span class="about-entry">Apple — Machine Learning Engineer Intern</span>
+                </span>
+              </li>
+              <li class="about-item">
+                <span class="about-label">Open Source</span>
+                <span class="about-items">
+                  <span class="about-entry">verl · slime · miles · SGLang</span>
+                </span>
+              </li>
+              <li class="about-item">
+                <span class="about-label">Research</span>
+                <span class="about-items">
+                  <span class="about-entry">HKU XLANG Lab — Computer Use Agent</span>
+                  <span class="about-entry">
+                    <a class="about-link" href="https://arxiv.org/abs/2508.09123" target="_blank" rel="noreferrer">OpenCUA — NeurIPS 2025 Spotlight, COLM AIA Workshop Best Paper Award</a>
+                  </span>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </section>
       </div>
     </div>
@@ -6832,7 +6928,6 @@
       const fullscreenButton = document.getElementById("fullscreen");
       const status = document.getElementById("status");
       let current = Number.parseInt(location.hash.slice(1), 10);
-      let introStep = 0;
       let ppoStep = 0;
       let comparatorStep = 0;
       let agentServiceStep = 0;
@@ -6881,18 +6976,6 @@
         resizeFrame = window.requestAnimationFrame(fitStage);
       }
 
-      function setIntroStep(slide, step) {
-        slide.classList.remove("intro-step-1", "intro-step-2", "intro-step-3", "intro-step-4");
-        if (step > 0) slide.classList.add(`intro-step-${step}`);
-
-        slide.querySelectorAll(".intro-fragment").forEach((fragment) => {
-          const requiredStep = Number.parseInt(fragment.dataset.introStep, 10);
-          const isVisible = Number.isInteger(requiredStep) && requiredStep <= step;
-          fragment.classList.toggle("is-visible", isVisible);
-          fragment.setAttribute("aria-hidden", String(!isVisible));
-        });
-      }
-
       function setComparatorStep(slide, step) {
         slide.classList.remove("compare-step-1", "compare-step-2", "compare-step-3");
         if (step > 0) slide.classList.add(`compare-step-${step}`);
@@ -6908,12 +6991,10 @@
       }
 
       function resetFragmentInteractions() {
-        introStep = 0;
         ppoStep = 0;
         comparatorStep = 0;
         agentServiceStep = 0;
         slides.forEach((slide) => {
-          if (slide.classList.contains("intro")) setIntroStep(slide, 0);
           if (slide.classList.contains("agent-service-slide")) setAgentServiceStep(slide, 0);
           slide.classList.remove("ppo-step-1", "ppo-step-2", "ppo-step-3", "ppo-step-4", "ppo-step-5", "ppo-step-6");
           slide.classList.remove("compare-step-1", "compare-step-2", "compare-step-3");
@@ -6922,11 +7003,6 @@
 
       function advancePresentation() {
         const slide = slides[current];
-        if (slide.classList.contains("intro") && introStep < 4) {
-          introStep += 1;
-          setIntroStep(slide, introStep);
-          return;
-        }
         if (slide.classList.contains("what-is-verl") && ppoStep < 6) {
           ppoStep += 1;
           setPpoStep(slide, ppoStep);
@@ -6947,11 +7023,6 @@
 
       function retreatPresentation() {
         const slide = slides[current];
-        if (slide.classList.contains("intro") && introStep > 0) {
-          introStep -= 1;
-          setIntroStep(slide, introStep);
-          return;
-        }
         if (slide.classList.contains("what-is-verl") && ppoStep > 0) {
           ppoStep -= 1;
           setPpoStep(slide, ppoStep);
