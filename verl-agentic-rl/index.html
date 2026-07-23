@@ -1330,6 +1330,300 @@
       transform: translateY(0);
     }
 
+    /* Slide 2 — simplified controller reveal sequence */
+    .what-is-verl .standard-head h2 {
+      font-size: 44px;
+      letter-spacing: -1.35px;
+    }
+
+    .what-is-verl .ppo-hybrid {
+      grid-template-rows: 1fr;
+      gap: 0;
+    }
+
+    .what-is-verl .ppo-content {
+      display: block;
+      min-height: 0;
+    }
+
+    .what-is-verl .ppo-graph {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      border-radius: 18px;
+      transition: box-shadow 300ms ease, border-color 300ms ease;
+    }
+
+    .ppo-diagram-core {
+      position: absolute;
+      z-index: 2;
+      left: 50%;
+      top: 62px;
+      width: 1040px;
+      height: 628px;
+      transform: translateX(-50%);
+    }
+
+    .backend-zone-label {
+      position: absolute;
+      z-index: 8;
+      display: grid;
+      place-items: center;
+      min-height: 32px;
+      padding: 0 13px;
+      border: 1px solid #8daab9;
+      border-radius: 6px;
+      background: #f4fafc;
+      color: #315b70;
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 820;
+      letter-spacing: 0.65px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      box-shadow: 0 6px 16px rgba(47, 84, 100, 0.08);
+      transition: opacity 240ms ease;
+    }
+
+    .backend-zone-label::before {
+      content: "";
+      position: absolute;
+      height: 2px;
+      background: #8daab9;
+    }
+
+    .rollout-backend-label {
+      left: 610px;
+      top: 86px;
+    }
+
+    .rollout-backend-label::before {
+      right: 100%;
+      top: 50%;
+      width: 24px;
+    }
+
+    .training-backend-label {
+      left: 430px;
+      top: 419px;
+      min-width: 180px;
+    }
+
+    .training-backend-label::before {
+      left: 50%;
+      top: 100%;
+      width: 2px;
+      height: 14px;
+    }
+
+    .what-is-verl .sync-label {
+      left: -25px;
+      top: 310px;
+      width: 178px;
+      padding: 10px 11px;
+      font-size: 12px;
+    }
+
+    .graph-backend-card {
+      position: absolute;
+      z-index: 10;
+      width: 265px;
+      padding: 13px 14px 14px;
+      border: 2px solid #6e9bb2;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.97);
+      box-shadow: 0 14px 34px rgba(38, 75, 92, 0.15);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(14px);
+      transition: opacity 280ms ease, visibility 280ms ease, transform 340ms ease;
+    }
+
+    .rollout-backend-card {
+      left: 610px;
+      top: 35px;
+    }
+
+    .training-backend-card {
+      left: 760px;
+      top: 430px;
+      border-color: #b68f3f;
+    }
+
+    .graph-backend-card small {
+      display: block;
+      color: #6a7f88;
+      font-family: var(--mono);
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .graph-backend-card h3 {
+      margin: 7px 0 10px;
+      color: #254756;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 780;
+      letter-spacing: -0.2px;
+    }
+
+    .training-backend-card h3 { color: #71561e; }
+
+    .graph-backend-options {
+      display: flex;
+      gap: 6px;
+    }
+
+    .graph-backend-options span {
+      display: grid;
+      min-height: 29px;
+      flex: 1;
+      place-items: center;
+      padding: 4px 6px;
+      border: 1px solid #c8d8df;
+      border-radius: 4px;
+      background: #edf5f8;
+      color: #2d5364;
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 740;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .training-backend-card .graph-backend-options span {
+      border-color: #dfcfaa;
+      background: #fff7e4;
+      color: #6e5521;
+    }
+
+    .controller-equation {
+      position: absolute;
+      z-index: 12;
+      left: 120px;
+      top: 17px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      pointer-events: none;
+    }
+
+    .controller-term,
+    .controller-operator {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-6px);
+      transition: opacity 260ms ease, visibility 260ms ease, transform 320ms ease;
+    }
+
+    .controller-term {
+      min-width: 250px;
+      padding: 10px 8px 12px;
+      color: #24799c;
+      font-size: 32px;
+      line-height: 1;
+      font-weight: 790;
+      letter-spacing: -0.8px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .single-controller-term {
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .multi-controller-term {
+      min-width: 330px;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .hybrid-controller-term {
+      background: transparent;
+      box-shadow: none;
+      color: #24799c;
+    }
+
+    .controller-operator {
+      min-width: 34px;
+      color: #24799c;
+      font-size: 39px;
+      line-height: 1;
+      font-weight: 760;
+      text-align: center;
+    }
+
+    .ppo-node::after {
+      content: "";
+      position: absolute;
+      inset: -12px;
+      border: 4px solid #557fc4;
+      border-radius: inherit;
+      box-shadow: 0 0 0 7px rgba(85, 127, 196, 0.12), 0 10px 26px rgba(62, 94, 147, 0.16);
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.94);
+      transition: opacity 260ms ease, transform 340ms cubic-bezier(0.2, 0.78, 0.26, 1);
+    }
+
+    .what-is-verl.ppo-step-1 .rollout-backend-card,
+    .what-is-verl.ppo-step-2 .rollout-backend-card,
+    .what-is-verl.ppo-step-3 .rollout-backend-card,
+    .what-is-verl.ppo-step-2 .training-backend-card,
+    .what-is-verl.ppo-step-3 .training-backend-card {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
+
+    .what-is-verl.ppo-step-1 .rollout-backend-label,
+    .what-is-verl.ppo-step-2 .rollout-backend-label,
+    .what-is-verl.ppo-step-3 .rollout-backend-label,
+    .what-is-verl.ppo-step-2 .training-backend-label,
+    .what-is-verl.ppo-step-3 .training-backend-label {
+      opacity: 0;
+    }
+
+    .what-is-verl.ppo-step-4 .gen-focus,
+    .what-is-verl.ppo-step-4 .training-focus,
+    .what-is-verl.ppo-step-4 .sync-layer,
+    .what-is-verl.ppo-step-4 .sync-label {
+      opacity: 0;
+    }
+
+    .what-is-verl.ppo-step-4 .weight-sync-path { stroke-dashoffset: 1; }
+
+    .what-is-verl.ppo-step-4 .weight-sync-arrowhead { opacity: 0; }
+
+    .what-is-verl.ppo-step-4 .ppo-graph,
+    .what-is-verl.ppo-step-5 .ppo-graph,
+    .what-is-verl.ppo-step-6 .ppo-graph {
+      border-color: #24799c;
+      box-shadow:
+        0 0 0 6px #24799c,
+        0 0 0 15px rgba(36, 121, 156, 0.13),
+        0 20px 56px rgba(26, 80, 105, 0.2);
+    }
+
+    .what-is-verl.ppo-step-4 .single-controller-term,
+    .what-is-verl.ppo-step-5 .single-controller-term,
+    .what-is-verl.ppo-step-6 .single-controller-term,
+    .what-is-verl.ppo-step-5 .controller-plus,
+    .what-is-verl.ppo-step-6 .controller-plus,
+    .what-is-verl.ppo-step-5 .multi-controller-term,
+    .what-is-verl.ppo-step-6 .multi-controller-term,
+    .what-is-verl.ppo-step-6 .controller-equals,
+    .what-is-verl.ppo-step-6 .hybrid-controller-term {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
     @keyframes gen-spotlight {
       0% { opacity: 0; transform: scale(0.92); }
       14%, 72% { opacity: 1; transform: scale(1); }
@@ -5530,11 +5824,20 @@
     }
 
     .thank-subtitle {
-      margin: 25px 0 0;
+      margin: 15px 0 0;
       color: #b5cbc6;
       font-size: 21px;
       line-height: 1.35;
       font-weight: 560;
+    }
+
+    .thank-summary {
+      margin: 26px 0 0;
+      color: #73d9cc;
+      font-size: 30px;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: -0.35px;
     }
 
     .acknowledgement-card {
@@ -5911,7 +6214,7 @@
       <section class="slide what-is-verl" data-title="verl overview" aria-hidden="true">
         <header class="standard-head reveal" style="--delay: 20ms">
           <div>
-            <h2>verl: A framework for post-training LLM with reinforcement learning</h2>
+            <h2>What is verl: A framework for LLM RL training</h2>
           </div>
           <div class="github-stars" aria-label="More than twenty-two thousand GitHub stars">
             <svg viewBox="0 0 48 48" aria-hidden="true">
@@ -5925,113 +6228,85 @@
         </header>
 
         <div class="ppo-hybrid">
-          <section class="hybrid-principle reveal" style="--delay: 70ms" aria-label="Hybrid Controller design">
-            <div class="hybrid-name">
-              <strong>Hybrid Controller</strong>
-            </div>
-            <div class="principle-block">
-              <div class="principle-tag mono">Single Controller<br />MPMD</div>
-              <p>Orchestrates the global data flow</p>
-            </div>
-            <div class="principle-arrow" aria-hidden="true">×</div>
-            <div class="principle-block">
-              <div class="principle-tag mono">Multi-Controller<br />SPMD</div>
-              <p>Runs distributed compute inside every node</p>
-            </div>
-          </section>
-
           <div class="ppo-content">
             <section class="ppo-graph reveal" style="--delay: 130ms" aria-label="PPO dataflow graph orchestrated by a single controller">
-              <div class="graph-controller-label mono">DataFlow Graph (e.g. PPO)</div>
+              <div class="graph-controller-label mono">Data Flow Graph (e.g. PPO)</div>
+              <div class="controller-equation" aria-label="Single Controller plus Multi Controller equals Hybrid Controller">
+                <div class="controller-term single-controller-term">Single Controller</div>
+                <div class="controller-operator controller-plus">+</div>
+                <div class="controller-term multi-controller-term">Multi Controller SPMD</div>
+                <div class="controller-operator controller-equals">=</div>
+                <div class="controller-term hybrid-controller-term">Hybrid Controller</div>
+              </div>
 
-              <article class="ppo-node gen-node">
-                <div class="node-name">Gen</div>
-              </article>
+              <div class="ppo-diagram-core">
+                <article class="ppo-node gen-node">
+                  <div class="node-name">Gen</div>
+                </article>
 
-              <article class="ppo-node ref-node">
-                <div class="node-name">Ref</div>
-              </article>
+                <article class="ppo-node ref-node">
+                  <div class="node-name">Ref</div>
+                </article>
 
-              <article class="ppo-node rm-node">
-                <div class="node-name">RM</div>
-              </article>
+                <article class="ppo-node rm-node">
+                  <div class="node-name">RM</div>
+                </article>
 
-              <article class="ppo-node value-node">
-                <div class="node-name">Value</div>
-              </article>
+                <article class="ppo-node value-node">
+                  <div class="node-name">Value</div>
+                </article>
 
-              <article class="ppo-node actor-node">
-                <div class="node-name">Actor<br />Training</div>
-              </article>
+                <article class="ppo-node actor-node">
+                  <div class="node-name">Actor<br />Training</div>
+                </article>
 
-              <article class="ppo-node critic-node">
-                <div class="node-name">Critic<br />Training</div>
-              </article>
+                <article class="ppo-node critic-node">
+                  <div class="node-name">Critic<br />Training</div>
+                </article>
 
-              <svg class="ppo-flow" viewBox="0 0 1040 628" preserveAspectRatio="none" aria-hidden="true">
-                <defs>
-                  <marker id="ppo-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#40555d"></path>
-                  </marker>
-                </defs>
-                <path class="data-arrow" d="M 480 166 C 400 193, 300 206, 244 243" marker-end="url(#ppo-arrow)"></path>
-                <path class="data-arrow" d="M 520 184 V 241" marker-end="url(#ppo-arrow)"></path>
-                <path class="data-arrow" d="M 560 166 C 640 193, 740 206, 796 243" marker-end="url(#ppo-arrow)"></path>
+                <section class="graph-backend-card rollout-backend-card" aria-label="Supported rollout backends">
+                  <small>verl supports</small>
+                  <h3>Rollout Backend</h3>
+                  <div class="graph-backend-options">
+                    <span>vLLM</span><span>SGLang</span><span>TensorRT-LLM</span>
+                  </div>
+                </section>
 
-                <path class="data-arrow" d="M 223 364 V 398 Q 223 414 241 414 H 520"></path>
-                <path class="data-arrow" d="M 520 364 V 414"></path>
-                <path class="data-arrow" d="M 817 364 V 398 Q 817 414 799 414 H 520"></path>
-                <path class="data-arrow" d="M 520 414 H 405 V 456" marker-end="url(#ppo-arrow)"></path>
-                <path class="data-arrow" d="M 520 414 H 635 V 456" marker-end="url(#ppo-arrow)"></path>
-              </svg>
+                <section class="graph-backend-card training-backend-card" aria-label="Supported training backends">
+                  <small>verl supports</small>
+                  <h3>Training Backend</h3>
+                  <div class="graph-backend-options">
+                    <span>FSDP</span><span>Megatron</span><span>VeOmni</span>
+                  </div>
+                </section>
 
-              <div class="gen-focus" aria-hidden="true"></div>
-              <div class="training-focus" aria-hidden="true"><span class="mono">Training</span></div>
+                <svg class="ppo-flow" viewBox="0 0 1040 628" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <marker id="ppo-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#40555d"></path>
+                    </marker>
+                  </defs>
+                  <path class="data-arrow" d="M 480 166 C 400 193, 300 206, 244 243" marker-end="url(#ppo-arrow)"></path>
+                  <path class="data-arrow" d="M 520 184 V 241" marker-end="url(#ppo-arrow)"></path>
+                  <path class="data-arrow" d="M 560 166 C 640 193, 740 206, 796 243" marker-end="url(#ppo-arrow)"></path>
 
-              <svg class="sync-layer" viewBox="0 0 1040 628" preserveAspectRatio="none" aria-hidden="true">
-                <path class="weight-sync-path" pathLength="1" d="M 315 516 C 70 516, 64 118, 451 118"></path>
-                <path class="weight-sync-arrowhead" d="M 440 111 L 453 118 L 440 125 Z"></path>
-              </svg>
-              <div class="sync-label mono">weight sync<small>broadcast / p2p</small></div>
+                  <path class="data-arrow" d="M 223 364 V 398 Q 223 414 241 414 H 520"></path>
+                  <path class="data-arrow" d="M 520 364 V 414"></path>
+                  <path class="data-arrow" d="M 817 364 V 398 Q 817 414 799 414 H 520"></path>
+                  <path class="data-arrow" d="M 520 414 H 405 V 456" marker-end="url(#ppo-arrow)"></path>
+                  <path class="data-arrow" d="M 520 414 H 635 V 456" marker-end="url(#ppo-arrow)"></path>
+                </svg>
+
+                <div class="gen-focus" aria-hidden="true"></div>
+                <div class="training-focus" aria-hidden="true"><span class="mono">Training</span></div>
+
+                <svg class="sync-layer" viewBox="0 0 1040 628" preserveAspectRatio="none" aria-hidden="true">
+                  <path class="weight-sync-path" pathLength="1" d="M 315 516 C 70 516, 64 118, 451 118"></path>
+                  <path class="weight-sync-arrowhead" d="M 440 111 L 453 118 L 440 125 Z"></path>
+                </svg>
+                <div class="sync-label mono">Weight Synchronization<small>Training → Generation</small></div>
+              </div>
             </section>
-
-            <aside class="hybrid-side" aria-label="Backend and mode details">
-              <section class="backend-popover rollout-popover">
-                <div class="popover-step mono">01 · Gen highlighted</div>
-                <h3>Rollout Backend</h3>
-                <div class="backend-chips">
-                  <span>vLLM</span><span>SGLang</span><span>TensorRT-LLM</span>
-                </div>
-              </section>
-
-              <section class="backend-popover training-popover">
-                <div class="popover-step mono">02 · Training highlighted</div>
-                <h3>Training Backend</h3>
-                <div class="backend-chips">
-                  <span>Megatron</span><span>FSDP</span><span>VeOmni</span>
-                </div>
-              </section>
-
-              <section class="modes-panel">
-                <div class="modes-head mono">Supported modes</div>
-                <div class="mode-matrix">
-                  <article class="mode-family colocate">
-                    <div class="mode-family-head">Co-locate</div>
-                    <div class="mode-options">
-                      <div class="mode-option">On-policy</div>
-                      <div class="mode-option">Off-policy<small>(partial rollout)</small></div>
-                    </div>
-                  </article>
-                  <article class="mode-family disaggregate">
-                    <div class="mode-family-head">Disaggregate</div>
-                    <div class="mode-options">
-                      <div class="mode-option">N-step off-policy</div>
-                      <div class="mode-option">Fully async</div>
-                    </div>
-                  </article>
-                </div>
-              </section>
-            </aside>
           </div>
         </div>
       </section>
@@ -6520,7 +6795,8 @@
         <div class="thank-copy">
           <h2 class="reveal" style="--delay: 90ms">Thank you.</h2>
           <div class="thank-rule cover-rule" aria-hidden="true"></div>
-          <p class="thank-subtitle reveal" style="--delay: 190ms">Questions &amp; discussion</p>
+          <p class="thank-summary reveal" style="--delay: 170ms">verl's Agent Service: Scalable, Faithful, Efficient</p>
+          <p class="thank-subtitle reveal" style="--delay: 230ms">Questions &amp; discussion</p>
         </div>
 
         <aside class="acknowledgement-card reveal" style="--delay: 240ms" aria-label="Acknowledgements">
@@ -6623,7 +6899,7 @@
       }
 
       function setPpoStep(slide, step) {
-        slide.classList.remove("ppo-step-1", "ppo-step-2", "ppo-step-3", "ppo-step-4");
+        slide.classList.remove("ppo-step-1", "ppo-step-2", "ppo-step-3", "ppo-step-4", "ppo-step-5", "ppo-step-6");
         if (step > 0) slide.classList.add(`ppo-step-${step}`);
       }
 
@@ -6639,7 +6915,7 @@
         slides.forEach((slide) => {
           if (slide.classList.contains("intro")) setIntroStep(slide, 0);
           if (slide.classList.contains("agent-service-slide")) setAgentServiceStep(slide, 0);
-          slide.classList.remove("ppo-step-1", "ppo-step-2", "ppo-step-3", "ppo-step-4");
+          slide.classList.remove("ppo-step-1", "ppo-step-2", "ppo-step-3", "ppo-step-4", "ppo-step-5", "ppo-step-6");
           slide.classList.remove("compare-step-1", "compare-step-2", "compare-step-3");
         });
       }
@@ -6651,7 +6927,7 @@
           setIntroStep(slide, introStep);
           return;
         }
-        if (slide.classList.contains("what-is-verl") && ppoStep < 4) {
+        if (slide.classList.contains("what-is-verl") && ppoStep < 6) {
           ppoStep += 1;
           setPpoStep(slide, ppoStep);
           return;
