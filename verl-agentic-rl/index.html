@@ -709,23 +709,71 @@
       display: block;
     }
 
+    .about-slide-title {
+      display: flex;
+      align-items: baseline;
+      gap: 22px;
+      white-space: nowrap;
+    }
+
+    .about-title-opportunity {
+      color: var(--cyan-dark);
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 700;
+      font-style: italic;
+      letter-spacing: -0.35px;
+    }
+
     .about-layout {
       display: grid;
-      grid-template-columns: 375px minmax(0, 1fr);
+      grid-template-columns: 390px minmax(0, 1fr);
       align-items: start;
       gap: 30px;
     }
 
     .contact-card {
-      padding: 27px 26px 25px;
+      padding: 30px 28px 28px;
       border: 1px solid #b9cbc5;
       background: rgba(255, 255, 255, 0.72);
+    }
+
+    .about-profile-name {
+      margin: 0 0 27px;
+      padding-bottom: 25px;
+      border-bottom: 2px solid var(--cyan-dark);
+      color: var(--ink);
+      font-size: 36px;
+      line-height: 1.05;
+      font-weight: 780;
+      letter-spacing: -0.75px;
+    }
+
+    .contact-item {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      align-items: center;
+      gap: 16px;
     }
 
     .contact-item + .contact-item {
       margin-top: 24px;
       padding-top: 23px;
       border-top: 1px solid rgba(157, 177, 170, 0.48);
+    }
+
+    .contact-icon {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      color: var(--cyan-dark);
+    }
+
+    .contact-icon svg {
+      display: block;
+      width: 38px;
+      height: 38px;
     }
 
     .contact-label {
@@ -744,9 +792,9 @@
       display: block;
       overflow-wrap: anywhere;
       color: var(--ink);
-      font-size: 19px;
+      font-size: 21px;
       line-height: 1.35;
-      font-weight: 580;
+      font-weight: 650;
       text-decoration-color: rgba(12, 134, 128, 0.46);
       text-decoration-thickness: 1px;
       text-underline-offset: 4px;
@@ -772,10 +820,10 @@
     .about-item {
       box-sizing: border-box;
       width: 100%;
-      padding: 13px 8px 14px 10px;
+      padding: 18px 8px 20px 10px;
       color: var(--ink);
       font-size: 23px;
-      line-height: 1.3;
+      line-height: 1.45;
       font-weight: 520;
       letter-spacing: -0.15px;
     }
@@ -813,14 +861,7 @@
     }
 
     .about-entry + .about-entry {
-      margin-top: 2px;
-    }
-
-    .about-name {
-      font-size: 30px;
-      line-height: 1.15;
-      font-weight: 760;
-      letter-spacing: -0.45px;
+      margin-top: 7px;
     }
 
     .about-link {
@@ -6847,31 +6888,40 @@
         <header class="intro-head">
           <div>
             <p class="slide-kicker mono">Self introduction</p>
-            <h2>About Me</h2>
+            <h2 class="about-slide-title">
+              <span>About Me</span>
+              <span class="about-title-opportunity">Open to NG Opportunity in AI Infra!</span>
+            </h2>
           </div>
           <div class="page-index mono">07 / 07</div>
         </header>
 
         <div class="intro-body about-body">
           <div class="about-layout">
-            <aside class="contact-card" aria-label="Contact information">
+            <aside class="contact-card" aria-label="Xiaole Guo contact information">
+              <p class="about-profile-name">Xiaole Guo</p>
               <div class="contact-item">
-                <span class="contact-label">Email</span>
-                <a class="contact-link" href="mailto:xiaoleg@andrew.cmu.edu">xiaoleg@andrew.cmu.edu</a>
+                <span class="contact-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <rect x="2.5" y="2.5" width="19" height="19" rx="3" fill="currentColor"></rect>
+                    <circle cx="7.4" cy="8" r="1.45" fill="#ffffff"></circle>
+                    <path d="M6.15 10.3h2.5v7.55h-2.5zM10.45 10.3h2.4v1.03c.72-.85 1.65-1.3 2.8-1.3 2.12 0 3.2 1.28 3.2 3.82v4h-2.5v-3.7c0-1.35-.44-2.02-1.34-2.02-1.08 0-1.62.76-1.62 2.28v3.44h-2.5v-7.55z" fill="#ffffff"></path>
+                  </svg>
+                </span>
+                <a class="contact-link" aria-label="LinkedIn profile" href="https://www.linkedin.com/in/gxlvera/" target="_blank" rel="noreferrer">linkedin.com/in/gxlvera</a>
               </div>
               <div class="contact-item">
-                <span class="contact-label">LinkedIn</span>
-                <a class="contact-link" href="https://www.linkedin.com/in/gxlvera/" target="_blank" rel="noreferrer">https://www.linkedin.com/in/gxlvera</a>
+                <span class="contact-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" stroke="currentColor" stroke-width="2"></rect>
+                    <path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+                <a class="contact-link" aria-label="Email Xiaole Guo" href="mailto:xiaoleg@andrew.cmu.edu">xiaoleg@andrew.cmu.edu</a>
               </div>
             </aside>
 
             <ul class="about-list" aria-label="About Xiaole Guo">
-              <li class="about-item">
-                <span class="about-label">Name</span>
-                <span class="about-items">
-                  <span class="about-entry about-name">Xiaole Guo</span>
-                </span>
-              </li>
               <li class="about-item">
                 <span class="about-label">Education</span>
                 <span class="about-items">
