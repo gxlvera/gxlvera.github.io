@@ -1,0 +1,1407 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f7f8" />
+    <title>Spindle</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="deck" aria-label="Spindle presentation">
+      <section class="slide cover is-active" data-slide="0" aria-label="Cover">
+        <div class="cover-accent" aria-hidden="true"></div>
+        <p class="cover-kicker">PROJECT PRESENTATION&nbsp;&nbsp;/&nbsp;&nbsp;2026</p>
+
+        <div class="cover-copy">
+          <h1>
+            <span class="cover-title-top">Spindle</span>
+          </h1>
+          <p class="cover-subtitle">
+            <span>An Infrastructure for agentic RL:</span>
+            <span>Reliable and efficient RL on any agent harness</span>
+          </p>
+        </div>
+
+        <div class="cover-footer">
+          <p class="page-number">01&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+        </div>
+      </section>
+
+      <section
+        class="slide motivation"
+        data-slide="1"
+        data-stage="0"
+        aria-label="Motivation"
+      >
+        <header class="slide-header">
+          <p class="section-label">01</p>
+          <h2>Intro + Motivation</h2>
+          <p class="page-number">02&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+        </header>
+
+        <div class="motivation-rl-primer" aria-label="Reinforcement learning connects rollout to training">
+          <div class="primer-node primer-training">
+            <span>POLICY UPDATE</span>
+            <strong>Training</strong>
+          </div>
+
+          <div class="primer-transfer motivation-stage-transfer" aria-hidden="true">
+            <span>token trajectory</span>
+            <i></i>
+          </div>
+
+          <div class="primer-node primer-rollout">
+            <span>GENERATION</span>
+            <strong>Rollout</strong>
+            <small>(SGLang / vLLM)</small>
+          </div>
+        </div>
+
+        <p class="motivation-spindle-line motivation-stage-spindle" aria-hidden="true">
+          <span>•</span><strong>Spindle:</strong> An infrastructure for agentic RL
+        </p>
+
+        <section class="motivation-example reasoning-rl-example motivation-stage-reasoning" aria-hidden="true">
+          <h3>Reasoning RL: a single model call</h3>
+          <div class="reasoning-rl-flow">
+            <div class="example-node example-prompt-card">
+              <small>INPUT</small>
+              <strong>Prompt</strong>
+              <p>Solve: If 3x + 5 = 20, what is x?</p>
+            </div>
+            <i class="example-arrow"></i>
+            <div class="example-node example-engine-card">
+              <small>INFERENCE</small>
+              <strong>Rollout Engine</strong>
+            </div>
+            <i class="example-arrow"></i>
+            <div class="example-node example-output-card">
+              <small>OUTPUT SAMPLE</small>
+              <strong>Answer</strong>
+              <p><span>&lt;thinking&gt;</span> 3x = 15 <span>&lt;/thinking&gt;</span><br />x = 5</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="motivation-example agentic-rl-example motivation-stage-agentic" aria-hidden="true">
+          <h3>Agentic RL: a stateful interaction loop</h3>
+
+          <div class="agentic-rl-flow">
+            <div class="example-node compact-node agentic-step-prompt" aria-hidden="true">
+              <small>SWE TASK</small>
+              <strong>Prompt</strong>
+            </div>
+            <i class="example-arrow short-arrow agentic-step-prompt" aria-hidden="true"></i>
+
+            <div class="agent-runtime-pair agentic-step-runtime" aria-hidden="true">
+              <div class="example-node compact-node harness-node">
+                <small>RUNTIME</small>
+                <strong>Agent Harness</strong>
+              </div>
+              <div class="runtime-loop-line"><span>observe</span><span>act</span></div>
+              <div class="example-node compact-node environment-node">
+                <small>STATE</small>
+                <strong>Environment</strong>
+              </div>
+            </div>
+
+            <i class="example-arrow bidirectional-arrow agentic-step-engine" aria-hidden="true"></i>
+            <div class="example-node compact-node proxy-node agentic-step-engine" aria-hidden="true">
+              <small>SERVICE LAYER</small>
+              <strong>Proxy Server</strong>
+            </div>
+            <i class="example-arrow bidirectional-arrow agentic-step-engine" aria-hidden="true"></i>
+            <div class="example-node compact-node rollout-node agentic-step-engine" aria-hidden="true">
+              <small>INFERENCE</small>
+              <strong>Rollout Engine</strong>
+            </div>
+            <i class="example-arrow short-arrow agentic-step-output" aria-hidden="true"></i>
+
+            <div class="agentic-output-sample agentic-step-output" aria-hidden="true">
+              <strong>Output Sample</strong>
+              <div class="agentic-sample-row">
+                <span class="sample-system">System</span>
+                <span class="sample-user">User</span>
+                <span class="sample-assistant">Assistant</span>
+                <span class="sample-tool">Tool response</span>
+                <span class="sample-assistant">Assistant</span>
+              </div>
+              <small>multi-turn · multi-source</small>
+            </div>
+          </div>
+
+          <div class="agentic-value-points">
+            <p><span>•</span> Unifies diverse agents into a standard RL rollout training pipeline</p>
+            <p><span>•</span> Converts diverse interactions into training evidence</p>
+          </div>
+        </section>
+
+      </section>
+
+      <section class="slide architecture" data-slide="2" data-stage="0" aria-label="Architecture">
+        <header class="slide-header">
+          <p class="section-label">03</p>
+          <h2>Architecture</h2>
+          <p class="page-number">03&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+        </header>
+
+        <div
+          class="architecture-canvas"
+          aria-label="Spindle connects an RL framework to task runtimes through a control plane and a token-level data plane"
+        >
+          <svg
+            class="paper-architecture"
+            viewBox="0 0 1460 690"
+            role="img"
+            aria-label="Paper-style architecture diagram with RL Framework on the left, Spindle in the center, and Task Runtime on the right"
+          >
+            <title>Spindle architecture</title>
+            <defs>
+              <pattern id="blue-hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+                <line x1="0" y1="0" x2="0" y2="9" stroke="#89bfe8" stroke-width="1" opacity="0.58" />
+              </pattern>
+              <pattern id="green-hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+                <line x1="0" y1="0" x2="0" y2="9" stroke="#78c88a" stroke-width="1" opacity="0.62" />
+              </pattern>
+              <pattern id="orange-hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+                <line x1="0" y1="0" x2="0" y2="9" stroke="#e0a23a" stroke-width="1" opacity="0.42" />
+              </pattern>
+              <filter id="roughen" x="-3%" y="-3%" width="106%" height="106%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="11" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.75" xChannelSelector="R" yChannelSelector="G" />
+              </filter>
+              <marker id="paper-arrow" markerWidth="7" markerHeight="7" refX="6.2" refY="3.5" orient="auto">
+                <path d="M 0 0 L 7 3.5 L 0 7" fill="none" stroke="#303a3e" stroke-width="1.15" />
+              </marker>
+              <marker id="paper-arrow-start" markerWidth="7" markerHeight="7" refX="0.8" refY="3.5" orient="auto">
+                <path d="M 7 0 L 0 3.5 L 7 7" fill="none" stroke="#303a3e" stroke-width="1.15" />
+              </marker>
+            </defs>
+
+            <g class="paper-zone paper-zone-rl architecture-stage-framework" aria-hidden="true">
+              <rect class="paper-boundary boundary-rl" x="22" y="46" width="300" height="575" rx="18" filter="url(#roughen)" />
+              <text class="paper-zone-title" x="172" y="82" text-anchor="middle">RL Framework</text>
+              <text class="paper-zone-subtitle" x="172" y="124" text-anchor="middle">Verl / Miles / slime</text>
+
+              <rect class="paper-node rl-paper-node" x="52" y="230" width="105" height="175" rx="14" filter="url(#roughen)" />
+              <text class="paper-node-title" x="104.5" y="307" text-anchor="middle">
+                <tspan x="104.5">Training</tspan>
+                <tspan x="104.5" dy="25">Engine</tspan>
+              </text>
+
+              <rect class="paper-node rl-paper-node" x="188" y="230" width="105" height="175" rx="14" filter="url(#roughen)" />
+              <text class="paper-node-title" x="240.5" y="307" text-anchor="middle">
+                <tspan x="240.5">Rollout</tspan>
+                <tspan x="240.5" dy="25">Engine</tspan>
+              </text>
+
+              <rect class="paper-node buffer-paper-node" x="52" y="493" width="241" height="58" rx="10" filter="url(#roughen)" />
+              <text class="paper-small-title" x="172.5" y="529" text-anchor="middle">Data Buffer</text>
+            </g>
+
+            <g class="paper-zone paper-zone-spindle">
+              <rect class="paper-boundary boundary-spindle" x="435" y="30" width="520" height="615" rx="18" filter="url(#roughen)" />
+              <text class="paper-zone-title" x="695" y="70" text-anchor="middle">Spindle</text>
+
+              <g class="architecture-agent-server-anchor">
+                <rect class="paper-node server-paper-node" x="465" y="90" width="460" height="155" rx="16" filter="url(#roughen)" />
+                <rect class="paper-pattern" x="465" y="90" width="460" height="155" rx="16" fill="url(#blue-hatch)" />
+                <text class="paper-component-title" x="695" y="145" text-anchor="middle">Agent Server</text>
+                <text class="paper-plane-label control-plane-label" x="695" y="176" text-anchor="middle">(control plane)</text>
+                <text class="paper-component-note" x="695" y="211" text-anchor="middle">task lifecycle and runtime orchestration</text>
+              </g>
+
+              <rect class="paper-node proxy-paper-node" x="475" y="315" width="440" height="270" rx="16" filter="url(#roughen)" />
+              <rect class="paper-pattern" x="475" y="315" width="440" height="270" rx="16" fill="url(#green-hatch)" />
+              <text class="paper-component-title" x="695" y="357" text-anchor="middle">Proxy Server</text>
+              <text class="paper-plane-label data-plane-label" x="695" y="387" text-anchor="middle">(data plane)</text>
+
+              <rect class="paper-module" x="495" y="425" width="190" height="62" rx="11" filter="url(#roughen)" />
+              <text class="paper-module-label" x="590" y="463" text-anchor="middle">Sessions</text>
+              <rect class="paper-module" x="705" y="425" width="190" height="62" rx="11" filter="url(#roughen)" />
+              <text class="paper-module-label" x="800" y="452" text-anchor="middle">
+                <tspan x="800">Protocol</tspan>
+                <tspan x="800" dy="22">Adapters</tspan>
+              </text>
+              <rect class="paper-module" x="495" y="505" width="190" height="62" rx="11" filter="url(#roughen)" />
+              <text class="paper-module-label trajectory-manage-label" x="590" y="532" text-anchor="middle">
+                <tspan x="590">Trajectory</tspan>
+                <tspan x="590" dy="22">Manage</tspan>
+              </text>
+              <rect class="paper-module" x="705" y="505" width="190" height="62" rx="11" filter="url(#roughen)" />
+              <text class="paper-module-label" x="800" y="543" text-anchor="middle">TITO</text>
+            </g>
+
+            <g class="paper-zone paper-zone-runtime architecture-stage-runtime" aria-hidden="true">
+              <rect class="paper-boundary boundary-runtime" x="1060" y="42" width="378" height="585" rx="18" filter="url(#roughen)" />
+              <rect class="paper-pattern runtime-zone-pattern" x="1060" y="42" width="378" height="585" rx="18" fill="url(#orange-hatch)" />
+              <text class="paper-zone-title" x="1249" y="80" text-anchor="middle">Task Runtime</text>
+
+              <rect class="paper-node runtime-paper-node" x="1085" y="93" width="328" height="140" rx="16" filter="url(#roughen)" />
+              <text class="runtime-paper-kind" x="1112" y="170">Task</text>
+              <line class="runtime-divider" x1="1195" y1="115" x2="1195" y2="211" />
+              <text class="runtime-paper-value" x="1220" y="136">
+                <tspan x="1220">SWE Gym /</tspan>
+                <tspan x="1220" dy="25">SWE Bench /</tspan>
+                <tspan x="1220" dy="25">custom</tspan>
+              </text>
+
+              <rect class="paper-node runtime-paper-node" x="1085" y="275" width="328" height="140" rx="16" filter="url(#roughen)" />
+              <text class="runtime-paper-kind" x="1112" y="352">Agent</text>
+              <line class="runtime-divider" x1="1195" y1="297" x2="1195" y2="393" />
+              <text class="runtime-paper-value" x="1220" y="330">
+                <tspan x="1220">Claude Code /</tspan>
+                <tspan x="1220" dy="28">Codex / ReAct</tspan>
+              </text>
+
+              <rect class="paper-node runtime-paper-node" x="1085" y="465" width="328" height="140" rx="16" filter="url(#roughen)" />
+              <text class="runtime-paper-kind" x="1112" y="542">Env</text>
+              <line class="runtime-divider" x1="1195" y1="487" x2="1195" y2="583" />
+              <text class="runtime-paper-value" x="1220" y="507">
+                <tspan x="1220">Local/</tspan>
+                      <tspan x="1220" dy="27">Remote Sandbox/</tspan>
+                <tspan x="1220" dy="27">Custom Provider</tspan>
+              </text>
+            </g>
+
+            <g class="paper-arrows paper-arrow-labels architecture-stage-submit" aria-hidden="true">
+              <path d="M 322 130 H 465" marker-end="url(#paper-arrow)" />
+              <text x="393.5" y="106" text-anchor="middle">submit task</text>
+            </g>
+
+            <g class="paper-arrows paper-arrow-labels architecture-stage-session" aria-hidden="true">
+              <path d="M 750 245 V 315" marker-end="url(#paper-arrow)" />
+              <text x="774" y="287">create session</text>
+            </g>
+
+            <g class="paper-arrows paper-arrow-labels architecture-stage-launch" aria-hidden="true">
+              <path d="M 925 160 H 1060" marker-end="url(#paper-arrow)" />
+              <text x="992.5" y="136" text-anchor="middle">launch</text>
+            </g>
+
+            <g class="paper-arrows paper-arrow-labels architecture-stage-agent-api" aria-hidden="true">
+              <path d="M 915 350 H 1085" marker-start="url(#paper-arrow-start)" marker-end="url(#paper-arrow)" />
+              <text class="paper-wide-label" x="1000" y="325" text-anchor="middle">OpenAI / Anthropic</text>
+            </g>
+
+            <g class="paper-arrows paper-arrow-labels architecture-stage-rollout" aria-hidden="true">
+              <path d="M 293 335 H 475" marker-start="url(#paper-arrow-start)" marker-end="url(#paper-arrow)" />
+              <text class="paper-wide-label paper-compact-label" x="384" y="310" text-anchor="middle">token ID / log prob</text>
+            </g>
+
+            <g class="paper-arrows paper-arrow-labels architecture-stage-trajectory-data" aria-hidden="true">
+              <path d="M 475 525 H 293" marker-end="url(#paper-arrow)" />
+              <text x="384" y="558" text-anchor="middle">trajectory data</text>
+            </g>
+
+            <g class="paper-arrows paper-arrow-labels architecture-stage-training-trajectory" aria-hidden="true">
+              <path d="M 104.5 493 V 405" marker-end="url(#paper-arrow)" />
+              <text x="126" y="455">trajectory data</text>
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <section class="slide detail-slide agent-server-slide" data-slide="3" data-stage="0" aria-label="Agent Server">
+        <header class="slide-header">
+          <p class="section-label">04</p>
+          <h2>Agent Server</h2>
+          <p class="page-number">04&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+        </header>
+
+        <p class="detail-lead agent-server-lead">
+          The control plane turns each submitted task into a session-bound task runtime.
+        </p>
+
+        <div class="agent-server-canvas">
+          <svg
+            class="agent-server-diagram"
+            viewBox="0 0 1460 620"
+            role="img"
+            aria-label="Agent Server interfaces, session creation flow, runtime launch, and deployment options"
+          >
+            <title>Agent Server control plane</title>
+            <defs>
+              <pattern id="server-blue-hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+                <line x1="0" y1="0" x2="0" y2="9" stroke="#89bfe8" stroke-width="1" opacity="0.58" />
+              </pattern>
+              <pattern id="server-green-hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+                <line x1="0" y1="0" x2="0" y2="9" stroke="#78c88a" stroke-width="1" opacity="0.56" />
+              </pattern>
+              <pattern id="server-orange-hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+                <line x1="0" y1="0" x2="0" y2="9" stroke="#e0a23a" stroke-width="1" opacity="0.46" />
+              </pattern>
+              <filter id="server-roughen" x="-3%" y="-3%" width="106%" height="106%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="17" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.65" xChannelSelector="R" yChannelSelector="G" />
+              </filter>
+              <marker id="server-arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+                <path d="M 0 0 L 9 4.5 L 0 9" fill="none" stroke="#303a3e" stroke-width="1.4" />
+              </marker>
+            </defs>
+
+            <g class="server-zone server-framework-zone server-stage-framework" aria-hidden="true">
+              <rect class="server-boundary framework-boundary" x="22" y="42" width="320" height="402" rx="18" filter="url(#server-roughen)" />
+              <text class="server-zone-title" x="182" y="78" text-anchor="middle">RL framework</text>
+              <text class="server-zone-subtitle" x="182" y="108" text-anchor="middle">Verl / slime / miles</text>
+              <text class="server-small-heading" x="54" y="154">CALLS AGENT SERVER API</text>
+
+              <text class="server-api-name" x="54" y="205">Submit</text>
+              <line class="server-rule" x1="54" y1="219" x2="310" y2="219" />
+
+              <text class="server-api-name" x="54" y="269">Cancel</text>
+              <line class="server-rule" x1="54" y1="294" x2="310" y2="294" />
+
+              <text class="server-api-name status-api" x="54" y="344">GetTaskStatus</text>
+            </g>
+
+            <g class="server-zone server-control-zone agent-server-magic-target">
+              <rect class="server-main-node" x="515" y="42" width="410" height="402" rx="18" filter="url(#server-roughen)" />
+              <rect class="server-node-pattern" x="515" y="42" width="410" height="402" rx="18" fill="url(#server-blue-hatch)" />
+              <text class="server-main-title" x="720" y="112" text-anchor="middle">Agent Server</text>
+              <text class="server-plane" x="720" y="146" text-anchor="middle">control plane</text>
+
+              <g class="server-lifecycle-details server-stage-lifecycle" aria-hidden="true">
+                <text class="server-task-label" x="720" y="222" text-anchor="middle">Task lifecycle</text>
+                <path class="server-state-line" d="M 580 260 H 860" />
+                <circle class="server-state-dot" cx="580" cy="260" r="5" />
+                <circle class="server-state-dot" cx="720" cy="260" r="5" />
+                <circle class="server-state-dot" cx="860" cy="260" r="5" />
+                <text class="server-state-text" x="580" y="297" text-anchor="middle">queued</text>
+                <text class="server-state-text" x="720" y="297" text-anchor="middle">running</text>
+                <text class="server-state-text" x="860" y="297" text-anchor="middle">terminal</text>
+              </g>
+            </g>
+
+            <g class="server-zone server-proxy-zone server-stage-session" aria-hidden="true">
+              <rect class="server-side-node proxy-side-node" x="1135" y="70" width="275" height="132" rx="16" filter="url(#server-roughen)" />
+              <rect class="server-node-pattern" x="1135" y="70" width="275" height="132" rx="16" fill="url(#server-green-hatch)" />
+              <text class="server-side-title" x="1272.5" y="126" text-anchor="middle">Proxy Server</text>
+            </g>
+
+            <g class="server-zone server-task-runtime-zone server-stage-runtime" aria-hidden="true">
+              <rect class="server-side-node runtime-side-node" x="1135" y="312" width="275" height="132" rx="16" filter="url(#server-roughen)" />
+              <rect class="server-node-pattern" x="1135" y="312" width="275" height="132" rx="16" fill="url(#server-orange-hatch)" />
+              <text class="server-side-title" x="1272.5" y="368" text-anchor="middle">Task Runtime</text>
+              <text class="server-side-note" x="1272.5" y="404" text-anchor="middle">task-scoped execution</text>
+            </g>
+
+            <g class="server-flow server-flow-labels server-request-flow server-stage-lifecycle" filter="url(#server-roughen)" aria-hidden="true">
+              <path d="M 342 244 H 515" marker-end="url(#server-arrow)" />
+              <text x="428" y="221" text-anchor="middle">request</text>
+            </g>
+
+            <g class="server-flow server-flow-labels server-session-flow server-stage-session" filter="url(#server-roughen)" aria-hidden="true">
+              <path d="M 925 112 H 1135" marker-end="url(#server-arrow)" />
+              <path d="M 1135 176 H 925" marker-end="url(#server-arrow)" />
+              <text x="1030" y="91" text-anchor="middle"><tspan class="flow-step">01</tspan> Create Session</text>
+              <text x="1030" y="212" text-anchor="middle"><tspan class="flow-step">02</tspan> Session ID + Proxy URL</text>
+            </g>
+
+            <g class="server-flow server-flow-labels server-runtime-flow server-stage-runtime" filter="url(#server-roughen)" aria-hidden="true">
+              <path d="M 925 378 H 1135" marker-end="url(#server-arrow)" />
+              <text x="1030" y="340" text-anchor="middle">
+                <tspan class="flow-step">03</tspan> Launch Task Runtime
+                <tspan class="server-flow-detail" x="1030" dy="25">with Session ID + Proxy URL</tspan>
+              </text>
+            </g>
+
+            <g class="server-deployment-zone server-stage-deployment" aria-hidden="true">
+              <line class="deployment-separator" x1="22" y1="470" x2="1438" y2="470" />
+              <text class="deployment-heading" x="22" y="520">DEPLOYMENT OPTIONS</text>
+
+              <rect class="deployment-option ray-option" x="160" y="540" width="530" height="70" rx="14" filter="url(#server-roughen)" />
+              <text class="deployment-title" x="425" y="568" text-anchor="middle">Same Ray Cluster</text>
+              <text class="deployment-note" x="425" y="595" text-anchor="middle">co-located with the RL framework</text>
+
+              <text class="deployment-or" x="730" y="582" text-anchor="middle">or</text>
+
+              <rect class="deployment-option http-option" x="770" y="540" width="530" height="70" rx="14" filter="url(#server-roughen)" />
+              <text class="deployment-title" x="1035" y="568" text-anchor="middle">Standalone HTTP Server</text>
+              <text class="deployment-note" x="1035" y="595" text-anchor="middle">stronger decoupling and independent scaling</text>
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <section class="slide detail-slide task-runtime-slide" data-slide="4" data-stage="0" aria-label="Task Runtime abstraction">
+        <header class="slide-header">
+          <p class="section-label">05</p>
+          <h2>Task Runtime abstraction</h2>
+          <p class="page-number">05&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+        </header>
+
+        <p class="detail-lead">
+          Task, Agent, and Environment are orthogonal components that can be replaced independently.
+        </p>
+
+        <div class="runtime-story-canvas">
+          <section class="component-board task-board" aria-label="Task component and SWE task pipeline">
+            <div class="component-heading">
+              <strong>Task</strong>
+              <span>SWE-bench / SWE-Gym</span>
+            </div>
+
+            <div class="task-choice-grid">
+              <div class="runtime-choice task-choice choice-task-bench">
+                <span class="choice-eyebrow">TASK</span>
+                <strong>SWE-bench</strong>
+              </div>
+              <div class="runtime-choice task-choice choice-task-gym">
+                <span class="choice-eyebrow">TASK</span>
+                <strong>SWE-Gym</strong>
+              </div>
+            </div>
+
+            <div class="task-pipeline" aria-label="SWE task execution pipeline">
+              <div class="pipeline-step">
+                <span>01</span>
+                <strong>Set up repo</strong>
+                <small>in environment</small>
+              </div>
+              <i class="pipeline-link" aria-hidden="true"></i>
+              <div class="pipeline-step">
+                <span>02</span>
+                <strong>Run agent</strong>
+              </div>
+              <i class="pipeline-link" aria-hidden="true"></i>
+              <div class="pipeline-step">
+                <span>03</span>
+                <strong>Collect code</strong>
+                <small>agent artifacts</small>
+              </div>
+              <i class="pipeline-link" aria-hidden="true"></i>
+              <div class="pipeline-step">
+                <span>04</span>
+                <strong>Evaluate</strong>
+                <small>and reward</small>
+              </div>
+            </div>
+          </section>
+
+          <section class="component-board agent-board" aria-label="Replaceable agent implementations">
+            <div class="component-heading">
+              <strong>Agent</strong>
+              <span>replaceable agent loop</span>
+            </div>
+
+            <div class="agent-choice-grid">
+              <div class="runtime-choice choice-agent-react">
+                <span class="choice-logo text-logo react-mark" aria-hidden="true">↻</span>
+                <strong>ReAct Agent</strong>
+                <small>Python coroutine</small>
+              </div>
+              <div class="runtime-choice choice-agent-claude">
+                <span class="choice-logo image-logo">
+                  <img src="https://www.anthropic.com/favicon.ico" alt="" />
+                </span>
+                <strong>Claude Code</strong>
+                <small>black-box harness</small>
+              </div>
+              <div class="runtime-choice choice-agent-custom">
+                <span class="choice-logo text-logo code-mark" aria-hidden="true">&lt;/&gt;</span>
+                <strong>Custom loop</strong>
+                <small>user-defined</small>
+              </div>
+            </div>
+          </section>
+
+          <section class="component-board environment-board" aria-label="Replaceable environment providers">
+            <div class="component-heading">
+              <strong>Environment</strong>
+              <span>local or remote sandbox</span>
+            </div>
+
+            <div class="environment-choice-grid">
+              <div class="runtime-choice choice-env-local">
+                <span class="choice-logo text-logo terminal-mark" aria-hidden="true">&gt;_</span>
+                <strong>Local</strong>
+                <small>process</small>
+              </div>
+              <div class="runtime-choice choice-env-docker">
+                <span class="choice-logo image-logo docker-logo">
+                  <img src="https://www.docker.com/app/uploads/2026/02/Docker_Mark_660x400.png" alt="" />
+                </span>
+                <strong>Docker</strong>
+                <small>container</small>
+              </div>
+              <div class="runtime-choice choice-env-e2b">
+                <span class="choice-logo image-logo e2b-logo">
+                  <img src="https://e2b.dev/brand/e2b-symbol-black-l.svg" alt="" />
+                </span>
+                <strong>E2B</strong>
+                <small>sandbox</small>
+              </div>
+              <div class="runtime-choice choice-env-modal">
+                <span class="choice-logo image-logo modal-logo">
+                  <img src="https://modal-cdn.com/modal-logo-icon.png" alt="" />
+                </span>
+                <strong>Modal</strong>
+                <small>sandbox</small>
+              </div>
+              <div class="runtime-choice choice-env-custom">
+                <span class="choice-logo text-logo plug-mark" aria-hidden="true">{ }</span>
+                <strong>Custom</strong>
+                <small>provider</small>
+              </div>
+            </div>
+          </section>
+
+          <svg class="orthogonality-overlay runtime-stage-final" viewBox="0 0 1460 620" aria-hidden="true">
+            <path d="M 111 168 V 224" />
+            <path d="M 299 168 V 224" />
+            <path d="M 111 224 H 1444" />
+            <path d="M 674 224 V 300" />
+            <path d="M 1444 224 V 300 H 1375" />
+            <path d="M 126 300 H 1375" />
+            <path d="M 126 300 V 316" />
+            <path d="M 345 300 V 316" />
+            <path d="M 564 300 V 316" />
+            <path d="M 819 300 V 316" />
+            <path d="M 958 300 V 316" />
+            <path d="M 1097 300 V 316" />
+            <path d="M 1236 300 V 316" />
+            <path d="M 1375 300 V 316" />
+            <circle cx="111" cy="168" r="5" />
+            <circle cx="299" cy="168" r="5" />
+            <circle cx="126" cy="316" r="5" />
+            <circle cx="345" cy="316" r="5" />
+            <circle cx="564" cy="316" r="5" />
+            <circle cx="819" cy="316" r="5" />
+            <circle cx="958" cy="316" r="5" />
+            <circle cx="1097" cy="316" r="5" />
+            <circle cx="1236" cy="316" r="5" />
+            <circle cx="1375" cy="316" r="5" />
+          </svg>
+
+          <div class="runtime-story-status" aria-live="polite">
+            <p class="runtime-stage-copy runtime-stage-0">Local baseline: SWE-bench with ReAct Agent in a Docker container.</p>
+            <p class="runtime-stage-copy runtime-stage-1">Scale the environment: move the same task and agent to Modal Sandbox.</p>
+            <p class="runtime-stage-copy runtime-stage-2">Switch the task: replace SWE-bench with SWE-Gym.</p>
+            <p class="runtime-stage-copy runtime-stage-3">Switch the agent: replace ReAct Agent with Claude Code.</p>
+            <p class="runtime-stage-copy runtime-stage-4">Orthogonal by design: mix and scale each component independently.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide detail-slide proxy-design-slide" data-slide="5" data-stage="0" aria-label="Proxy Server design">
+        <header class="slide-header">
+          <p class="section-label">06</p>
+          <h2>Proxy Server</h2>
+          <p class="page-number">06&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+        </header>
+
+        <div class="proxy-design-canvas">
+          <section class="proxy-overview" aria-label="Proxy Server core functions">
+            <header>
+              <small>DATA PLANE SERVICE</small>
+              <strong>Proxy Server</strong>
+            </header>
+            <div class="proxy-overview-functions">
+              <div>Protocol<br />Adapter</div>
+              <div>Trajectory Manager</div>
+              <div>TITO</div>
+            </div>
+          </section>
+
+          <section class="proxy-plane-frame proxy-control-plane proxy-stage-planes" aria-hidden="true">
+            <p><strong>CONTROL PLANE</strong><span>session lifecycle</span></p>
+          </section>
+
+          <section class="proxy-plane-frame proxy-data-plane proxy-stage-planes" aria-hidden="true">
+            <p><strong>DATA PLANE</strong><span>data traffic</span></p>
+          </section>
+
+          <section class="proxy-control-client proxy-stage-session" aria-hidden="true">
+            <strong>Agent Server</strong>
+          </section>
+
+          <section class="proxy-agent-clients proxy-stage-runtime" aria-hidden="true">
+            <strong>Task Agent Runtime</strong>
+            <div><span>OpenAI</span><b>ReAct / Codex</b></div>
+            <div><span>Anthropic</span><b>Claude Code</b></div>
+            <div><span>Custom</span><b>User agent</b></div>
+          </section>
+
+          <section class="proxy-cluster" aria-label="One router with dynamically registered proxy replicas" aria-hidden="true">
+            <header class="proxy-cluster-header">
+              <strong>Proxy Server Cluster</strong>
+            </header>
+
+            <div class="proxy-router">
+              <strong>Proxy Server Router</strong>
+              <span>registry, session management, placement</span>
+            </div>
+
+            <p class="proxy-registration-label proxy-stage-register" aria-hidden="true">DYNAMIC REGISTRATION</p>
+
+            <div class="proxy-replica-row">
+              <article class="proxy-replica replica-01">
+                <header><strong>Replica 01</strong><span class="proxy-stage-register" aria-hidden="true">registered</span></header>
+                <div class="replica-pipeline">
+                  <div class="replica-component adapter-component">Protocol<br />Adapters</div>
+                  <div class="replica-component manager-component">Trajectory<br />Manage</div>
+                  <div class="replica-component tito-component">TITO</div>
+                </div>
+              </article>
+
+              <article class="proxy-replica replica-02 assigned-replica">
+                <header>
+                  <strong>Replica 02</strong>
+                  <span class="proxy-stage-register replica-registration-status" aria-hidden="true">registered</span>
+                  <span class="proxy-stage-session replica-assigned-status" aria-hidden="true">assigned</span>
+                </header>
+                <div class="replica-pipeline">
+                  <div class="replica-component adapter-component">Protocol<br />Adapters</div>
+                  <div class="replica-component manager-component">Trajectory<br />Manage</div>
+                  <div class="replica-component tito-component">TITO</div>
+                </div>
+              </article>
+
+              <article class="proxy-replica replica-03">
+                <header><strong>Replica 03</strong><span class="proxy-stage-register" aria-hidden="true">registered</span></header>
+                <div class="replica-pipeline">
+                  <div class="replica-component adapter-component">Protocol<br />Adapters</div>
+                  <div class="replica-component manager-component">Trajectory<br />Manage</div>
+                  <div class="replica-component tito-component">TITO</div>
+                </div>
+              </article>
+            </div>
+
+          </section>
+
+          <svg class="proxy-design-connectors" viewBox="0 0 1460 660" aria-hidden="true">
+            <defs>
+              <marker id="proxy-register-arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+                <path d="M 0 0 L 9 4.5 L 0 9" fill="none" stroke="#7a8a90" stroke-width="1.3" />
+              </marker>
+              <marker id="proxy-control-arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+                <path d="M 0 0 L 9 4.5 L 0 9" fill="none" stroke="#3977b5" stroke-width="1.5" />
+              </marker>
+              <marker id="proxy-data-arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+                <path d="M 0 0 L 9 4.5 L 0 9" fill="none" stroke="#2f8f69" stroke-width="1.5" />
+              </marker>
+            </defs>
+
+            <path class="proxy-register-edge proxy-stage-register" d="M 515 250 V 205 H 785 V 155" marker-end="url(#proxy-register-arrow)" />
+            <path class="proxy-register-edge proxy-stage-register" d="M 890 250 V 155" marker-end="url(#proxy-register-arrow)" />
+            <path class="proxy-register-edge proxy-stage-register" d="M 1265 250 V 205 H 995 V 155" marker-end="url(#proxy-register-arrow)" />
+
+            <path class="proxy-control-edge proxy-stage-session" d="M 250 88 H 655" marker-end="url(#proxy-control-arrow)" />
+            <path class="proxy-control-return proxy-stage-session" d="M 655 132 H 270" marker-end="url(#proxy-control-arrow)" />
+
+            <path class="proxy-injection-edge proxy-stage-runtime" d="M 125 152 V 260" marker-end="url(#proxy-control-arrow)" />
+
+            <path class="proxy-data-edge proxy-stage-direct" d="M 250 410 H 300 V 600 H 890 V 550" marker-end="url(#proxy-data-arrow)" />
+          </svg>
+
+          <div class="proxy-control-label proxy-stage-session" aria-hidden="true">
+            <strong>create session / abort session / check status</strong>
+            <span>session ID + replica URL</span>
+          </div>
+
+          <div class="proxy-data-label proxy-stage-direct" aria-hidden="true">
+            <strong>direct to assigned replica</strong>
+            <span>router bypassed</span>
+          </div>
+
+          <div class="proxy-injection-label proxy-stage-runtime" aria-hidden="true">
+            <strong>inject</strong>
+            <span>session ID + replica URL</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide detail-slide trajectory-manager-slide" data-slide="6" data-stage="0" aria-label="Trajectory Manager">
+        <header class="slide-header">
+          <p class="section-label">07</p>
+          <h2>Trajectory Manager</h2>
+          <p class="page-number">07&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+        </header>
+
+        <div class="trajectory-manager-canvas">
+          <section class="interaction-example" aria-label="Example multi-turn interaction">
+            <div class="trajectory-section-heading">
+              <strong>One task, multiple turns</strong>
+            </div>
+
+            <div class="interaction-track">
+              <div class="interaction-token context-token">
+                <small>CONTEXT</small>
+                <strong>System</strong>
+              </div>
+              <i class="interaction-link" aria-hidden="true"></i>
+              <div class="interaction-token user-token">
+                <small>INPUT</small>
+                <strong>User</strong>
+              </div>
+              <i class="interaction-link" aria-hidden="true"></i>
+              <div class="interaction-token assistant-token">
+                <small>TURN 01</small>
+                <strong>Assistant 1</strong>
+              </div>
+              <i class="interaction-link" aria-hidden="true"></i>
+              <div class="interaction-token tool-token">
+                <small>OBSERVATION</small>
+                <strong>Tool result</strong>
+              </div>
+              <i class="interaction-link" aria-hidden="true"></i>
+              <div class="interaction-token assistant-token">
+                <small>TURN 02</small>
+                <strong>Assistant 2</strong>
+              </div>
+              <i class="interaction-link" aria-hidden="true"></i>
+              <div class="interaction-token tool-token">
+                <small>OBSERVATION</small>
+                <strong>Tool result 2</strong>
+              </div>
+              <i class="interaction-link" aria-hidden="true"></i>
+              <div class="interaction-token assistant-token">
+                <small>TURN 03</small>
+                <strong>Assistant 3</strong>
+              </div>
+            </div>
+          </section>
+
+          <div class="trajectory-methods trajectory-stage-methods" aria-hidden="true">
+            <section class="merge-method per-turn-method">
+              <header>
+                <div>
+                  <span>BASELINE</span>
+                  <h3>Per-turn</h3>
+                </div>
+                <p>4 interactions → 4 samples</p>
+              </header>
+
+              <div class="lineage-list per-turn-lineages">
+                <div class="lineage-row">
+                  <span class="lineage-name">sample 01</span>
+                  <div class="token-run repeated-prefix">
+                    <span>SYS</span><span>U</span>
+                  </div>
+                  <div class="token-run target-span"><span>A1</span></div>
+                </div>
+                <div class="lineage-row">
+                  <span class="lineage-name">sample 02</span>
+                  <div class="token-run repeated-prefix long-prefix">
+                    <span>SYS</span><span>U</span><span>A1</span><span>T1</span>
+                  </div>
+                  <div class="token-run target-span"><span>A2</span></div>
+                </div>
+                <div class="lineage-row">
+                  <span class="lineage-name">sample 03</span>
+                  <div class="token-run repeated-prefix long-prefix">
+                    <span>SYS</span><span>U</span><span>A1</span><span>T1</span><span>A2</span><span>T2</span>
+                  </div>
+                  <div class="token-run target-span"><span>A3</span></div>
+                </div>
+                <div class="lineage-row subagent-lineage">
+                  <span class="lineage-name">sample 04<small>sub-agent</small></span>
+                  <div class="token-run subagent-prefix">
+                    <span>S-SYS</span><span>S-U</span>
+                  </div>
+                  <div class="token-run subagent-target"><span>SA1</span></div>
+                </div>
+              </div>
+
+              <p class="method-note">Every new sample repeats the full prefix.</p>
+            </section>
+
+            <section class="merge-method prefix-merge-method">
+              <header>
+                <div>
+                  <span>BEST-EFFORT PREFIX MERGE</span>
+                  <h3>Turn-merge</h3>
+                </div>
+                <p>4 samples → 2 trajectories</p>
+              </header>
+
+              <div class="merge-lineage-stage">
+                <div class="lineage-row merge-source merge-source-a">
+                  <span class="lineage-name">trace 01</span>
+                  <div class="token-run repeated-prefix"><span>SYS</span><span>U</span></div>
+                  <div class="token-run target-span"><span>A1</span></div>
+                </div>
+                <div class="lineage-row merge-source merge-source-b">
+                  <span class="lineage-name">trace 02</span>
+                  <div class="token-run repeated-prefix long-prefix">
+                    <span>SYS</span><span>U</span><span>A1</span><span>T1</span>
+                  </div>
+                  <div class="token-run target-span"><span>A2</span></div>
+                </div>
+                <div class="lineage-row merge-source merge-source-c">
+                  <span class="lineage-name">trace 03</span>
+                  <div class="token-run repeated-prefix long-prefix">
+                    <span>SYS</span><span>U</span><span>A1</span><span>T1</span><span>A2</span><span>T2</span>
+                  </div>
+                  <div class="token-run target-span"><span>A3</span></div>
+                </div>
+                <div class="lineage-row retained-source subagent-lineage">
+                  <span class="lineage-name">
+                    <b class="retained-before">trace 04</b>
+                    <b class="retained-after">trajectory 02</b>
+                    <small>sub-agent</small>
+                  </span>
+                  <div class="token-run subagent-prefix">
+                    <span>S-SYS</span><span>S-U</span>
+                  </div>
+                  <div class="token-run subagent-target"><span>SA1</span></div>
+                </div>
+
+                <div class="merged-lineage merge-result" aria-hidden="true">
+                  <span class="lineage-name">trajectory 01<small>main agent</small></span>
+                  <div class="merged-token context-merged">SYS</div>
+                  <div class="merged-token context-merged">U</div>
+                  <div class="merged-token assistant-merged">A1</div>
+                  <div class="merged-token tool-merged">T1</div>
+                  <div class="merged-token assistant-merged">A2</div>
+                  <div class="merged-token tool-merged">T2</div>
+                  <div class="merged-token assistant-merged">A3</div>
+                </div>
+              </div>
+
+              <p class="method-note merged-note">Merge compatible prefixes. Keep the sub-agent trajectory separate.</p>
+            </section>
+          </div>
+
+          <div class="trajectory-results trajectory-stage-results" aria-hidden="true">
+            <section class="result-table" aria-label="Per-turn and prefix merge benchmark comparison">
+              <div class="result-header">
+                <span></span>
+                <strong>Per-turn</strong>
+                <strong>Turn-merge</strong>
+                <strong>Outcome</strong>
+              </div>
+              <div class="result-row">
+                <span>Training samples</span>
+                <strong>1,380</strong>
+                <strong class="result-best">236</strong>
+                <strong class="result-outcome"><b>5.8×</b> fewer samples</strong>
+              </div>
+              <div class="result-row">
+                <span>Step wall clock</span>
+                <strong class="result-duration"><b>182</b><small>min</small></strong>
+                <strong class="result-best result-duration"><b>28</b><small>min</small></strong>
+                <strong class="result-outcome"><b>6.5×</b> faster step</strong>
+              </div>
+              <div class="result-row">
+                <span>Eval score</span>
+                <strong class="result-outcome result-outcome-neutral result-eval-outcome">almost same</strong>
+              </div>
+            </section>
+
+            <section class="utilization-chart" aria-label="Rollout GPU utilization over wall time">
+              <div class="utilization-heading">
+                <strong>Rollout GPU utilization over three steps</strong>
+                <span><i class="legend-per-turn"></i>Per-turn</span>
+                <span><i class="legend-merged"></i>Turn-merge</span>
+              </div>
+
+              <svg viewBox="0 0 900 390" role="img" aria-label="Separate rollout GPU utilization charts for three per-turn steps over 182 minutes and three continuous turn-merge steps over 84 minutes">
+                <text class="chart-panel-title per-turn-panel-title" x="70" y="18">PER-TURN</text>
+                <text class="chart-finish-label baseline-label" x="830" y="18" text-anchor="end">182 min</text>
+
+                <g class="chart-grid">
+                  <rect x="70" y="28" width="760" height="120" />
+                  <line x1="70" y1="68" x2="830" y2="68" />
+                  <line x1="70" y1="108" x2="830" y2="108" />
+                  <line x1="258" y1="28" x2="258" y2="148" />
+                  <line x1="446" y1="28" x2="446" y2="148" />
+                  <line x1="634" y1="28" x2="634" y2="148" />
+                </g>
+
+                <g class="chart-axis-labels">
+                  <text x="58" y="33" text-anchor="end">100</text>
+                  <text x="58" y="112" text-anchor="end">50</text>
+                  <text x="58" y="152" text-anchor="end">0</text>
+                  <text x="70" y="168">0</text>
+                  <text x="258" y="168" text-anchor="middle">45</text>
+                  <text x="446" y="168" text-anchor="middle">90</text>
+                  <text x="634" y="168" text-anchor="middle">135</text>
+                  <text x="830" y="168" text-anchor="end">182</text>
+                </g>
+
+                <g class="per-turn-step-labels">
+                  <text x="135" y="139" text-anchor="middle">STEP 1</text>
+                  <text x="364" y="139" text-anchor="middle">STEP 2</text>
+                  <text x="673" y="139" text-anchor="middle">STEP 3</text>
+                </g>
+
+                <g class="per-turn-panel-trace" transform="translate(0 7) scale(1 0.63)">
+                <path
+                  class="utilization-trace per-turn-trace"
+                  d="M70.0 224.0 L77.0 224.0 L77.5 72.4 L77.5 80.5 L79.4 80.4 L81.3 70.1 L83.2 75.4 L85.0 74.7 L86.9 195.6 L88.8 77.0 L90.7 67.2 L92.5 77.6 L94.4 66.0 L96.3 82.2 L98.2 78.2 L100.1 74.4 L101.9 110.2 L103.8 81.9 L105.7 76.5 L107.6 69.0 L109.5 81.6 L111.3 76.1 L113.2 73.7 L115.1 85.6 L117.0 76.0 L118.9 79.8 L120.7 85.0 L122.6 73.3 L124.5 74.3 L126.4 72.3 L128.3 85.2 L130.1 85.9 L132.0 151.3 L133.9 66.0 L135.8 70.5 L137.6 67.8 L139.5 74.9 L141.4 83.1 L143.3 80.4 L145.2 84.0 L147.0 68.2 L148.9 69.1 L150.8 75.2 L152.7 86.2 L154.6 80.3 L156.4 85.4 L158.3 66.6 L160.2 66.0 L162.1 83.7 L164.0 94.4 L165.8 81.4 L167.7 74.4 L169.6 73.6 L171.5 66.6 L173.4 66.0 L175.2 74.3 L177.1 81.8 L179.0 66.0 L180.9 69.2 L182.7 85.7 L184.6 186.1 L186.5 70.4 L188.4 82.5 L190.3 80.3 L191.1 72.9 L191.6 224.0 L340.9 224.0 L341.4 74.6 L341.4 79.5 L342.9 83.0 L344.4 84.8 L345.8 87.7 L347.3 81.9 L348.7 82.4 L350.2 71.5 L351.7 81.1 L353.1 78.8 L354.6 80.8 L356.0 79.0 L357.5 73.9 L359.0 219.3 L360.4 73.4 L361.9 74.4 L363.4 100.8 L364.8 81.7 L366.3 224.0 L367.7 76.4 L369.2 66.0 L370.7 85.8 L372.1 66.0 L373.6 74.0 L375.0 72.4 L376.5 184.5 L378.0 81.5 L379.4 81.3 L380.9 224.0 L382.4 66.0 L383.8 76.1 L385.3 66.0 L385.3 69.1 L385.8 224.0 L644.9 224.0 L645.4 76.2 L645.4 80.1 L647.2 68.7 L648.9 70.6 L650.7 73.7 L652.4 73.4 L654.2 72.1 L656.0 84.2 L657.7 73.0 L659.5 119.7 L661.2 82.2 L663.0 66.0 L664.7 195.6 L666.5 66.4 L668.2 77.3 L670.0 66.0 L671.7 70.0 L673.5 91.3 L675.2 82.2 L677.0 66.0 L678.8 77.3 L680.5 66.0 L682.3 68.9 L684.0 217.7 L685.8 80.1 L687.5 80.0 L689.3 78.2 L691.0 66.5 L692.8 126.0 L694.5 66.0 L696.3 70.5 L698.0 79.2 L699.8 66.0 L700.5 68.2 L701.1 224.0 L830.0 224.0"
+                />
+                </g>
+                <path
+                  class="utilization-trace merged-trace"
+                  d="M70.0 224.0 L74.1 224.0 L74.6 70.1 L74.6 66.0 L75.8 68.7 L77.1 74.0 L78.4 69.9 L79.6 75.7 L80.9 75.0 L82.1 72.5 L83.4 189.2 L84.6 70.7 L85.9 66.0 L87.1 70.5 L88.4 66.0 L89.6 73.5 L90.9 70.7 L92.1 84.1 L93.4 71.7 L94.6 81.7 L95.9 67.5 L97.1 79.9 L98.4 86.9 L99.6 73.3 L100.9 79.3 L102.2 88.0 L103.4 67.6 L104.7 66.0 L105.9 141.8 L107.2 82.8 L108.4 69.0 L109.7 80.3 L110.9 87.9 L112.2 66.3 L113.4 79.7 L114.7 87.8 L115.9 66.0 L117.2 71.4 L118.4 69.1 L119.7 81.6 L120.9 83.5 L122.2 75.9 L123.5 70.2 L124.7 86.3 L126.0 91.3 L127.2 88.0 L128.5 86.1 L129.7 83.4 L131.0 74.8 L132.2 78.7 L133.5 85.0 L134.7 81.7 L136.0 72.2 L137.2 85.2 L138.5 87.1 L139.7 82.6 L141.0 81.0 L142.2 71.9 L143.5 87.9 L144.7 67.5 L146.0 81.3 L147.3 87.8 L148.5 154.5 L149.8 75.2 L151.0 87.3 L152.3 66.5 L153.5 76.3 L154.8 79.3 L156.0 66.0 L157.3 74.9 L158.5 75.3 L159.8 75.4 L161.0 68.1 L162.3 66.0 L163.5 76.0 L164.8 103.9 L166.0 66.0 L167.3 66.0 L168.5 73.8 L169.8 70.2 L171.1 79.0 L172.3 77.0 L173.6 66.0 L174.8 74.0 L176.1 85.0 L177.3 85.8 L178.6 66.0 L179.8 86.5 L181.1 86.8 L182.3 86.6 L183.6 77.6 L184.8 67.3 L186.1 73.4 L186.9 73.6 L187.4 224.0 L830.0 224.0"
+                />
+
+                <line class="baseline-finish-line" x1="830" y1="28" x2="830" y2="168" />
+
+                <text class="chart-panel-title turn-merge-panel-title" x="70" y="195">TURN-MERGE</text>
+                <text class="chart-finish-label merge-label" x="779" y="195" text-anchor="middle">84 min</text>
+
+                <g class="chart-grid turn-merge-grid">
+                  <rect x="70" y="205" width="760" height="120" />
+                  <line x1="70" y1="245" x2="830" y2="245" />
+                  <line x1="70" y1="285" x2="830" y2="285" />
+                  <line x1="323" y1="205" x2="323" y2="325" />
+                  <line x1="576" y1="205" x2="576" y2="325" />
+                </g>
+
+                <g class="chart-step-guides">
+                  <line x1="306" y1="205" x2="306" y2="325" />
+                  <line x1="543" y1="205" x2="543" y2="325" />
+                  <text x="188" y="315" text-anchor="middle">STEP 1</text>
+                  <text x="424" y="315" text-anchor="middle">STEP 2</text>
+                  <text x="661" y="315" text-anchor="middle">STEP 3</text>
+                </g>
+
+                <g class="chart-axis-labels">
+                  <text x="58" y="210" text-anchor="end">100</text>
+                  <text x="58" y="289" text-anchor="end">50</text>
+                  <text x="58" y="329" text-anchor="end">0</text>
+                  <text x="70" y="346">0</text>
+                  <text x="323" y="346" text-anchor="middle">30</text>
+                  <text x="576" y="346" text-anchor="middle">60</text>
+                  <text x="830" y="346" text-anchor="end">90</text>
+                  <text x="450" y="380" text-anchor="middle">Wall time (min)</text>
+                </g>
+
+                <path
+                  class="utilization-trace turn-merge-continuous"
+                  d="M70 325 L75 325 L76 229 L82 214 L89 220 L96 210 L103 217 L109 213 L113 286 L116 218 L124 211 L132 221 L141 209 L150 216 L158 212 L166 224 L174 214 L181 218 L184 263 L188 211 L197 219 L205 213 L214 222 L223 210 L231 216 L239 212 L246 305 L250 220 L259 211 L268 217 L277 209 L286 219 L295 213 L304 216 L306 276 L310 219 L318 210 L326 216 L335 212 L344 221 L351 214 L356 294 L360 218 L369 210 L378 216 L387 213 L396 221 L405 211 L414 218 L422 214 L430 269 L434 216 L443 209 L452 220 L461 212 L470 217 L477 301 L481 219 L490 211 L499 216 L508 210 L517 220 L526 213 L535 218 L543 281 L547 216 L556 210 L565 219 L574 212 L583 218 L590 292 L594 215 L603 209 L612 220 L621 212 L630 217 L639 211 L648 221 L656 214 L664 274 L668 217 L677 210 L686 219 L693 311 L697 220 L706 212 L715 217 L724 209 L733 219 L741 264 L745 216 L754 210 L763 219 L771 213 L779 217 L779 325 L830 325"
+                />
+                <line class="merge-finish-line" x1="779" y1="205" x2="779" y2="346" />
+              </svg>
+            </section>
+          </div>
+
+        </div>
+      </section>
+
+      <section class="slide detail-slide prefix-trie-slide" data-slide="7" data-stage="0" aria-label="Trajectory Manager prefix-trie storage">
+        <header class="slide-header">
+          <p class="section-label">08</p>
+          <h2>Trajectory Manager</h2>
+          <p class="page-number">08&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+        </header>
+
+        <p class="detail-lead">
+          Data structure for trajectories: Multi-linear chains vs Prefix trie
+        </p>
+
+        <div class="prefix-trie-canvas">
+          <section class="storage-method linear-storage" aria-label="Multiple linear chain storage">
+            <header class="storage-method-header">
+              <div>
+                <span>FLATTENED</span>
+                <h3>Multi-linear chains</h3>
+              </div>
+              <p>four full copies</p>
+            </header>
+
+            <div class="linear-chain-list">
+              <div class="linear-chain-row">
+                <span class="storage-chain-id">chain 01</span>
+                <div class="linear-chain-body">
+                  <span class="storage-node context-node shared-copy prompt-node">Prompt</span>
+                  <i></i>
+                  <span class="storage-node assistant-storage-node shared-copy">A1</span>
+                  <i></i>
+                  <span class="storage-node tool-storage-node shared-copy">T1</span>
+                  <i></i>
+                  <span class="storage-node assistant-storage-node shared-copy">A2</span>
+                  <i></i>
+                  <span class="storage-node tool-storage-node shared-copy">T2</span>
+                  <i></i>
+                  <span class="storage-node chosen-storage-node">A3</span>
+                </div>
+                <span class="linear-chain-kind selected-kind">selected</span>
+              </div>
+
+              <div class="linear-chain-row">
+                <span class="storage-chain-id">chain 02</span>
+                <div class="linear-chain-body">
+                  <span class="storage-node context-node shared-copy prompt-node">Prompt</span>
+                  <i></i>
+                  <span class="storage-node assistant-storage-node shared-copy">A1</span>
+                  <i></i>
+                  <span class="storage-node tool-storage-node shared-copy">T1</span>
+                  <i></i>
+                  <span class="storage-node discard-storage-node">A2_1</span>
+                </div>
+                <span class="linear-chain-kind bon-kind">BoN #2</span>
+              </div>
+
+              <div class="linear-chain-row">
+                <span class="storage-chain-id">chain 03</span>
+                <div class="linear-chain-body">
+                  <span class="storage-node context-node shared-copy prompt-node">Prompt</span>
+                  <i></i>
+                  <span class="storage-node assistant-storage-node shared-copy">A1</span>
+                  <i></i>
+                  <span class="storage-node tool-storage-node shared-copy">T1</span>
+                  <i></i>
+                  <span class="storage-node discard-storage-node">A2_2</span>
+                </div>
+                <span class="linear-chain-kind bon-kind">BoN #3</span>
+              </div>
+
+              <div class="linear-chain-row subagent-linear-chain">
+                <span class="storage-chain-id">chain 04</span>
+                <div class="linear-chain-body">
+                  <span class="storage-node context-node shared-copy prompt-node">Prompt</span>
+                  <i></i>
+                  <span class="storage-node assistant-storage-node shared-copy">A1</span>
+                  <i></i>
+                  <span class="storage-node subagent-storage-node">Subagent Prompt</span>
+                  <i></i>
+                  <span class="storage-node subagent-storage-node">Subagent A1</span>
+                  <i></i>
+                  <span class="storage-node tool-storage-node">T</span>
+                  <i></i>
+                  <span class="storage-node subagent-storage-node">Subagent A2</span>
+                </div>
+                <span class="linear-chain-kind subagent-kind">subagent</span>
+              </div>
+            </div>
+
+            <p class="storage-method-note">Relationships between chains are not clear.</p>
+          </section>
+
+          <section class="storage-method trie-storage trie-stage-tree" aria-label="Prefix-trie trajectory storage" aria-hidden="true">
+            <header class="storage-method-header">
+              <div>
+                <span>STRUCTURED</span>
+                <h3>Prefix-trie storage</h3>
+              </div>
+              <p>one shared lineage</p>
+            </header>
+
+            <svg class="trie-storage-connectors" viewBox="0 0 708 520" aria-hidden="true">
+              <path class="trie-edge keep-edge" d="M 104 243 H 128" />
+              <path class="trie-edge keep-edge" d="M 188 243 H 212" />
+              <path class="trie-edge keep-edge" d="M 272 243 H 322" />
+              <path class="trie-edge discard-edge" d="M 296 243 V 130 H 322" />
+              <path class="trie-edge discard-edge" d="M 296 243 V 356 H 322" />
+              <path class="trie-edge keep-edge" d="M 394 243 H 430" />
+              <path class="trie-edge keep-edge" d="M 490 243 H 530" />
+              <path class="trie-edge subagent-edge" d="M 200 243 V 448 H 212" />
+              <path class="trie-edge subagent-edge" d="M 312 448 H 322" />
+              <path class="trie-edge subagent-edge" d="M 412 448 H 430" />
+              <path class="trie-edge subagent-edge" d="M 490 448 H 530" />
+              <circle class="trie-junction" cx="296" cy="243" r="4" />
+              <circle class="trie-junction subagent-junction" cx="200" cy="243" r="4" />
+            </svg>
+
+            <div class="storage-node trie-node context-node prompt-node trie-prompt">Prompt</div>
+            <div class="storage-node trie-node assistant-storage-node trie-a1">A1</div>
+            <div class="storage-node trie-node tool-storage-node trie-t1">T1</div>
+
+            <div class="storage-node trie-node assistant-storage-node chosen-storage-node trie-a2">A2</div>
+            <div class="storage-node trie-node tool-storage-node trie-t2">T2</div>
+            <div class="trie-branch-label trie-bon-label">BEST-OF-3</div>
+            <div class="trie-branch-label trie-selected-label">SELECTED</div>
+            <div class="storage-node trie-node chosen-storage-node trie-a3">A3</div>
+            <div class="storage-node trie-node discard-storage-node trie-discard-leaf trie-a2-1">A2_1</div>
+            <div class="storage-node trie-node discard-storage-node trie-discard-leaf trie-a2-2">A2_2</div>
+
+            <div class="trie-branch-label trie-subagent-label">SUBAGENT</div>
+            <div class="storage-node trie-node subagent-storage-node trie-sub-prompt">Subagent Prompt</div>
+            <div class="storage-node trie-node subagent-storage-node trie-sub-a1">Subagent A1</div>
+            <div class="storage-node trie-node tool-storage-node trie-sub-tool">T</div>
+            <div class="storage-node trie-node subagent-storage-node trie-sub-a2">Subagent A2</div>
+
+            <div class="leaf-callout a2-1-leaf-callout trie-stage-leaf-notes" aria-hidden="true">single leaf</div>
+            <div class="leaf-callout a2-2-leaf-callout trie-stage-leaf-notes" aria-hidden="true">single leaf</div>
+
+            <span class="drop-mark drop-a2-1 trie-stage-drop" aria-hidden="true">DROP</span>
+            <span class="drop-mark drop-a2-2 trie-stage-drop" aria-hidden="true">DROP</span>
+
+            <p class="storage-method-note trie-method-note">Relationships between chains are clear.</p>
+          </section>
+
+          <section class="trie-selector-strip trie-stage-selector" aria-label="Tree-aware trajectory selection" aria-hidden="true">
+            <p>TREE-AWARE SELECTION</p>
+            <strong>Prefix trie allows convenience for customized reward assignment.</strong>
+          </section>
+
+        </div>
+      </section>
+
+      <section class="slide detail-slide tito-slide" data-slide="8" data-stage="0" aria-label="Token-in-Token-Out">
+        <header class="slide-header">
+          <p class="section-label">09</p>
+          <h2>Token-in-Token-Out</h2>
+          <p class="page-number">09&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+        </header>
+
+        <div class="tito-canvas">
+          <section class="tito-stage tito-definition-stage" data-tito-stage="0" aria-label="TITO definition and motivation">
+            <header class="tito-stage-heading">
+              <h3>Input is token ID, output is token ID, no re-tokenization</h3>
+            </header>
+
+            <div class="tito-main-flow" aria-label="Prompt token IDs flow through rollout into training without retokenization">
+              <div class="tito-flow-node tito-prompt-node">
+                <small>INPUT</small>
+                <strong>Prompt IDs</strong>
+                <div class="tito-id-strip"><i>151</i><i>82</i><i>947</i><i>…</i></div>
+              </div>
+              <i class="tito-flow-arrow"></i>
+              <div class="tito-flow-node tito-rollout-node">
+                <small>INFERENCE</small>
+                <strong>Rollout Engine</strong>
+                <span>token in / token out</span>
+              </div>
+              <i class="tito-flow-arrow"></i>
+              <div class="tito-flow-node tito-output-node">
+                <small>SAMPLED</small>
+                <strong>Generated IDs</strong>
+                <div class="tito-id-strip generated"><i>31</i><i>408</i><i>7</i><i>…</i></div>
+              </div>
+              <i class="tito-flow-arrow tito-direct-arrow"><b>same IDs</b></i>
+              <div class="tito-flow-node tito-trainer-node">
+                <small>TRAINING</small>
+                <strong>Training Engine</strong>
+                <span>no re-tokenization</span>
+              </div>
+            </div>
+
+            <div class="tito-bpe-example tito-bpe-stage" aria-hidden="true">
+              <div class="tito-bpe-heading">
+                <span>WHY?</span>
+                <strong>Decode then encode has BPE boundary drift</strong>
+              </div>
+              <div class="tito-bpe-sequence" aria-label="BPE boundary drift example">
+                <span class="bpe-caption">model samples</span>
+                <code class="bpe-token">“he”</code>
+                <code class="bpe-token">“llo”</code>
+                <i class="bpe-roundtrip">decode / encode</i>
+                <span class="bpe-caption">trainer receives</span>
+                <code class="bpe-token bpe-drifted">“hello”</code>
+                <strong class="bpe-mismatch">≠ &nbsp;training–inference mismatch</strong>
+              </div>
+              <p>TITO preserves the sampled IDs exactly; the training side never reconstructs them from text.</p>
+            </div>
+          </section>
+
+          <section class="tito-stage tito-multiturn-stage" data-tito-stage="2" aria-label="Multi-turn append-only delta tokenization" aria-hidden="true">
+            <h3 class="tito-multiturn-subtitle">Multi-turn: Append-only delta tokenization</h3>
+
+            <div class="tito-turn-example" aria-label="Two-turn continuous token sequence">
+              <div class="tito-turn-row">
+                <span class="tito-turn-label">TURN 01</span>
+                <div class="tito-token-sequence">
+                  <span class="tito-role-token system-role">SYSTEM</span>
+                  <span class="tito-role-token user-role">USER</span>
+                  <i class="tito-mini-arrow"></i>
+                  <span class="tito-engine-chip">Rollout Engine</span>
+                  <i class="tito-mini-arrow"></i>
+                  <span class="tito-role-token assistant-role">ASSISTANT · A1</span>
+                </div>
+              </div>
+
+              <div class="tito-turn-row second-turn">
+                <span class="tito-turn-label">TURN 02</span>
+                <div class="tito-token-sequence">
+                  <div class="tito-highlight-group preserve-highlight">
+                    <span class="tito-role-token system-role">SYSTEM</span>
+                    <span class="tito-role-token user-role">USER</span>
+                    <span class="tito-role-token assistant-role">ASSISTANT · A1</span>
+                    <b>preserve</b>
+                  </div>
+                  <div class="tito-highlight-group delta-highlight">
+                    <span class="tito-role-token tool-role">Δ TOOL RESPONSE</span>
+                    <b>delta-tokenization</b>
+                  </div>
+                  <i class="tito-mini-arrow"></i>
+                  <span class="tito-engine-chip">Rollout Engine</span>
+                  <i class="tito-mini-arrow"></i>
+                  <span class="tito-role-token assistant-role">A2</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="tito-complexity-title">Why delta-tokenization?</p>
+
+            <ul class="tito-delta-reasons">
+              <li>
+                <strong>Accuracy</strong>
+                <span>Re-tokenization across turns may change sampled token IDs.</span>
+              </li>
+              <li>
+                <strong>Efficiency</strong>
+                <span><code class="complexity-old">O(TN)</code> vs <code class="complexity-new">O(N)</code>. Tokenization becomes a bottleneck when turn count is large and context is long.</span>
+              </li>
+            </ul>
+          </section>
+
+          <section class="tito-stage tito-merging-stage" data-tito-stage="3" aria-label="Model-specific multi-turn token merging" aria-hidden="true">
+            <header class="tito-stage-heading">
+              <h3>Model specific adapter for multi-turn merging</h3>
+            </header>
+
+            <div class="tito-merge-invariant">
+              <span>REQUIRED INVARIANT</span>
+              <code>append(history, new turn)</code>
+              <strong>=</strong>
+              <code>apply_chat_template(full history)</code>
+              <b>exact token-ID equality</b>
+            </div>
+
+            <div class="tito-model-examples">
+              <section class="tito-model-row qwen-model-row tito-merge-qwen" aria-hidden="true">
+                <span class="tito-example-label">Example</span>
+                <div class="tito-model-name"><span>ADAPTER</span><strong>Qwen</strong></div>
+                <div class="tito-boundary-sequence">
+                  <code>… A1 &lt;|im_end|&gt;</code>
+                  <i></i>
+                  <code class="tito-boundary-fix">+ \n</code>
+                  <i></i>
+                  <code>tool Δ + assistant opener</code>
+                </div>
+                <p>Insert the missing newline boundary; mark inserted IDs <strong>mask = 0</strong>.</p>
+              </section>
+
+              <section class="tito-model-row glm-model-row tito-merge-glm" aria-hidden="true">
+                <div class="tito-model-name"><span>ADAPTER</span><strong>GLM</strong></div>
+                <div class="tito-boundary-sequence">
+                  <code>… A1 &lt;ambiguous boundary&gt;</code>
+                  <i></i>
+                  <code class="tito-boundary-fix remove-fix">trim</code>
+                  <i></i>
+                  <code>tool / user Δ + assistant opener</code>
+                </div>
+                <p>Remove the ambiguous tail token and trim <strong>mask + logprob</strong> together.</p>
+              </section>
+            </div>
+
+          </section>
+
+          <div class="tito-stage-index" aria-hidden="true">
+            <span>01</span><i></i><span>02</span><i></i><span>03</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide detail-slide experiment-slide" data-slide="9" aria-label="Experiment Results">
+        <header class="slide-header">
+          <p class="section-label">10</p>
+          <h2>Experiment Results with Spindle</h2>
+          <p class="page-number">10&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+        </header>
+
+        <div class="experiment-canvas">
+          <div class="experiment-chart-grid">
+            <section class="experiment-chart codex-result-chart" aria-label="Codex reward during training">
+              <header>
+                <h3>Codex</h3>
+                <span>reward (pass@1)</span>
+              </header>
+              <svg viewBox="0 0 650 300" role="img" aria-label="Codex pass at one reward increases during SWE-gym training">
+                <g class="experiment-grid">
+                  <rect x="68" y="18" width="548" height="228" />
+                  <line x1="68" y1="64" x2="616" y2="64" />
+                  <line x1="68" y1="110" x2="616" y2="110" />
+                  <line x1="68" y1="155" x2="616" y2="155" />
+                  <line x1="68" y1="201" x2="616" y2="201" />
+                  <line x1="178" y1="18" x2="178" y2="246" />
+                  <line x1="287" y1="18" x2="287" y2="246" />
+                  <line x1="397" y1="18" x2="397" y2="246" />
+                  <line x1="506" y1="18" x2="506" y2="246" />
+                </g>
+                <g class="experiment-axis-labels">
+                  <text x="56" y="250" text-anchor="end">0.0</text>
+                  <text x="56" y="205" text-anchor="end">0.2</text>
+                  <text x="56" y="159" text-anchor="end">0.4</text>
+                  <text x="56" y="114" text-anchor="end">0.6</text>
+                  <text x="56" y="68" text-anchor="end">0.8</text>
+                  <text x="68" y="268">0</text>
+                  <text x="178" y="268" text-anchor="middle">20</text>
+                  <text x="287" y="268" text-anchor="middle">40</text>
+                  <text x="397" y="268" text-anchor="middle">60</text>
+                  <text x="506" y="268" text-anchor="middle">80</text>
+                  <text x="616" y="268" text-anchor="end">100</text>
+                  <text x="342" y="292" text-anchor="middle">training step</text>
+                </g>
+                <path class="experiment-raw-line" d="M68 244 L76 221 L84 238 L92 205 L100 226 L108 214 L116 196 L124 228 L132 210 L140 187 L148 219 L156 199 L164 176 L172 205 L180 189 L188 153 L196 195 L204 183 L212 172 L220 146 L228 190 L236 164 L244 117 L252 188 L260 156 L268 177 L276 135 L284 168 L292 151 L300 179 L308 165 L316 183 L324 176 L332 191 L340 170 L348 160 L356 177 L364 142 L372 127 L380 168 L388 141 L396 119 L404 150 L412 105 L420 137 L428 113 L436 126 L444 94 L452 116 L460 88 L468 108 L476 76 L484 112 L492 82 L500 96 L508 72 L516 104 L524 78 L532 89 L540 112 L548 77 L556 128 L564 82 L572 71 L580 116 L588 65 L596 96 L604 54 L612 80" />
+                <path class="experiment-trend-line codex-trend" d="M68 242 L84 228 L100 222 L116 211 L132 205 L148 195 L164 190 L180 177 L196 173 L212 158 L228 155 L244 145 L260 150 L276 146 L292 153 L308 158 L324 166 L340 163 L356 153 L372 143 L388 137 L404 124 L420 116 L436 109 L452 96 L468 91 L484 82 L500 78 L516 79 L532 72 L548 79 L564 83 L580 75 L596 73 L612 61" />
+                <g class="experiment-chart-legend">
+                  <line class="codex-legend-line" x1="500" y1="228" x2="540" y2="228" />
+                  <text x="548" y="233">Codex</text>
+                </g>
+              </svg>
+            </section>
+
+            <section class="experiment-chart claude-result-chart" aria-label="Claude Code reward during training">
+              <header>
+                <h3>Claude Code</h3>
+                <span>reward (pass@1)</span>
+              </header>
+              <svg viewBox="0 0 650 300" role="img" aria-label="Claude Code pass at one reward increases during SWE-gym training">
+                <g class="experiment-grid">
+                  <rect x="34" y="18" width="582" height="228" />
+                  <line x1="34" y1="64" x2="616" y2="64" />
+                  <line x1="34" y1="110" x2="616" y2="110" />
+                  <line x1="34" y1="155" x2="616" y2="155" />
+                  <line x1="34" y1="201" x2="616" y2="201" />
+                  <line x1="150" y1="18" x2="150" y2="246" />
+                  <line x1="267" y1="18" x2="267" y2="246" />
+                  <line x1="383" y1="18" x2="383" y2="246" />
+                  <line x1="500" y1="18" x2="500" y2="246" />
+                </g>
+                <g class="experiment-axis-labels">
+                  <text x="34" y="268">0</text>
+                  <text x="150" y="268" text-anchor="middle">20</text>
+                  <text x="267" y="268" text-anchor="middle">40</text>
+                  <text x="383" y="268" text-anchor="middle">60</text>
+                  <text x="500" y="268" text-anchor="middle">80</text>
+                  <text x="616" y="268" text-anchor="end">100</text>
+                  <text x="325" y="292" text-anchor="middle">training step</text>
+                </g>
+                <path class="experiment-raw-line" d="M34 244 L42 215 L50 187 L58 221 L66 173 L74 194 L82 152 L90 180 L98 165 L106 132 L114 182 L122 157 L130 118 L138 172 L146 143 L154 151 L162 94 L170 139 L178 171 L186 128 L194 146 L202 121 L210 164 L218 140 L226 151 L234 119 L242 131 L250 102 L258 154 L266 126 L274 83 L282 144 L290 118 L298 103 L306 136 L314 77 L322 121 L330 91 L338 128 L346 72 L354 105 L362 81 L370 116 L378 60 L386 102 L394 79 L402 125 L410 87 L418 112 L426 72 L434 124 L442 89 L450 136 L458 104 L466 120 L474 96 L482 129 L490 108 L498 139 L506 101 L514 113 L522 90 L530 82 L538 106 L546 75 L554 65 L562 92 L570 54 L578 83 L586 38 L594 76 L602 46 L610 31" />
+                <path class="experiment-trend-line claude-trend" d="M34 244 L50 205 L66 186 L82 171 L98 157 L114 148 L130 153 L146 136 L162 143 L178 132 L194 141 L210 151 L226 155 L242 145 L258 132 L274 112 L290 126 L306 101 L322 112 L338 91 L354 84 L370 96 L386 105 L402 111 L418 104 L434 113 L450 116 L466 132 L482 139 L498 135 L514 118 L530 100 L546 106 L562 83 L578 75 L594 56 L610 43" />
+                <g class="experiment-chart-legend">
+                  <line class="claude-legend-line" x1="466" y1="228" x2="506" y2="228" />
+                  <text x="514" y="233">Claude Code</text>
+                </g>
+              </svg>
+            </section>
+          </div>
+
+          <div class="experiment-summary">
+            <p class="experiment-model">
+              <strong>Qwen3.5 4B,</strong>
+              <span>trained on SWE-gym</span>
+              <span class="experiment-eval-set">eval on SWE-bench Verified</span>
+            </p>
+
+            <section class="eval-results" aria-label="Pass at one evaluation scores">
+              <h3>Pass@1 eval score</h3>
+              <table>
+                <thead>
+                  <tr><th>Harness</th><th>Base</th><th>Spindle RL</th><th>Gain</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Codex</td><td>3.8%</td><td>27.1%</td><td>23.3 ↑</td></tr>
+                  <tr><td>Claude Code</td><td>29.8%</td><td>35.3%</td><td>5.5 ↑</td></tr>
+                </tbody>
+              </table>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="progress-track" aria-hidden="true">
+      <span id="progress-fill"></span>
+    </div>
+
+    <script src="slides.js"></script>
+  </body>
+</html>
