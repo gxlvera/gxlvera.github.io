@@ -1224,16 +1224,16 @@ body {
   left: 32px;
   width: 376px;
   height: 2px;
-  background: linear-gradient(270deg, rgba(8, 127, 140, 0.34), var(--cyan));
+  background: linear-gradient(90deg, rgba(8, 127, 140, 0.34), var(--cyan));
 }
 
 .primer-transfer i::before {
   content: "";
   position: absolute;
   top: -6px;
-  left: -1px;
+  right: -1px;
   border-top: 7px solid transparent;
-  border-right: 11px solid var(--cyan);
+  border-left: 11px solid var(--cyan);
   border-bottom: 7px solid transparent;
 }
 
