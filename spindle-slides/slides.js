@@ -3,14 +3,13 @@
 
   const SLIDE_WIDTH = 1600;
   const SLIDE_HEIGHT = 900;
-  const TOTAL_DECK_SLIDES = 10;
+  const TOTAL_DECK_SLIDES = 9;
   const MOTIVATION_FINAL_STAGE = 8;
   const ARCHITECTURE_FINAL_STAGE = 8;
   const AGENT_SERVER_FINAL_STAGE = 5;
-  const TASK_RUNTIME_FINAL_STAGE = 4;
   const PROXY_SERVER_FINAL_STAGE = 7;
   const TRAJECTORY_FINAL_STAGE = 4;
-  const PREFIX_TRIE_FINAL_STAGE = 4;
+  const PREFIX_TRIE_FINAL_STAGE = 5;
   const TITO_FINAL_STAGE = 5;
   const deck = document.getElementById("deck");
   const slides = Array.from(document.querySelectorAll(".slide"));
@@ -197,31 +196,13 @@
     });
   }
 
-  function taskRuntimeStage() {
-    const slide = slides[4];
-    return Number(slide?.dataset.stage || 0);
-  }
-
-  function setTaskRuntimeStage(stage) {
-    const slide = slides[4];
-    if (!slide) return;
-    const nextStage = Math.max(0, Math.min(stage, TASK_RUNTIME_FINAL_STAGE));
-    slide.dataset.stage = String(nextStage);
-    slide.querySelectorAll(".runtime-stage-copy").forEach((element, index) => {
-      element.setAttribute("aria-hidden", String(index !== nextStage));
-    });
-    slide.querySelectorAll(".runtime-stage-final").forEach((element) => {
-      element.setAttribute("aria-hidden", String(nextStage < TASK_RUNTIME_FINAL_STAGE));
-    });
-  }
-
   function trajectoryStage() {
-    const slide = slides[6];
+    const slide = slides[5];
     return Number(slide?.dataset.stage || 0);
   }
 
   function setTrajectoryStage(stage) {
-    const slide = slides[6];
+    const slide = slides[5];
     if (!slide) return;
     const nextStage = Math.max(0, Math.min(stage, TRAJECTORY_FINAL_STAGE));
     slide.dataset.stage = String(nextStage);
@@ -249,36 +230,39 @@
   }
 
   function prefixTrieStage() {
-    const slide = slides[7];
+    const slide = slides[6];
     return Number(slide?.dataset.stage || 0);
   }
 
   function setPrefixTrieStage(stage) {
-    const slide = slides[7];
+    const slide = slides[6];
     if (!slide) return;
     const nextStage = Math.max(0, Math.min(stage, PREFIX_TRIE_FINAL_STAGE));
     slide.dataset.stage = String(nextStage);
     slide.querySelectorAll(".trie-stage-tree").forEach((element) => {
-      element.setAttribute("aria-hidden", String(nextStage < 1));
+      element.setAttribute("aria-hidden", String(nextStage < 2));
+    });
+    slide.querySelectorAll(".linear-chain-limitations").forEach((element) => {
+      element.setAttribute("aria-hidden", String(nextStage < 1 || nextStage >= 6));
+    });
+    slide.querySelectorAll(".trie-storage-benefits").forEach((element) => {
+      element.setAttribute("aria-hidden", String(nextStage < 3 || nextStage >= 6));
     });
     slide.querySelectorAll(".trie-stage-leaf-notes").forEach((element) => {
-      element.setAttribute("aria-hidden", String(nextStage < 2 || nextStage >= 3));
+      element.setAttribute("aria-hidden", String(nextStage < 4 || nextStage >= 5));
     });
     slide.querySelectorAll(".trie-stage-drop").forEach((element) => {
-      element.setAttribute("aria-hidden", String(nextStage < 3));
-    });
-    slide.querySelectorAll(".trie-stage-selector").forEach((element) => {
-      element.setAttribute("aria-hidden", String(nextStage < 4));
+      element.setAttribute("aria-hidden", String(nextStage < 5));
     });
   }
 
   function proxyServerStage() {
-    const slide = slides[5];
+    const slide = slides[4];
     return Number(slide?.dataset.stage || 0);
   }
 
   function setProxyServerStage(stage) {
-    const slide = slides[5];
+    const slide = slides[4];
     if (!slide) return;
     const nextStage = Math.max(0, Math.min(stage, PROXY_SERVER_FINAL_STAGE));
     slide.dataset.stage = String(nextStage);
@@ -303,12 +287,12 @@
   }
 
   function titoStage() {
-    const slide = slides[8];
+    const slide = slides[7];
     return Number(slide?.dataset.stage || 0);
   }
 
   function setTitoStage(stage) {
-    const slide = slides[8];
+    const slide = slides[7];
     if (!slide) return;
     const nextStage = Math.max(0, Math.min(stage, TITO_FINAL_STAGE));
     slide.dataset.stage = String(nextStage);
@@ -353,23 +337,19 @@
       setAgentServerStage(agentServerStage() + 1);
       return;
     }
-    if (currentSlide === 4 && taskRuntimeStage() < TASK_RUNTIME_FINAL_STAGE) {
-      setTaskRuntimeStage(taskRuntimeStage() + 1);
-      return;
-    }
-    if (currentSlide === 5 && proxyServerStage() < PROXY_SERVER_FINAL_STAGE) {
+    if (currentSlide === 4 && proxyServerStage() < PROXY_SERVER_FINAL_STAGE) {
       setProxyServerStage(proxyServerStage() + 1);
       return;
     }
-    if (currentSlide === 6 && trajectoryStage() < TRAJECTORY_FINAL_STAGE) {
+    if (currentSlide === 5 && trajectoryStage() < TRAJECTORY_FINAL_STAGE) {
       setTrajectoryStage(trajectoryStage() + 1);
       return;
     }
-    if (currentSlide === 7 && prefixTrieStage() < PREFIX_TRIE_FINAL_STAGE) {
+    if (currentSlide === 6 && prefixTrieStage() < PREFIX_TRIE_FINAL_STAGE) {
       setPrefixTrieStage(prefixTrieStage() + 1);
       return;
     }
-    if (currentSlide === 8 && titoStage() < TITO_FINAL_STAGE) {
+    if (currentSlide === 7 && titoStage() < TITO_FINAL_STAGE) {
       setTitoStage(titoStage() + 1);
       return;
     }
@@ -390,23 +370,19 @@
       setAgentServerStage(agentServerStage() - 1);
       return;
     }
-    if (currentSlide === 4 && taskRuntimeStage() > 0) {
-      setTaskRuntimeStage(taskRuntimeStage() - 1);
-      return;
-    }
-    if (currentSlide === 5 && proxyServerStage() > 0) {
+    if (currentSlide === 4 && proxyServerStage() > 0) {
       setProxyServerStage(proxyServerStage() - 1);
       return;
     }
-    if (currentSlide === 6 && trajectoryStage() > 0) {
+    if (currentSlide === 5 && trajectoryStage() > 0) {
       setTrajectoryStage(trajectoryStage() - 1);
       return;
     }
-    if (currentSlide === 7 && prefixTrieStage() > 0) {
+    if (currentSlide === 6 && prefixTrieStage() > 0) {
       setPrefixTrieStage(prefixTrieStage() - 1);
       return;
     }
-    if (currentSlide === 8 && titoStage() > 0) {
+    if (currentSlide === 7 && titoStage() > 0) {
       setTitoStage(titoStage() - 1);
       return;
     }
@@ -417,11 +393,10 @@
     if (slideIndex === 1) setMotivationStage(0);
     if (slideIndex === 2) setArchitectureStage(0);
     if (slideIndex === 3) setAgentServerStage(0);
-    if (slideIndex === 4) setTaskRuntimeStage(0);
-    if (slideIndex === 5) setProxyServerStage(0);
-    if (slideIndex === 6) setTrajectoryStage(0);
-    if (slideIndex === 7) setPrefixTrieStage(0);
-    if (slideIndex === 8) setTitoStage(0);
+    if (slideIndex === 4) setProxyServerStage(0);
+    if (slideIndex === 5) setTrajectoryStage(0);
+    if (slideIndex === 6) setPrefixTrieStage(0);
+    if (slideIndex === 7) setTitoStage(0);
   }
 
   function changeSlide(offset) {
@@ -465,7 +440,6 @@
       setMotivationStage(0);
       setArchitectureStage(0);
       setAgentServerStage(0);
-      setTaskRuntimeStage(0);
       setProxyServerStage(0);
       setTrajectoryStage(0);
       setPrefixTrieStage(0);
@@ -479,7 +453,6 @@
       setMotivationStage(MOTIVATION_FINAL_STAGE);
       setArchitectureStage(ARCHITECTURE_FINAL_STAGE);
       setAgentServerStage(AGENT_SERVER_FINAL_STAGE);
-      setTaskRuntimeStage(TASK_RUNTIME_FINAL_STAGE);
       setProxyServerStage(PROXY_SERVER_FINAL_STAGE);
       setTrajectoryStage(TRAJECTORY_FINAL_STAGE);
       setPrefixTrieStage(PREFIX_TRIE_FINAL_STAGE);
@@ -505,25 +478,20 @@
 
     if (event.key.toLowerCase() === "r" && currentSlide === 4) {
       event.preventDefault();
-      setTaskRuntimeStage(0);
+      setProxyServerStage(0);
     }
 
     if (event.key.toLowerCase() === "r" && currentSlide === 5) {
       event.preventDefault();
-      setProxyServerStage(0);
+      setTrajectoryStage(0);
     }
 
     if (event.key.toLowerCase() === "r" && currentSlide === 6) {
       event.preventDefault();
-      setTrajectoryStage(0);
-    }
-
-    if (event.key.toLowerCase() === "r" && currentSlide === 7) {
-      event.preventDefault();
       setPrefixTrieStage(0);
     }
 
-    if (event.key.toLowerCase() === "r" && currentSlide === 8) {
+    if (event.key.toLowerCase() === "r" && currentSlide === 7) {
       event.preventDefault();
       setTitoStage(0);
     }
@@ -554,7 +522,6 @@
   setMotivationStage(0);
   setArchitectureStage(0);
   setAgentServerStage(0);
-  setTaskRuntimeStage(0);
   setProxyServerStage(0);
   setTrajectoryStage(0);
   setPrefixTrieStage(0);

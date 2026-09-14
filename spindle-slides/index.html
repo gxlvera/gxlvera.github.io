@@ -24,7 +24,7 @@
         </div>
 
         <div class="cover-footer">
-          <p class="page-number">01&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+          <p class="page-number">01&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
         </div>
       </section>
 
@@ -37,7 +37,7 @@
         <header class="slide-header">
           <p class="section-label">01</p>
           <h2>Intro + Motivation</h2>
-          <p class="page-number">02&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+          <p class="page-number">02&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
         </header>
 
         <div class="motivation-rl-primer" aria-label="Reinforcement learning connects rollout to training">
@@ -143,7 +143,7 @@
         <header class="slide-header">
           <p class="section-label">03</p>
           <h2>Architecture</h2>
-          <p class="page-number">03&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+          <p class="page-number">03&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
         </header>
 
         <div
@@ -307,7 +307,7 @@
         <header class="slide-header">
           <p class="section-label">04</p>
           <h2>Agent Server</h2>
-          <p class="page-number">04&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+          <p class="page-number">04&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
         </header>
 
         <p class="detail-lead agent-server-lead">
@@ -425,7 +425,7 @@
         </div>
       </section>
 
-      <section class="slide detail-slide task-runtime-slide" data-slide="4" data-stage="0" aria-label="Task Runtime abstraction">
+      <template id="removed-task-runtime-slide">
         <header class="slide-header">
           <p class="section-label">05</p>
           <h2>Task Runtime abstraction</h2>
@@ -583,13 +583,13 @@
             <p class="runtime-stage-copy runtime-stage-4">Orthogonal by design: mix and scale each component independently.</p>
           </div>
         </div>
-      </section>
+      </template>
 
-      <section class="slide detail-slide proxy-design-slide" data-slide="5" data-stage="0" aria-label="Proxy Server design">
+      <section class="slide detail-slide proxy-design-slide" data-slide="4" data-stage="0" aria-label="Proxy Server design">
         <header class="slide-header">
-          <p class="section-label">06</p>
+          <p class="section-label">05</p>
           <h2>Proxy Server</h2>
-          <p class="page-number">06&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+          <p class="page-number">05&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
         </header>
 
         <div class="proxy-design-canvas">
@@ -713,11 +713,11 @@
         </div>
       </section>
 
-      <section class="slide detail-slide trajectory-manager-slide" data-slide="6" data-stage="0" aria-label="Trajectory Manager">
+      <section class="slide detail-slide trajectory-manager-slide" data-slide="5" data-stage="0" aria-label="Trajectory Manager">
         <header class="slide-header">
-          <p class="section-label">07</p>
+          <p class="section-label">06</p>
           <h2>Trajectory Manager</h2>
-          <p class="page-number">07&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+          <p class="page-number">06&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
         </header>
 
         <div class="trajectory-manager-canvas">
@@ -983,11 +983,11 @@
         </div>
       </section>
 
-      <section class="slide detail-slide prefix-trie-slide" data-slide="7" data-stage="0" aria-label="Trajectory Manager prefix-trie storage">
+      <section class="slide detail-slide prefix-trie-slide" data-slide="6" data-stage="0" aria-label="Trajectory Manager prefix-trie storage">
         <header class="slide-header">
-          <p class="section-label">08</p>
+          <p class="section-label">07</p>
           <h2>Trajectory Manager</h2>
-          <p class="page-number">08&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+          <p class="page-number">07&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
         </header>
 
         <p class="detail-lead">
@@ -1034,7 +1034,7 @@
                   <i></i>
                   <span class="storage-node discard-storage-node">A2_1</span>
                 </div>
-                <span class="linear-chain-kind bon-kind">BoN #2</span>
+                <span class="linear-chain-kind bon-kind">Best of N</span>
               </div>
 
               <div class="linear-chain-row">
@@ -1048,7 +1048,7 @@
                   <i></i>
                   <span class="storage-node discard-storage-node">A2_2</span>
                 </div>
-                <span class="linear-chain-kind bon-kind">BoN #3</span>
+                <span class="linear-chain-kind bon-kind">Best of N</span>
               </div>
 
               <div class="linear-chain-row subagent-linear-chain">
@@ -1070,8 +1070,12 @@
               </div>
             </div>
 
-            <p class="storage-method-note">Relationships between chains are not clear.</p>
           </section>
+
+          <ul class="linear-chain-limitations" aria-label="Limitations of multi-linear chains">
+            <li>Time: O(NL), memory: O(NL). N = number of chains; L = average length of chain.</li>
+            <li>Relationships between chains are not clear.</li>
+          </ul>
 
           <section class="storage-method trie-storage trie-stage-tree" aria-label="Prefix-trie trajectory storage" aria-hidden="true">
             <header class="storage-method-header">
@@ -1104,7 +1108,7 @@
 
             <div class="storage-node trie-node assistant-storage-node chosen-storage-node trie-a2">A2</div>
             <div class="storage-node trie-node tool-storage-node trie-t2">T2</div>
-            <div class="trie-branch-label trie-bon-label">BEST-OF-3</div>
+            <div class="trie-branch-label trie-bon-label">BEST OF N</div>
             <div class="trie-branch-label trie-selected-label">SELECTED</div>
             <div class="storage-node trie-node chosen-storage-node trie-a3">A3</div>
             <div class="storage-node trie-node discard-storage-node trie-discard-leaf trie-a2-1">A2_1</div>
@@ -1121,23 +1125,21 @@
 
             <span class="drop-mark drop-a2-1 trie-stage-drop" aria-hidden="true">DROP</span>
             <span class="drop-mark drop-a2-2 trie-stage-drop" aria-hidden="true">DROP</span>
-
-            <p class="storage-method-note trie-method-note">Relationships between chains are clear.</p>
           </section>
 
-          <section class="trie-selector-strip trie-stage-selector" aria-label="Tree-aware trajectory selection" aria-hidden="true">
-            <p>TREE-AWARE SELECTION</p>
-            <strong>Prefix trie allows convenience for customized reward assignment.</strong>
-          </section>
+          <ul class="trie-storage-benefits" aria-label="Benefits of prefix-trie storage" aria-hidden="true">
+            <li>Time: O(L), memory: O(U). U = number of prefix nodes.</li>
+            <li>Relationships between chains are clearer, good for customized reward assignment.</li>
+          </ul>
 
         </div>
       </section>
 
-      <section class="slide detail-slide tito-slide" data-slide="8" data-stage="0" aria-label="Token-in-Token-Out">
+      <section class="slide detail-slide tito-slide" data-slide="7" data-stage="0" aria-label="Token-in-Token-Out">
         <header class="slide-header">
-          <p class="section-label">09</p>
+          <p class="section-label">08</p>
           <h2>Token-in-Token-Out</h2>
-          <p class="page-number">09&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+          <p class="page-number">08&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
         </header>
 
         <div class="tito-canvas">
@@ -1289,11 +1291,11 @@
         </div>
       </section>
 
-      <section class="slide detail-slide experiment-slide" data-slide="9" aria-label="Experiment Results">
+      <section class="slide detail-slide experiment-slide" data-slide="8" aria-label="Experiment Results">
         <header class="slide-header">
-          <p class="section-label">10</p>
+          <p class="section-label">09</p>
           <h2>Experiment Results with Spindle</h2>
-          <p class="page-number">10&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+          <p class="page-number">09&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
         </header>
 
         <div class="experiment-canvas">
