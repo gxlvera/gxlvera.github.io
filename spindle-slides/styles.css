@@ -5902,7 +5902,7 @@ body {
   top: 315px;
   left: 0;
   width: 1460px;
-  height: 185px;
+  height: 195px;
   padding: 17px 30px;
   border-left: 4px solid rgba(176, 77, 62, 0.78);
   background: rgba(255, 250, 247, 0.72);
@@ -5921,13 +5921,6 @@ body {
   display: flex;
   align-items: baseline;
   gap: 24px;
-}
-
-.tito-bpe-heading span {
-  color: #52666f;
-  font-size: 21px;
-  font-weight: 650;
-  letter-spacing: -0.01em;
 }
 
 .tito-bpe-heading strong {
@@ -6069,17 +6062,30 @@ body {
 }
 
 .bpe-mismatch {
-  margin-left: 8px;
   color: #a64d40;
-  font-size: 21px;
-  font-weight: 720;
+  font-size: 24px;
+  font-weight: 750;
 }
 
-.tito-bpe-example > p {
-  margin: 2px 0 0;
-  color: #36555f;
-  font-size: 20px;
-  font-weight: 600;
+.bpe-mismatch-summary {
+  position: absolute;
+  right: 30px;
+  bottom: 10px;
+  left: 30px;
+}
+
+.bpe-mismatch-summary ul {
+  display: flex;
+  gap: 48px;
+  margin: 4px 0 0;
+  padding-left: 25px;
+  color: #3c5964;
+  font-size: 18px;
+  font-weight: 620;
+}
+
+.bpe-mismatch-summary li::marker {
+  color: #b45649;
 }
 
 .tito-turn-example.tito-placement-turns {

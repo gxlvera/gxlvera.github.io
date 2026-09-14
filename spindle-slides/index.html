@@ -1178,10 +1178,9 @@
 
             <div class="tito-bpe-example tito-bpe-stage" aria-hidden="true">
               <div class="tito-bpe-heading">
-                <strong>Re-tokenizing previously generated tokens is dangerous!</strong>
-                <span>Decode then encode has BPE boundary drift</span>
+                <strong>Decode - encode is not round-trip equal.</strong>
               </div>
-              <div class="tito-bpe-sequence" aria-label="BPE boundary drift example">
+              <div class="tito-bpe-sequence" aria-label="Decode encode mismatch example">
                 <span class="bpe-caption">model generates</span>
                 <span class="bpe-id-sequence">
                   <code class="bpe-id-chip">token_id: 826</code>
@@ -1195,9 +1194,14 @@
                 </span>
                 <i class="bpe-process-arrow">encode</i>
                 <span class="bpe-token-stack"><small>token_id: 15339</small><code class="bpe-token bpe-drifted">“hello”</code></span>
-                <strong class="bpe-mismatch">≠ &nbsp;cross-turn mismatch!</strong>
               </div>
-              <p>We should preserve sampled tokens; we can only use append-only delta tokenization.</p>
+              <div class="bpe-mismatch-summary">
+                <strong class="bpe-mismatch">≠ &nbsp;cross-turn mismatch!</strong>
+                <ul>
+                  <li>can’t merge</li>
+                  <li>hurt KV cache hit rate</li>
+                </ul>
+              </div>
             </div>
 
             <div class="tito-stateful-warning" aria-hidden="true">
