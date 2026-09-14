@@ -10,7 +10,7 @@
   const PROXY_SERVER_FINAL_STAGE = 7;
   const TRAJECTORY_FINAL_STAGE = 4;
   const PREFIX_TRIE_FINAL_STAGE = 5;
-  const TITO_FINAL_STAGE = 5;
+  const TITO_FINAL_STAGE = 7;
   const deck = document.getElementById("deck");
   const slides = Array.from(document.querySelectorAll(".slide"));
   const progressFill = document.getElementById("progress-fill");
@@ -298,19 +298,26 @@
     slide.dataset.stage = String(nextStage);
     slide.querySelectorAll(".tito-stage").forEach((element) => {
       const elementStage = Number(element.dataset.titoStage || 0);
-      const visible = elementStage === nextStage ||
-        (elementStage === 0 && nextStage === 1) ||
-        (elementStage === 3 && nextStage >= 3);
+      const visible =
+        (elementStage === 0 && nextStage <= 3) ||
+        (elementStage === 4 && nextStage === 4) ||
+        (elementStage === 5 && nextStage >= 5);
       element.setAttribute("aria-hidden", String(!visible));
     });
+    slide.querySelectorAll(".tito-placement-turns").forEach((element) => {
+      element.setAttribute("aria-hidden", String(nextStage < 1 || nextStage > 3));
+    });
     slide.querySelectorAll(".tito-bpe-stage").forEach((element) => {
-      element.setAttribute("aria-hidden", String(nextStage !== 1));
+      element.setAttribute("aria-hidden", String(nextStage < 2 || nextStage > 3));
+    });
+    slide.querySelectorAll(".tito-stateful-warning").forEach((element) => {
+      element.setAttribute("aria-hidden", String(nextStage !== 3));
     });
     slide.querySelectorAll(".tito-merge-qwen").forEach((element) => {
-      element.setAttribute("aria-hidden", String(nextStage < 4));
+      element.setAttribute("aria-hidden", String(nextStage < 6));
     });
     slide.querySelectorAll(".tito-merge-glm").forEach((element) => {
-      element.setAttribute("aria-hidden", String(nextStage < 5));
+      element.setAttribute("aria-hidden", String(nextStage < 7));
     });
   }
 

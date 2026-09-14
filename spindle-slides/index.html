@@ -230,7 +230,7 @@
                 <tspan x="590" dy="22">Manage</tspan>
               </text>
               <rect class="paper-module" x="705" y="505" width="190" height="62" rx="11" filter="url(#roughen)" />
-              <text class="paper-module-label" x="800" y="543" text-anchor="middle">TITO</text>
+              <text class="paper-module-label" x="800" y="543" text-anchor="middle">Tokenization</text>
             </g>
 
             <g class="paper-zone paper-zone-runtime architecture-stage-runtime" aria-hidden="true">
@@ -601,7 +601,7 @@
             <div class="proxy-overview-functions">
               <div>Protocol<br />Adapter</div>
               <div>Trajectory Manager</div>
-              <div>TITO</div>
+              <div>Tokenization</div>
             </div>
           </section>
 
@@ -642,7 +642,7 @@
                 <div class="replica-pipeline">
                   <div class="replica-component adapter-component">Protocol<br />Adapters</div>
                   <div class="replica-component manager-component">Trajectory<br />Manage</div>
-                  <div class="replica-component tito-component">TITO</div>
+                  <div class="replica-component tito-component">Tokenization</div>
                 </div>
               </article>
 
@@ -655,7 +655,7 @@
                 <div class="replica-pipeline">
                   <div class="replica-component adapter-component">Protocol<br />Adapters</div>
                   <div class="replica-component manager-component">Trajectory<br />Manage</div>
-                  <div class="replica-component tito-component">TITO</div>
+                  <div class="replica-component tito-component">Tokenization</div>
                 </div>
               </article>
 
@@ -664,7 +664,7 @@
                 <div class="replica-pipeline">
                   <div class="replica-component adapter-component">Protocol<br />Adapters</div>
                   <div class="replica-component manager-component">Trajectory<br />Manage</div>
-                  <div class="replica-component tito-component">TITO</div>
+                  <div class="replica-component tito-component">Tokenization</div>
                 </div>
               </article>
             </div>
@@ -713,10 +713,10 @@
         </div>
       </section>
 
-      <section class="slide detail-slide trajectory-manager-slide" data-slide="5" data-stage="0" aria-label="Trajectory Manager">
+      <section class="slide detail-slide trajectory-manager-slide" data-slide="5" data-stage="0" aria-label="Proxy Server Component 1: Trajectory Manager">
         <header class="slide-header">
           <p class="section-label">06</p>
-          <h2>Trajectory Manager</h2>
+          <h2>Proxy Server Component 1: Trajectory Manager</h2>
           <p class="page-number">06&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
         </header>
 
@@ -983,10 +983,10 @@
         </div>
       </section>
 
-      <section class="slide detail-slide prefix-trie-slide" data-slide="6" data-stage="0" aria-label="Trajectory Manager prefix-trie storage">
+      <section class="slide detail-slide prefix-trie-slide" data-slide="6" data-stage="0" aria-label="Proxy Server Component 1: Trajectory Manager">
         <header class="slide-header">
           <p class="section-label">07</p>
-          <h2>Trajectory Manager</h2>
+          <h2>Proxy Server Component 1: Trajectory Manager</h2>
           <p class="page-number">07&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
         </header>
 
@@ -1129,70 +1129,84 @@
 
           <ul class="trie-storage-benefits" aria-label="Benefits of prefix-trie storage" aria-hidden="true">
             <li>Time: O(L), memory: O(U). U = number of prefix nodes.</li>
-            <li>Relationships between chains are clearer, good for customized reward assignment.</li>
+            <li>Relationships between chains are clearer, helpful for special chain discovery and reward assignment.</li>
           </ul>
 
         </div>
       </section>
 
-      <section class="slide detail-slide tito-slide" data-slide="7" data-stage="0" aria-label="Token-in-Token-Out">
+      <section class="slide detail-slide tito-slide" data-slide="7" data-stage="0" aria-label="Proxy Server Component 2: Tokenization">
         <header class="slide-header">
           <p class="section-label">08</p>
-          <h2>Token-in-Token-Out</h2>
+          <h2>Proxy Server Component 2: Tokenization</h2>
           <p class="page-number">08&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
         </header>
 
         <div class="tito-canvas">
-          <section class="tito-stage tito-definition-stage" data-tito-stage="0" aria-label="TITO definition and motivation">
+          <section class="tito-stage tito-definition-stage" data-tito-stage="0" aria-label="Tokenization definition and motivation">
             <header class="tito-stage-heading">
-              <h3>Input is token ID, output is token ID, no re-tokenization</h3>
+              <h3>Why tokenization on the Proxy Server instead of the Rollout Engine (e.g., SGLang)?</h3>
             </header>
 
-            <div class="tito-main-flow" aria-label="Prompt token IDs flow through rollout into training without retokenization">
-              <div class="tito-flow-node tito-prompt-node">
-                <small>INPUT</small>
-                <strong>Prompt IDs</strong>
-                <div class="tito-id-strip"><i>151</i><i>82</i><i>947</i><i>…</i></div>
+            <div class="tito-turn-example tito-placement-turns" aria-label="Two-turn tokenization example" aria-hidden="true">
+              <div class="tito-turn-row">
+                <span class="tito-turn-label">TURN 01</span>
+                <div class="tito-token-sequence">
+                  <span class="tito-role-token system-role">SYSTEM</span>
+                  <span class="tito-role-token user-role">USER</span>
+                  <i class="tito-mini-arrow"></i>
+                  <span class="tito-engine-chip">Rollout Engine</span>
+                  <i class="tito-mini-arrow"></i>
+                  <span class="tito-role-token assistant-role">ASSISTANT · A1</span>
+                </div>
               </div>
-              <i class="tito-flow-arrow"></i>
-              <div class="tito-flow-node tito-rollout-node">
-                <small>INFERENCE</small>
-                <strong>Rollout Engine</strong>
-                <span>token in / token out</span>
-              </div>
-              <i class="tito-flow-arrow"></i>
-              <div class="tito-flow-node tito-output-node">
-                <small>SAMPLED</small>
-                <strong>Generated IDs</strong>
-                <div class="tito-id-strip generated"><i>31</i><i>408</i><i>7</i><i>…</i></div>
-              </div>
-              <i class="tito-flow-arrow tito-direct-arrow"><b>same IDs</b></i>
-              <div class="tito-flow-node tito-trainer-node">
-                <small>TRAINING</small>
-                <strong>Training Engine</strong>
-                <span>no re-tokenization</span>
+
+              <div class="tito-turn-row second-turn">
+                <span class="tito-turn-label">TURN 02</span>
+                <div class="tito-token-sequence">
+                  <span class="tito-role-token system-role">SYSTEM</span>
+                  <span class="tito-role-token user-role">USER</span>
+                  <span class="tito-role-token assistant-role">ASSISTANT · A1</span>
+                  <span class="tito-role-token tool-role">TOOL RESPONSE</span>
+                  <i class="tito-mini-arrow"></i>
+                  <span class="tito-engine-chip">Rollout Engine</span>
+                  <i class="tito-mini-arrow"></i>
+                  <span class="tito-role-token assistant-role">A2</span>
+                </div>
               </div>
             </div>
 
             <div class="tito-bpe-example tito-bpe-stage" aria-hidden="true">
               <div class="tito-bpe-heading">
-                <span>WHY?</span>
-                <strong>Decode then encode has BPE boundary drift</strong>
+                <strong>Re-tokenizing previously generated tokens is dangerous!</strong>
+                <span>Decode then encode has BPE boundary drift</span>
               </div>
               <div class="tito-bpe-sequence" aria-label="BPE boundary drift example">
-                <span class="bpe-caption">model samples</span>
-                <code class="bpe-token">“he”</code>
-                <code class="bpe-token">“llo”</code>
-                <i class="bpe-roundtrip">decode / encode</i>
-                <span class="bpe-caption">trainer receives</span>
-                <code class="bpe-token bpe-drifted">“hello”</code>
-                <strong class="bpe-mismatch">≠ &nbsp;training–inference mismatch</strong>
+                <span class="bpe-caption">model generates</span>
+                <span class="bpe-id-sequence">
+                  <code class="bpe-id-chip">token_id: 826</code>
+                  <code class="bpe-id-chip">token_id: 4172</code>
+                </span>
+                <i class="bpe-process-arrow">decode</i>
+                <span class="bpe-text-pair">
+                  <code class="bpe-token">“he”</code>
+                  <b>+</b>
+                  <code class="bpe-token">“llo”</code>
+                </span>
+                <i class="bpe-process-arrow">encode</i>
+                <span class="bpe-token-stack"><small>token_id: 15339</small><code class="bpe-token bpe-drifted">“hello”</code></span>
+                <strong class="bpe-mismatch">≠ &nbsp;cross-turn mismatch!</strong>
               </div>
-              <p>TITO preserves the sampled IDs exactly; the training side never reconstructs them from text.</p>
+              <p>We should preserve sampled tokens; we can only use append-only delta tokenization.</p>
+            </div>
+
+            <div class="tito-stateful-warning" aria-hidden="true">
+              <strong>Inference engine can’t be stateful</strong>
+              <span aria-label="not acceptable">❌</span>
             </div>
           </section>
 
-          <section class="tito-stage tito-multiturn-stage" data-tito-stage="2" aria-label="Multi-turn append-only delta tokenization" aria-hidden="true">
+          <section class="tito-stage tito-multiturn-stage" data-tito-stage="4" aria-label="Multi-turn append-only delta tokenization" aria-hidden="true">
             <h3 class="tito-multiturn-subtitle">Multi-turn: Append-only delta tokenization</h3>
 
             <div class="tito-turn-example" aria-label="Two-turn continuous token sequence">
@@ -1229,7 +1243,7 @@
               </div>
             </div>
 
-            <p class="tito-complexity-title">Why delta-tokenization?</p>
+            <p class="tito-complexity-title">Advantages</p>
 
             <ul class="tito-delta-reasons">
               <li>
@@ -1243,7 +1257,7 @@
             </ul>
           </section>
 
-          <section class="tito-stage tito-merging-stage" data-tito-stage="3" aria-label="Model-specific multi-turn token merging" aria-hidden="true">
+          <section class="tito-stage tito-merging-stage" data-tito-stage="5" aria-label="Model-specific multi-turn token merging" aria-hidden="true">
             <header class="tito-stage-heading">
               <h3>Model specific adapter for multi-turn merging</h3>
             </header>
