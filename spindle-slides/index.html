@@ -24,7 +24,7 @@
         </div>
 
         <div class="cover-footer">
-          <p class="page-number">01&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
+          <p class="page-number">01&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
         </div>
       </section>
 
@@ -37,7 +37,7 @@
         <header class="slide-header">
           <p class="section-label">01</p>
           <h2>Intro + Motivation</h2>
-          <p class="page-number">02&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
+          <p class="page-number">02&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
         </header>
 
         <div class="motivation-rl-primer" aria-label="Reinforcement learning connects rollout to training">
@@ -143,7 +143,7 @@
         <header class="slide-header">
           <p class="section-label">03</p>
           <h2>Architecture</h2>
-          <p class="page-number">03&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
+          <p class="page-number">03&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
         </header>
 
         <div
@@ -307,7 +307,7 @@
         <header class="slide-header">
           <p class="section-label">04</p>
           <h2>Agent Server</h2>
-          <p class="page-number">04&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
+          <p class="page-number">04&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
         </header>
 
         <p class="detail-lead agent-server-lead">
@@ -589,7 +589,7 @@
         <header class="slide-header">
           <p class="section-label">05</p>
           <h2>Proxy Server</h2>
-          <p class="page-number">05&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
+          <p class="page-number">05&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
         </header>
 
         <div class="proxy-design-canvas">
@@ -717,7 +717,7 @@
         <header class="slide-header">
           <p class="section-label">06</p>
           <h2>Proxy Server Component 1: Trajectory Manager</h2>
-          <p class="page-number">06&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
+          <p class="page-number">06&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
         </header>
 
         <div class="trajectory-manager-canvas">
@@ -987,7 +987,7 @@
         <header class="slide-header">
           <p class="section-label">07</p>
           <h2>Proxy Server Component 1: Trajectory Manager</h2>
-          <p class="page-number">07&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
+          <p class="page-number">07&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
         </header>
 
         <p class="detail-lead">
@@ -1139,7 +1139,7 @@
         <header class="slide-header">
           <p class="section-label">08</p>
           <h2>Proxy Server Component 2: Tokenization (Token-in-Token-Out)</h2>
-          <p class="page-number">08&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
+          <p class="page-number">08&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
         </header>
 
         <div class="tito-canvas">
@@ -1309,11 +1309,47 @@
         </div>
       </section>
 
-      <section class="slide detail-slide experiment-slide" data-slide="8" aria-label="Experiment Results">
+      <section class="slide detail-slide summary-slide" data-slide="8" aria-label="Summary">
         <header class="slide-header">
           <p class="section-label">09</p>
+          <h2>Summary</h2>
+          <p class="page-number">09&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
+        </header>
+
+        <div class="summary-canvas">
+          <section class="summary-system-diagram" aria-label="Spindle control plane and data plane">
+            <h3>Spindle</h3>
+
+            <div class="summary-server-card summary-agent-card">
+              <strong>Agent Server</strong>
+              <span>(control plane)</span>
+              <p>task lifecycle and runtime orchestration</p>
+            </div>
+
+            <div class="summary-server-card summary-proxy-card">
+              <strong>Proxy Server</strong>
+              <span>(data plane)</span>
+              <div class="summary-proxy-components">
+                <div>Protocol<br />Adapter</div>
+                <div>Trajectory<br />Manager</div>
+                <div class="summary-tokenization-component">Tokenization</div>
+              </div>
+            </div>
+          </section>
+
+          <ul class="summary-points">
+            <li class="summary-point summary-point-agents"><span></span><strong>Any agent harness</strong></li>
+            <li class="summary-point summary-point-reliability"><span></span><strong>Reliability &amp; correctness</strong></li>
+            <li class="summary-point summary-point-efficiency"><span></span><strong>Efficiency</strong></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="slide detail-slide experiment-slide" data-slide="9" aria-label="Experiment Results">
+        <header class="slide-header">
+          <p class="section-label">10</p>
           <h2>Experiment Results with Spindle</h2>
-          <p class="page-number">09&nbsp;&nbsp;/&nbsp;&nbsp;09</p>
+          <p class="page-number">10&nbsp;&nbsp;/&nbsp;&nbsp;10</p>
         </header>
 
         <div class="experiment-canvas">

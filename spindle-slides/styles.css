@@ -6868,6 +6868,207 @@ body {
   letter-spacing: 0.07em;
 }
 
+/* Summary */
+
+.summary-canvas {
+  position: absolute;
+  z-index: 2;
+  top: 165px;
+  left: 70px;
+  display: grid;
+  width: 1460px;
+  height: 650px;
+  grid-template-columns: 610px 1fr;
+  align-items: center;
+  gap: 105px;
+}
+
+.summary-system-diagram {
+  position: relative;
+  display: grid;
+  width: 610px;
+  height: 590px;
+  grid-template-rows: 160px 1fr;
+  gap: 38px;
+  padding: 62px 30px 28px;
+  border: 2px dashed rgba(38, 58, 67, 0.78);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.summary-system-diagram > h3 {
+  position: absolute;
+  top: 16px;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  color: #203842;
+  font-size: 32px;
+  font-weight: 730;
+  text-align: center;
+  letter-spacing: -0.025em;
+}
+
+.summary-server-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1.8px solid;
+  border-radius: 17px;
+}
+
+.summary-server-card > strong {
+  color: #263f49;
+  font-size: 31px;
+  font-weight: 730;
+  letter-spacing: -0.025em;
+}
+
+.summary-server-card > span {
+  margin-top: 3px;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  font-size: 18px;
+  font-weight: 760;
+}
+
+.summary-agent-card {
+  border-color: rgba(57, 119, 213, 0.72);
+  background:
+    repeating-linear-gradient(125deg, transparent 0, transparent 8px, rgba(111, 160, 222, 0.1) 8px, rgba(111, 160, 222, 0.1) 9px),
+    rgba(247, 251, 255, 0.9);
+}
+
+.summary-agent-card > span {
+  color: #b36b24;
+}
+
+.summary-agent-card > p {
+  margin: 14px 0 0;
+  color: #506a75;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  font-size: 17px;
+  font-weight: 620;
+}
+
+.summary-proxy-card {
+  justify-content: flex-start;
+  padding: 24px 24px 22px;
+  border-color: rgba(47, 143, 105, 0.72);
+  background:
+    repeating-linear-gradient(125deg, transparent 0, transparent 8px, rgba(120, 200, 138, 0.1) 8px, rgba(120, 200, 138, 0.1) 9px),
+    rgba(249, 255, 250, 0.9);
+}
+
+.summary-proxy-card > span {
+  color: #277b57;
+}
+
+.summary-proxy-components {
+  display: grid;
+  width: 100%;
+  flex: 1;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 78px 78px;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.summary-proxy-components > div {
+  display: grid;
+  place-items: center;
+  border: 1.4px solid rgba(47, 143, 105, 0.58);
+  border-radius: 11px;
+  color: #285d46;
+  background: rgba(241, 252, 244, 0.9);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  font-size: 18px;
+  font-weight: 720;
+  line-height: 1.18;
+  text-align: center;
+}
+
+.summary-proxy-components .summary-tokenization-component {
+  grid-column: 1 / -1;
+}
+
+.summary-points {
+  display: flex;
+  flex-direction: column;
+  gap: 38px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.summary-point {
+  position: relative;
+  display: flex;
+  height: 126px;
+  align-items: center;
+  gap: 27px;
+  padding: 0 34px;
+  border: 1px solid rgba(45, 86, 101, 0.17);
+  border-left-width: 6px;
+  border-radius: 6px 16px 16px 6px;
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.summary-point > span {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border-radius: 50%;
+}
+
+.summary-point > strong {
+  color: #203842;
+  font-size: 39px;
+  font-weight: 690;
+  letter-spacing: -0.025em;
+}
+
+.summary-point-agents {
+  border-left-color: #3977d5;
+}
+
+.summary-point-agents > span {
+  background: #3977d5;
+}
+
+.summary-point-reliability {
+  border-left-color: #b45a4b;
+}
+
+.summary-point-reliability > span {
+  background: #b45a4b;
+}
+
+.summary-point-efficiency {
+  border-left-color: #2f8f69;
+}
+
+.summary-point-efficiency > span {
+  background: #2f8f69;
+}
+
+.summary-slide.is-active .summary-system-diagram,
+.summary-slide.is-active .summary-point {
+  animation: detail-enter 560ms ease both;
+}
+
+.summary-slide.is-active .summary-point-agents {
+  animation-delay: 80ms;
+}
+
+.summary-slide.is-active .summary-point-reliability {
+  animation-delay: 150ms;
+}
+
+.summary-slide.is-active .summary-point-efficiency {
+  animation-delay: 220ms;
+}
+
 /* Experiment results */
 
 .experiment-canvas {
