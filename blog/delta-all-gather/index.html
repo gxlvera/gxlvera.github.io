@@ -124,12 +124,70 @@
 <pre><code class="language-text">PP nodes → gather to one source node → broadcast to rollout
 </code></pre>
 <p><strong>PP-level sharded diff is required.</strong> Gathering the full model onto one node can exceed its CPU RAM (computing the diff requires keeping a pinned copy of the previous step's weights): a 1T-parameter BF16 model alone is about 2 TB. The cross-node gather also uses the network, just like trainer → rollout transfer. If we compress only the latter, the full gather becomes the new bottleneck. Compute the diff within each PP node and gather the deltas instead.</p>
-<p><strong>TP-level sharded diff is not required, but recommended.</strong> Node-local NVLink is fast, but a sufficiently small delta can make the output transfer faster than a full local gather. For example, with 300 GB of weights, an effective local gather bandwidth of 300 GB/s gives a 1 s gather. A 1% delta sent at 30 GB/s takes only 0.1 s. Making the local gather delta-aware helps avoid that bottleneck.</p>
+<p>For example, assume the following effective bandwidths and payload sizes:</p>
+<pre><code class="language-text">cross-node gather bandwidth = 30 GB/s
+trainer → rollout bandwidth = 30 GB/s
+full weights                = 1 TB
+delta density               = 10%
+
+full cross-node gather:
+1000 GB / 30 GB/s ≈ 33 s
+
+delta trainer → rollout:
+100 GB / 30 GB/s ≈ 3.3 s
+</code></pre>
+<p><strong>If we optimize only trainer → rollout, the trainer-side full gather immediately becomes the new bottleneck.</strong> Both stages use a network of similar bandwidth, but the full gather still moves ten times as much data.</p>
+<p><strong>TP-level sharded diff is not required, but recommended.</strong> Once the cross-PP gather is delta-aware, consider the full TP AllGather that still happens inside each node. NVLink is faster than cross-node RDMA, but delta compression also makes the network payload smaller.</p>
+<p>For example, assume:</p>
+<pre><code class="language-text">weights for this comparison = 300 GB
+NVLink AllGather bandwidth  = 300 GB/s
+RDMA bandwidth              = 30 GB/s
+delta density               = 10%
+</code></pre>
+<p>NVLink is 10× faster than RDMA, while the delta reduces the network payload by 10×:</p>
+<pre><code class="language-text">full local AllGather:
+300 GB / 300 GB/s = 1 s
+
+delta RDMA transfer:
+(300 GB × 10%) / 30 GB/s = 1 s
+</code></pre>
+<p>The two stages are roughly balanced, so TP-level sharded diff is not strictly required.</p>
+<p>But if delta density falls to 1%:</p>
+<pre><code class="language-text">full local AllGather:
+300 GB / 300 GB/s = 1 s
+
+delta RDMA transfer:
+(300 GB × 1%) / 30 GB/s = 0.1 s
+</code></pre>
+<p>The full local gather now takes ten times as long as the delta transfer. This is why TP-level sharded diff is still recommended for NCCL: node-local NVLink can become the bottleneck when the payload reduction outweighs its bandwidth advantage.</p>
 <h2 id="en-2-disk-pp-nodes-write-to-storage-in-parallel">2. Disk: PP nodes write to storage in parallel</h2>
 <pre><code class="language-text">Each PP node: local TP AllGather → diff → write delta to storage
 </code></pre>
 <p><strong>PP-level sharded diff is required.</strong> Each PP node handles its own weights and writes its own delta, avoiding a full-model snapshot on a single node.</p>
-<p><strong>TP-level sharded diff is not required.</strong> Full node-local NVLink AllGather is usually much faster than writing the delta to disk or object storage. For example, gathering 200 GB at 300 GB/s takes about 0.67 s; writing a 10% delta at 5 GB/s still takes 4 s. Storage remains the larger cost, so full local AllGather followed by diff is usually sufficient.</p>
+<p><strong>TP-level sharded diff is not required.</strong> Full node-local NVLink AllGather is usually much faster than writing to disk or object storage. Using the example bandwidths:</p>
+<pre><code class="language-text">PP stage weights          = 200 GB
+NVLink AllGather bandwidth = 300 GB/s
+storage write bandwidth   = 5 GB/s
+
+full local AllGather:
+200 GB / 300 GB/s ≈ 0.67 s
+
+full-weight storage write (baseline):
+200 GB / 5 GB/s = 40 s
+
+storage write with a 10% delta:
+20 GB / 5 GB/s = 4 s
+</code></pre>
+<p>Even after delta compression, the 4 s storage write is much slower than the 0.67 s local gather. Making the gather 10× faster would reduce it from about 0.67 s to 0.07 s, saving about 0.6 s; it would not remove the storage bottleneck. Full local AllGather followed by diff is therefore usually sufficient.</p>
+<p>This is the key bandwidth difference between NCCL and Disk. In these illustrative examples:</p>
+<pre><code class="language-text">NVLink:          hundreds of GB/s  (300 GB/s)
+RDMA:            tens of GB/s      (30 GB/s)
+Disk / storage:  a few GB/s/node   (5 GB/s)
+
+NVLink / RDMA bandwidth ratio    = 10×
+NVLink / storage bandwidth ratio = 60×
+</code></pre>
+<p>A 10× payload reduction can already offset NVLink's advantage over RDMA. The same reduction still leaves storage substantially slower than the full local gather. That is why TP-level sharded diff is recommended for NCCL, while Disk can usually skip it.</p>
 <p>For a concrete disk-based implementation, see <a href="https://github.com/THUDM/slime/blob/main/docs/en/advanced/delta-weight-sync.md">Slime's Delta Weight Sync documentation</a>. It describes computing a diff for each gathered HF tensor, encoding and compressing the result, and publishing it through disk transport. The PP/TP recommendations here are our analysis of the topology and bottlenecks.</p>
 <h2 id="en-conclusion">Conclusion</h2>
 <div class="table-scroll" role="region" aria-label="Comparison table" tabindex="0"><table>
@@ -186,12 +244,70 @@
 <pre><code class="language-text">各 PP node → gather 到一个 source node → broadcast 给 rollout
 </code></pre>
 <p><strong>PP-level sharded diff 必须做。</strong> 完整模型聚合到一台机器，CPU RAM 可能放不下（由于要算 diff，所以必须 pin 一版上个 step 的权重）：1T 参数的 BF16 模型，仅权重就约 2 TB。同时，跨 PP node 的 gather 和 trainer → rollout 都走跨机网络。如果只压缩后者，前面的全量 gather 就会成为新瓶颈。因此，应该先在各 PP node 内算 diff，再聚合 delta。</p>
-<p><strong>TP-level sharded diff 非必须，建议做。</strong> 单机 NVLink 虽然快，但 delta 足够小时，输出传输仍可能比全量 local gather 更快。例如，300 GB 权重以 300 GB/s 的有效带宽做 local gather，需要 1 s；如果 delta 只有 1%，以 30 GB/s 发送只需 0.1 s。让单机内部也只 gather delta，可以避免这一步成为瓶颈。</p>
+<p>例如，假设有效带宽和 payload 大小如下：</p>
+<pre><code class="language-text">跨机 gather bandwidth = 30 GB/s
+trainer → rollout      = 30 GB/s
+full weights           = 1 TB
+delta density          = 10%
+
+全量跨机 gather：
+1000 GB / 30 GB/s ≈ 33 s
+
+delta trainer → rollout：
+100 GB / 30 GB/s ≈ 3.3 s
+</code></pre>
+<p><strong>如果只优化 trainer → rollout，trainer-side full gather 就会直接变成新瓶颈。</strong> 两边使用的跨机网络带宽相近，但全量 gather 仍然要搬十倍的数据。</p>
+<p><strong>TP-level sharded diff 非必须，建议做。</strong> 跨 PP node 已经只 gather delta 后，再看机器内部仍然保留的全量 TP AllGather。NVLink 比跨机 RDMA 快，但 delta 压缩也会减少网络传输的 payload。</p>
+<p>例如，假设：</p>
+<pre><code class="language-text">本次对比的权重大小 = 300 GB
+NVLink AllGather  = 300 GB/s
+RDMA              = 30 GB/s
+delta density     = 10%
+</code></pre>
+<p>NVLink 比 RDMA 快 10 倍，而 delta 又把网络 payload 缩小了 10 倍：</p>
+<pre><code class="language-text">单机全量 AllGather：
+300 GB / 300 GB/s = 1 s
+
+delta RDMA 传输：
+(300 GB × 10%) / 30 GB/s = 1 s
+</code></pre>
+<p>两边基本平衡，所以 TP-level sharded diff 不是绝对必须的。</p>
+<p>但如果 delta density 进一步降到 1%：</p>
+<pre><code class="language-text">单机全量 AllGather：
+300 GB / 300 GB/s = 1 s
+
+delta RDMA 传输：
+(300 GB × 1%) / 30 GB/s = 0.1 s
+</code></pre>
+<p>这时全量 local gather 的时间反而是 delta 传输的十倍。因此，NCCL 下仍然建议做 TP-level sharded diff：当 payload 的压缩倍数超过 NVLink 的带宽优势时，单机内部也可能成为瓶颈。</p>
 <h2 id="zh-2-disk各-pp-node-并行写-storage">2. Disk：各 PP node 并行写 storage</h2>
 <pre><code class="language-text">每个 PP node：单机 TP AllGather → diff → 写 delta 到 storage
 </code></pre>
 <p><strong>PP-level sharded diff 必须做。</strong> 各 PP node 只处理自己的权重、写出自己的 delta，避免在一个 node 上保存完整模型 snapshot。</p>
-<p><strong>TP-level sharded diff 非必须，可以不做。</strong> 单机 NVLink 全量 AllGather 通常远快于把 delta 写到 disk / object storage。例如，200 GB 权重以 300 GB/s gather，只需约 0.67 s；即使 delta 只有 10%，以 5 GB/s 写出仍需 4 s。主要开销仍在 storage，因此先做单机全量 AllGather，再算 diff，通常就够了。</p>
+<p><strong>TP-level sharded diff 非必须，可以不做。</strong> 单机 NVLink 全量 AllGather 通常远快于写 disk / object storage。沿用示例带宽：</p>
+<pre><code class="language-text">PP stage weight  = 200 GB
+NVLink AllGather = 300 GB/s
+storage write   = 5 GB/s
+
+单机全量 AllGather：
+200 GB / 300 GB/s ≈ 0.67 s
+
+全量权重写 storage（作为基线）：
+200 GB / 5 GB/s = 40 s
+
+10% delta 写 storage：
+20 GB / 5 GB/s = 4 s
+</code></pre>
+<p>即使经过 delta 压缩，4 s 的 storage 写入仍然明显慢于 0.67 s 的 local gather。假设把 gather 加速十倍，从约 0.67 s 降到 0.07 s，也只省约 0.6 s，并不能消除 storage 瓶颈。因此，单机全量 AllGather 后再算 diff，通常就够了。</p>
+<p>这就是 NCCL 和 Disk 的关键带宽差异。在这些示例中：</p>
+<pre><code class="language-text">NVLink：          数百 GB/s        （300 GB/s）
+RDMA：            数十 GB/s        （30 GB/s）
+Disk / storage：  每个 node 几 GB/s （5 GB/s）
+
+NVLink / RDMA 带宽比    = 10 倍
+NVLink / storage 带宽比 = 60 倍
+</code></pre>
+<p>payload 缩小十倍，就可能抵消 NVLink 相对 RDMA 的带宽优势；但同样的压缩比例下，storage 仍然明显慢于单机全量 gather。所以 NCCL 建议做 TP-level sharded diff，而 Disk 通常可以不做。</p>
 <p>具体的 disk 实现可以参考 <a href="https://github.com/THUDM/slime/blob/main/docs/en/advanced/delta-weight-sync.md">Slime 的 Delta Weight Sync 文档</a>：它介绍了对 gather 后的 HF tensor 计算 diff、编码压缩，再通过 disk transport 发布的流程。本文的 PP/TP 建议则是基于上述拓扑和瓶颈的分析。</p>
 <h2 id="zh-结论">结论</h2>
 <div class="table-scroll" role="region" aria-label="结论对比表" tabindex="0"><table>
