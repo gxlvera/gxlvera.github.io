@@ -352,22 +352,22 @@ RDMA:   tens of GB/s
 <tr>
 <td>NCCL: cross-node gather → single-node broadcast</td>
 <td><strong>Required</strong></td>
-<td><strong>Recommended</strong></td>
+<td><strong>Not required, but recommended</strong></td>
 </tr>
 <tr>
 <td>NCCL: node-local PP gather → P2P rollout</td>
-<td><strong>Must preserve the distributed PP layout</strong></td>
-<td><strong>Optional, but recommended</strong></td>
+<td><strong>Required</strong></td>
+<td><strong>Not required, but recommended</strong></td>
 </tr>
 <tr>
 <td>Disk: cross-node gather → single-node storage write</td>
 <td><strong>Required</strong></td>
-<td>Secondary value</td>
+<td><strong>Not required</strong></td>
 </tr>
 <tr>
 <td>Disk: node-local PP gather → parallel storage writes</td>
-<td><strong>Must preserve the distributed PP layout</strong></td>
-<td><strong>Usually unnecessary</strong></td>
+<td><strong>Required</strong></td>
+<td><strong>Not required</strong></td>
 </tr>
 </tbody>
 </table></div>
@@ -638,22 +638,22 @@ RDMA:   数十 GB/s
 <tr>
 <td>NCCL：跨机 gather → 单 node broadcast</td>
 <td><strong>必须</strong></td>
-<td><strong>建议做</strong></td>
+<td><strong>非必须，建议做</strong></td>
 </tr>
 <tr>
 <td>NCCL：PP node 内 gather → P2P rollout</td>
-<td><strong>必须保留分布式 PP layout</strong></td>
-<td><strong>可选，但建议做</strong></td>
+<td><strong>必须</strong></td>
+<td><strong>非必须，建议做</strong></td>
 </tr>
 <tr>
 <td>Disk：跨机 gather → 单 node 写 storage</td>
 <td><strong>必须</strong></td>
-<td>价值次要</td>
+<td><strong>非必须</strong></td>
 </tr>
 <tr>
 <td>Disk：PP node 内 gather → 并行写 storage</td>
-<td><strong>必须保留分布式 PP layout</strong></td>
-<td><strong>通常没必要</strong></td>
+<td><strong>必须</strong></td>
+<td><strong>非必须</strong></td>
 </tr>
 </tbody>
 </table></div>
