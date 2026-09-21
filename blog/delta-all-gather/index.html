@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="When sharded diff is necessary for delta weight sync: CPU RAM, communication bottlenecks, and TP-level versus PP-level gathers across NCCL and storage paths. English and Chinese.">
+  <meta name="author" content="Xiaole Guo">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="When is delta all-gather (sharded diff) necessary?">
+  <meta property="og:description" content="Two levels of sharded diff. Four weight-sync topologies. A practical look at memory and communication bottlenecks.">
+  <meta property="og:url" content="https://gxlvera.github.io/blog/delta-all-gather/">
+  <link rel="canonical" href="https://gxlvera.github.io/blog/delta-all-gather/">
+  <link rel="icon" href="../../assets/images/logo.ico">
+  <title>When is delta all-gather (sharded diff) necessary? | Xiaole Guo</title>
+  <style>
+    :root { color-scheme: light; --ink: #16213e; --muted: #5a6579; --blue: #245ed6; --line: #dce3ee; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 28px; }
+    body { margin: 0; background: #f8f9fc; color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 17px; line-height: 1.8; }
+    a { color: var(--blue); text-underline-offset: 4px; }
+    a:hover { color: #6847ca; }
+    a:focus-visible, summary:focus-visible, .table-scroll:focus-visible { outline: 3px solid #7c5cff; outline-offset: 5px; }
+    .site-nav { max-width: 1000px; margin: auto; padding: 26px 32px; display: flex; justify-content: space-between; gap: 20px; font-size: 14px; }
+    .site-nav a { text-decoration: none; font-weight: 600; }
+    main { max-width: 936px; margin: 0 auto 60px; padding: 56px 64px; background: white; border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 12px 40px #16213e06; }
+    .eyebrow { margin: 0 0 18px; color: var(--blue); font-size: 12px; letter-spacing: .13em; font-weight: 700; text-transform: uppercase; }
+    h1 { margin: 0 0 24px; font-size: clamp(32px, 5vw, 48px); line-height: 1.18; letter-spacing: -.035em; font-weight: 750; overflow-wrap: break-word; }
+    .dek { font-size: 19px; line-height: 1.65; color: var(--muted); max-width: 650px; }
+    .byline { color: var(--muted); font-size: 14px; margin: 24px 0; }
+    .languages { display: flex; gap: 12px; flex-wrap: wrap; padding-bottom: 36px; border-bottom: 1px solid var(--line); }
+    .languages a { padding: 6px 16px; border: 1px solid var(--line); border-radius: 30px; text-decoration: none; font-size: 14px; font-weight: 600; }
+    .languages a:first-child { background: #eef3ff; color: var(--blue); border-color: #cddcfc; }
+    .language-label { margin: 38px 0 24px; font-size: 13px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 700; }
+    h2 { font-size: 29px; line-height: 1.35; margin: 44px 0 18px; letter-spacing: -.02em; }
+    h3 { font-size: 23px; line-height: 1.45; margin: 34px 0 16px; }
+    h4 { font-size: 19px; line-height: 1.5; margin: 28px 0 14px; }
+    p { margin: 16px 0; }
+    ul, ol { padding-left: 26px; }
+    li { padding-left: 4px; margin: 9px 0; }
+    strong { font-weight: 650; }
+    blockquote { margin: 24px 0; padding: 2px 22px; border-left: 3px solid #5d78e6; background: #f3f6ff; border-radius: 0 8px 8px 0; }
+    pre { background: #f5f7fb; border: 1px solid #e1e6f0; border-radius: 10px; padding: 20px 22px; overflow-x: auto; line-height: 1.65; font-size: 14px; tab-size: 4; }
+    code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    p code, li code { font-size: .87em; background: #eef2f8; padding: 2px 5px; border-radius: 4px; }
+    hr { height: 1px; border: 0; background: var(--line); margin: 42px 0; }
+    .table-scroll { overflow-x: auto; margin: 24px 0; border: 1px solid var(--line); border-radius: 10px; }
+    table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 14px; line-height: 1.6; }
+    th, td { padding: 14px 16px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+    th { background: #eff3fb; font-weight: 650; }
+    tr:last-child td { border-bottom: 0; }
+    details { background: #f8f9fc; border: 1px solid var(--line); border-radius: 10px; padding: 14px 20px; font-size: 14px; margin-bottom: 32px; }
+    summary { cursor: pointer; font-weight: 600; }
+    .toc ul { margin: 10px 0; }
+    .toc li { margin: 4px 0; }
+    .toc a { text-decoration: none; }
+    #chinese { border-top: 3px solid #dce5ff; margin-top: 64px; padding-top: 12px; }
+    .page-footer { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 20px; font-size: 14px; }
+    @media (max-width: 680px) {
+      body { font-size: 16px; }
+      .site-nav { padding: 20px; }
+      main { margin: 0 10px 24px; padding: 32px 20px; border-radius: 14px; }
+      h2 { font-size: 25px; }
+      h3 { font-size: 21px; }
+      .dek { font-size: 17px; }
+      pre { padding: 16px; font-size: 12px; }
+      blockquote { padding-left: 16px; padding-right: 14px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print {
+      body { background: white; }
+      main { max-width: none; border: 0; box-shadow: none; margin: 0; padding: 0; }
+      .site-nav, .languages, details, .page-footer { display: none; }
+      pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+      table { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="site-nav" aria-label="Site navigation">
+    <a href="../../">← Xiaole Guo</a>
+    <a href="#chinese" lang="zh-CN">跳至中文 ↓</a>
+  </nav>
+  <main id="top">
+    <article>
+      <header>
+        <p class="eyebrow">RL Infra · Engineering notes</p>
+        <h1>When is delta all-gather (sharded diff) necessary?</h1>
+        <p class="dek">Two levels of sharded diff. Four weight-sync topologies. A practical look at memory and communication bottlenecks.</p>
+        <p class="byline">Xiaole Guo · <time datetime="2026-09-20">September 20, 2026</time> · English / 中文</p>
+        <nav class="languages" aria-label="Article languages">
+          <a href="#english" lang="en">English</a>
+          <a href="#chinese" lang="zh-CN">中文</a>
+        </nav>
+      </header>
+      <section id="english" lang="en" aria-label="English article">
+        <p class="language-label">English</p>
+        <details><summary>In this article</summary><div class="toc">
+<ul>
+<li><a href="#en-background">Background</a></li>
+<li><a href="#en-tldr">TL;DR</a></li>
+<li><a href="#en-two-granularities-of-sharded-diff">Two granularities of sharded diff</a><ul>
+<li><a href="#en-1-tp-level-sharded-diff">1. TP-level sharded diff</a></li>
+<li><a href="#en-2-pp-level-sharded-diff">2. PP-level sharded diff</a></li>
+</ul>
+</li>
+<li><a href="#en-1-nccl-weight-sync">1. NCCL weight sync</a><ul>
+<li><a href="#en-11-pp-level-sharded-diff-required">1.1 PP-level sharded diff: required</a><ul>
+<li><a href="#en-problem-one-the-weights-may-not-fit-in-cpu-ram">Problem one: the weights may not fit in CPU RAM</a></li>
+<li><a href="#en-problem-two-cross-node-allgather-becomes-the-new-bottleneck">Problem two: cross-node AllGather becomes the new bottleneck</a></li>
+</ul>
+</li>
+<li><a href="#en-12-tp-level-sharded-diff-optional-but-recommended">1.2 TP-level sharded diff: optional, but recommended</a></li>
+</ul>
+</li>
+<li><a href="#en-2-from-disk-object-storage">2. From disk / object storage</a><ul>
+<li><a href="#en-21-cross-node-gather-to-one-node-pp-level-sharded-diff-is-still-required">2.1 Cross-node gather to one node: PP-level sharded diff is still required</a></li>
+<li><a href="#en-22-node-local-allgather-within-each-pp-stage-tp-level-sharded-diff-is-usually-unnecessary">2.2 Node-local AllGather within each PP stage: TP-level sharded diff is usually unnecessary</a></li>
+</ul>
+</li>
+<li><a href="#en-conclusion">Conclusion</a></li>
+</ul>
+</div>
+</details>
+        <h2 id="en-background">Background</h2>
+<p>While looking at VeRL's delta weight sync implementation, we noticed something interesting:</p>
+<blockquote>
+<p>VeRL does more than reduce the trainer → rollout transfer payload. It also performs <strong>sharded diff</strong>.</p>
+</blockquote>
+<p>Instead of first AllGathering the full weights onto one rank and then computing the delta, it computes the diff on each shard first and gathers only the delta.</p>
+<p>This article asks:</p>
+<blockquote>
+<p><strong>When is sharded diff necessary, and when can we skip it?</strong></p>
+</blockquote>
+<p>The answer mainly depends on two factors:</p>
+<ol>
+<li><strong>Whether a single node has enough CPU RAM to hold the full weights after the gather.</strong></li>
+<li><strong>Whether AllGather takes longer than the delta-compressed trainer → rollout transfer—in other words, whether AllGather becomes the new bottleneck.</strong></li>
+</ol>
+<p>We will discuss four cases:</p>
+<pre><code class="language-text">NCCL:
+1. Cross-node AllGather to one node → that node broadcasts to rollout
+2. Node-local AllGather within each PP stage → PP nodes send P2P to rollout
+
+Disk:
+3. Cross-node AllGather to one node → that node writes to disk / object storage
+4. Node-local AllGather within each PP stage → PP nodes write to disk / object storage in parallel
+</code></pre>
+<hr />
+<h2 id="en-tldr">TL;DR</h2>
+<ul>
+<li><strong>PP-level sharded diff is essentially required.</strong> Otherwise, a very large model needs a full-weight gather across PP nodes, which is slow and may exceed a single node's CPU RAM.</li>
+<li><strong>TP-level sharded diff is optional for NCCL, but recommended.</strong> When the delta is very small, a full node-local AllGather can become the bottleneck again.</li>
+<li><strong>TP-level sharded diff is usually unnecessary for the disk path.</strong> Node-local NVLink AllGather is usually much faster than writing to disk / object storage.</li>
+</ul>
+<hr />
+<h2 id="en-two-granularities-of-sharded-diff">Two granularities of sharded diff</h2>
+<p>Sharded diff can be divided into two levels.</p>
+<h3 id="en-1-tp-level-sharded-diff">1. TP-level sharded diff</h3>
+<p>This is the finest granularity.</p>
+<p>Each TP rank computes the diff directly on its own shard:</p>
+<pre><code class="language-text">TP rank 0 → diff ─┐
+TP rank 1 → diff ─┤
+TP rank 2 → diff ─┼→ gather delta
+...               │
+</code></pre>
+<p>Even when these TP ranks are on the same machine, they gather only the delta rather than the full weights.</p>
+<h3 id="en-2-pp-level-sharded-diff">2. PP-level sharded diff</h3>
+<p>A full AllGather can still happen within each machine:</p>
+<pre><code class="language-text">TP shards
+   ↓
+node-local full AllGather
+   ↓
+PP source
+   ↓
+diff
+</code></pre>
+<p>But there is <strong>no full-weight gather across PP nodes</strong>.</p>
+<p>Each PP node keeps only its own portion or sends only its own delta:</p>
+<pre><code class="language-text">PP0 → delta ─┐
+PP1 → delta ─┤
+PP2 → delta ─┼→ downstream
+...          │
+</code></pre>
+<p>So:</p>
+<blockquote>
+<p><strong>TP-level sharded diff optimizes AllGather within a node.</strong></p>
+</blockquote>
+<p>And:</p>
+<blockquote>
+<p><strong>PP-level sharded diff avoids full-weight gathers across nodes.</strong></p>
+</blockquote>
+<hr />
+<h2 id="en-1-nccl-weight-sync">1. NCCL weight sync</h2>
+<h3 id="en-11-pp-level-sharded-diff-required">1.1 PP-level sharded diff: required</h3>
+<p>Suppose we do not use PP-level sharded diff:</p>
+<pre><code class="language-text">PP0 ─┐
+PP1 ─┤
+PP2 ─┼→ cross-node gather to one node
+...  │
+     ↓
+full model
+     ↓
+broadcast to rollout
+</code></pre>
+<p>This creates two problems.</p>
+<h4 id="en-problem-one-the-weights-may-not-fit-in-cpu-ram">Problem one: the weights may not fit in CPU RAM</h4>
+<p>For example, a 1T-parameter BF16 model needs:</p>
+<pre><code class="language-text">1T × 2 bytes ≈ 2 TB
+</code></pre>
+<p>If the full weights must be materialized on one node, that node may need terabytes of CPU RAM.</p>
+<p>This alone may make the design infeasible.</p>
+<h4 id="en-problem-two-cross-node-allgather-becomes-the-new-bottleneck">Problem two: cross-node AllGather becomes the new bottleneck</h4>
+<p>Both the trainer-side AllGather across PP nodes and the trainer → rollout transfer use the cross-node network.</p>
+<p>For example:</p>
+<pre><code class="language-text">cross-node gather bandwidth = 30 GB/s
+trainer → rollout bandwidth = 30 GB/s
+delta density               = 10%
+full weights                = 1 TB
+</code></pre>
+<p>Then:</p>
+<pre><code class="language-text">full cross-node gather:
+1000 / 30 ≈ 33 s
+
+delta trainer → rollout:
+100 / 30 ≈ 3.3 s
+</code></pre>
+<p><strong>If we optimize only trainer → rollout, the trainer-side full gather immediately becomes the new bottleneck.<br />
+In this case, PP-level sharded diff is required.</strong></p>
+<p>This is also an important reason why VeRL's <code>delta_sharded</code> can deliver substantial benefits.</p>
+<hr />
+<h3 id="en-12-tp-level-sharded-diff-optional-but-recommended">1.2 TP-level sharded diff: optional, but recommended</h3>
+<p>If the path has already become:</p>
+<pre><code class="language-text">TP shards within a PP stage
+   ↓
+node-local NVLink AllGather
+   ↓
+PP source
+   ↓
+RDMA P2P
+   ↓
+rollout
+</code></pre>
+<p>then full AllGather happens only within a node.</p>
+<p>Assume:</p>
+<pre><code class="language-text">NVLink AllGather = 300 GB/s
+RDMA             = 30 GB/s
+delta density    = 10%
+</code></pre>
+<p>For 300 GB of weights:</p>
+<pre><code class="language-text">full local AllGather:
+300 / 300 = 1 s
+
+delta RDMA:
+30 / 30 = 1 s
+</code></pre>
+<p>The two stages are roughly balanced.</p>
+<p>So <strong>TP-level sharded diff is not strictly required</strong>.</p>
+<p>But it is still recommended.</p>
+<p>If delta density falls further to 1%:</p>
+<pre><code class="language-text">delta RDMA:
+3 GB / 30 GB/s = 0.1 s
+</code></pre>
+<p>while full local AllGather still takes:</p>
+<pre><code class="language-text">300 / 300 = 1 s
+</code></pre>
+<p>then node-local AllGather becomes the bottleneck again.</p>
+<p>For the NCCL path:</p>
+<blockquote>
+<p><strong>PP-level sharded diff is required; TP-level sharded diff is optional, but provides more headroom.</strong></p>
+</blockquote>
+<hr />
+<h2 id="en-2-from-disk-object-storage">2. From disk / object storage</h2>
+<h3 id="en-21-cross-node-gather-to-one-node-pp-level-sharded-diff-is-still-required">2.1 Cross-node gather to one node: PP-level sharded diff is still required</h3>
+<p>If the path is:</p>
+<pre><code class="language-text">PP0 ─┐
+PP1 ─┤
+PP2 ─┼→ one node
+...  │
+     ↓
+full model
+     ↓
+disk / S3
+</code></pre>
+<p>then even before considering performance, there is a direct problem:</p>
+<blockquote>
+<p><strong>The full model may not fit in a single node's CPU RAM.</strong></p>
+</blockquote>
+<p>For a model at the 1T-parameter scale, PP-level sharded diff / distributed writes remain very important.</p>
+<p>A more reasonable design is:</p>
+<pre><code class="language-text">PP0 → storage
+PP1 → storage
+PP2 → storage
+...
+</code></pre>
+<p>rather than collecting everything on one node first.</p>
+<hr />
+<h3 id="en-22-node-local-allgather-within-each-pp-stage-tp-level-sharded-diff-is-usually-unnecessary">2.2 Node-local AllGather within each PP stage: TP-level sharded diff is usually unnecessary</h3>
+<p>If the path already looks like the Slime-style design:</p>
+<pre><code class="language-text">TP shards within a PP stage
+   ↓
+node-local NVLink AllGather
+   ↓
+PP source
+   ↓
+diff
+   ↓
+disk / S3
+</code></pre>
+<p>then the benefit of TP-level sharded diff is usually small.</p>
+<p>For example:</p>
+<pre><code class="language-text">PP stage weights = 200 GB
+NVLink AllGather = 300 GB/s
+storage write   = 5 GB/s
+</code></pre>
+<p>Then:</p>
+<pre><code class="language-text">AllGather:
+200 / 300 ≈ 0.67 s
+
+storage write:
+200 / 5 = 40 s
+</code></pre>
+<p>Even if AllGather improves from:</p>
+<pre><code class="language-text">0.67 s → 0.07 s
+</code></pre>
+<p>the overall speedup is small.</p>
+<p>So:</p>
+<blockquote>
+<p><strong>For the disk path, if the gather within each PP stage uses only node-local NVLink, TP-level sharded diff is usually unnecessary.</strong></p>
+</blockquote>
+<p>This is an important difference from the NCCL path.</p>
+<p>With NCCL:</p>
+<pre><code class="language-text">NVLink: hundreds of GB/s
+RDMA:   tens of GB/s
+</code></pre>
+<p>The difference is often only about one order of magnitude.</p>
+<p>But disk / object storage often provides only:</p>
+<pre><code class="language-text">a few GB/s per node
+</code></pre>
+<p>which is much slower than NVLink.</p>
+<p>The disk path is therefore more likely to be limited by storage bandwidth than by node-local AllGather.</p>
+<hr />
+<h2 id="en-conclusion">Conclusion</h2>
+<div class="table-scroll" role="region" aria-label="Comparison table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>PP-level sharded diff</th>
+<th>TP-level sharded diff</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NCCL: cross-node gather → single-node broadcast</td>
+<td><strong>Required</strong></td>
+<td><strong>Recommended</strong></td>
+</tr>
+<tr>
+<td>NCCL: node-local PP gather → P2P rollout</td>
+<td><strong>Must preserve the distributed PP layout</strong></td>
+<td><strong>Optional, but recommended</strong></td>
+</tr>
+<tr>
+<td>Disk: cross-node gather → single-node storage write</td>
+<td><strong>Required</strong></td>
+<td>Secondary value</td>
+</tr>
+<tr>
+<td>Disk: node-local PP gather → parallel storage writes</td>
+<td><strong>Must preserve the distributed PP layout</strong></td>
+<td><strong>Usually unnecessary</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The core decision comes down to two points:</p>
+<blockquote>
+<p><strong>Avoid full-weight gathers across PP nodes where possible: the weights may not fit, and the gather can become a cross-node communication bottleneck.</strong></p>
+<p><strong>Whether to optimize a full node-local TP AllGather with sharded diff depends on how fast the output path is: it is worth considering for NCCL P2P, and usually not worthwhile for disk / object storage.</strong></p>
+</blockquote>
+      </section>
+      <section id="chinese" lang="zh-CN" aria-label="中文文章">
+        <p class="language-label">中文</p>
+        <h2>什么时候需要 delta all-gather（sharded diff）？</h2>
+        <details><summary>文章目录</summary><div class="toc">
+<ul>
+<li><a href="#zh-背景">背景</a></li>
+<li><a href="#zh-tldr">TL;DR</a></li>
+<li><a href="#zh-两种粒度的-sharded-diff">两种粒度的 sharded diff</a><ul>
+<li><a href="#zh-1-tp-level-sharded-diff">1. TP-level sharded diff</a></li>
+<li><a href="#zh-2-pp-level-sharded-diff">2. PP-level sharded diff</a></li>
+</ul>
+</li>
+<li><a href="#zh-1-nccl-weight-sync">1. NCCL weight sync</a><ul>
+<li><a href="#zh-11-pp-level-sharded-diff必须做">1.1 PP-level sharded diff：必须做</a><ul>
+<li><a href="#zh-问题一cpu-ram-可能根本放不下">问题一：CPU RAM 可能根本放不下</a></li>
+<li><a href="#zh-问题二跨机-allgather-会成为新的瓶颈">问题二：跨机 AllGather 会成为新的瓶颈</a></li>
+</ul>
+</li>
+<li><a href="#zh-12-tp-level-sharded-diff可做可不做但最好做">1.2 TP-level sharded diff：可做可不做，但最好做</a></li>
+</ul>
+</li>
+<li><a href="#zh-2-from-disk-object-storage">2. From disk / object storage</a><ul>
+<li><a href="#zh-21-跨机-gather-到单-nodepp-level-sharded-diff-仍然必须做">2.1 跨机 gather 到单 node：PP-level sharded diff 仍然必须做</a></li>
+<li><a href="#zh-22-pp-stage-内单机-allgathertp-level-sharded-diff-基本没必要">2.2 PP stage 内单机 AllGather：TP-level sharded diff 基本没必要</a></li>
+</ul>
+</li>
+<li><a href="#zh-conclusion">Conclusion</a></li>
+</ul>
+</div>
+</details>
+        <h2 id="zh-背景">背景</h2>
+<p>在看 VeRL 的 delta weight sync 实现时，我们发现一个有意思的点：</p>
+<blockquote>
+<p>VeRL 不只是减少了 trainer → rollout 的传输 payload，它还做了 <strong>sharded diff</strong>。</p>
+</blockquote>
+<p>也就是说，它不是先把完整权重 AllGather 到一个 rank，再计算 delta；而是先在 shard 上计算 diff，再只 gather delta。</p>
+<p>这篇文章主要想分析：</p>
+<blockquote>
+<p><strong>什么时候 sharded diff 是必要的，什么时候其实可以不做？</strong></p>
+</blockquote>
+<p>这主要取决于两个因素：</p>
+<ol>
+<li><strong>单个 node 的 CPU RAM 是否能装下 gather 后的完整权重。</strong></li>
+<li><strong>AllGather 的时间是否会超过 delta 后 trainer → rollout 的发送时间，即 AllGather 会不会成为新的瓶颈。</strong></li>
+</ol>
+<p>我们分四种情况讨论：</p>
+<pre><code class="language-text">NCCL:
+1. 跨机 AllGather 到单 node → 单 node broadcast 给 rollout
+2. PP stage 内单机 AllGather → PP node P2P 发给 rollout
+
+Disk:
+3. 跨机 AllGather 到单 node → 单 node 写 disk / object storage
+4. PP stage 内单机 AllGather → 多个 PP node 并行写 disk / object storage
+</code></pre>
+<hr />
+<h2 id="zh-tldr">TL;DR</h2>
+<ul>
+<li><strong>PP-level sharded diff 基本必须做。</strong> 否则超大模型需要跨 PP node 聚合完整权重，不但慢，而且单机 CPU RAM 很可能放不下。</li>
+<li><strong>TP-level sharded diff 对 NCCL 可做可不做，但最好做。</strong> 当 delta 很小时，单机 full AllGather 也可能重新成为瓶颈。</li>
+<li><strong>TP-level sharded diff 对 disk path 通常没必要。</strong> 单机 NVLink AllGather 通常远快于写 disk / object storage。</li>
+</ul>
+<hr />
+<h2 id="zh-两种粒度的-sharded-diff">两种粒度的 sharded diff</h2>
+<p>这里其实可以把 sharded diff 再细分成两层。</p>
+<h3 id="zh-1-tp-level-sharded-diff">1. TP-level sharded diff</h3>
+<p>最细粒度。</p>
+<p>每个 TP rank 直接对自己的 shard 算 diff：</p>
+<pre><code class="language-text">TP rank 0 → diff ─┐
+TP rank 1 → diff ─┤
+TP rank 2 → diff ─┼→ gather delta
+...               │
+</code></pre>
+<p>即使这些 TP rank 都在同一台机器上，也只 gather delta，而不是 full weight。</p>
+<h3 id="zh-2-pp-level-sharded-diff">2. PP-level sharded diff</h3>
+<p>机器内部仍然可以做 full AllGather：</p>
+<pre><code class="language-text">TP shards
+   ↓
+单机 full AllGather
+   ↓
+PP source
+   ↓
+diff
+</code></pre>
+<p>但是不同 PP node 之间<strong>不再 gather full weight</strong>。</p>
+<p>每个 PP node 只保留自己的部分，或者只发送自己的 delta：</p>
+<pre><code class="language-text">PP0 → delta ─┐
+PP1 → delta ─┤
+PP2 → delta ─┼→ downstream
+...          │
+</code></pre>
+<p>所以：</p>
+<blockquote>
+<p><strong>TP-level sharded diff 优化的是 node 内 AllGather。</strong></p>
+</blockquote>
+<p>而：</p>
+<blockquote>
+<p><strong>PP-level sharded diff 避免的是跨 node 的 full-weight gather。</strong></p>
+</blockquote>
+<hr />
+<h2 id="zh-1-nccl-weight-sync">1. NCCL weight sync</h2>
+<h3 id="zh-11-pp-level-sharded-diff必须做">1.1 PP-level sharded diff：必须做</h3>
+<p>假设我们不做 PP-level sharded diff：</p>
+<pre><code class="language-text">PP0 ─┐
+PP1 ─┤
+PP2 ─┼→ 跨机 gather 到单 node
+...  │
+     ↓
+完整模型
+     ↓
+broadcast rollout
+</code></pre>
+<p>这有两个问题。</p>
+<h4 id="zh-问题一cpu-ram-可能根本放不下">问题一：CPU RAM 可能根本放不下</h4>
+<p>例如一个 1T BF16 模型：</p>
+<pre><code class="language-text">1T × 2 bytes ≈ 2 TB
+</code></pre>
+<p>如果最终完整权重需要在一个 node 上 materialize，那么单机可能需要 TB 级 CPU RAM。</p>
+<p>这本身就可能不可行。</p>
+<h4 id="zh-问题二跨机-allgather-会成为新的瓶颈">问题二：跨机 AllGather 会成为新的瓶颈</h4>
+<p>trainer 侧跨 PP node 的 AllGather 和 trainer → rollout，本质上都走跨机网络。</p>
+<p>例如：</p>
+<pre><code class="language-text">跨机 gather bandwidth = 30 GB/s
+trainer → rollout      = 30 GB/s
+delta density          = 10%
+full weight            = 1 TB
+</code></pre>
+<p>那么：</p>
+<pre><code class="language-text">full cross-node gather:
+1000 / 30 ≈ 33 s
+
+delta trainer → rollout:
+100 / 30 ≈ 3.3 s
+</code></pre>
+<p><strong>如果只优化 trainer→rollout，trainer-side full gather 就会直接变成新瓶颈。<br />
+所以这种情况下，PP-level sharded diff 是必须做的。</strong></p>
+<p>这也是 VeRL <code>delta_sharded</code> 能获得明显收益的重要原因。</p>
+<hr />
+<h3 id="zh-12-tp-level-sharded-diff可做可不做但最好做">1.2 TP-level sharded diff：可做可不做，但最好做</h3>
+<p>如果已经改成：</p>
+<pre><code class="language-text">PP stage 内 TP shards
+   ↓
+单机 NVLink AllGather
+   ↓
+PP source
+   ↓
+RDMA P2P
+   ↓
+rollout
+</code></pre>
+<p>这时候 full AllGather 已经只发生在 node 内。</p>
+<p>假设：</p>
+<pre><code class="language-text">NVLink AllGather = 300 GB/s
+RDMA             = 30 GB/s
+delta density    = 10%
+</code></pre>
+<p>对于 300 GB 权重：</p>
+<pre><code class="language-text">full local AllGather:
+300 / 300 = 1 s
+
+delta RDMA:
+30 / 30 = 1 s
+</code></pre>
+<p>两边基本平衡。</p>
+<p>所以 <strong>TP-level sharded diff 不是绝对必须的</strong>。</p>
+<p>但最好还是做。</p>
+<p>因为如果 delta density 进一步降到 1%：</p>
+<pre><code class="language-text">delta RDMA:
+3 GB / 30 GB/s = 0.1 s
+</code></pre>
+<p>而 full local AllGather 仍然需要：</p>
+<pre><code class="language-text">300 / 300 = 1 s
+</code></pre>
+<p>这时候 node 内 AllGather 反而会重新成为瓶颈。</p>
+<p>所以 NCCL path 下：</p>
+<blockquote>
+<p><strong>PP-level sharded diff 必须做；TP-level sharded diff 可选，但做了更稳。</strong></p>
+</blockquote>
+<hr />
+<h2 id="zh-2-from-disk-object-storage">2. From disk / object storage</h2>
+<h3 id="zh-21-跨机-gather-到单-nodepp-level-sharded-diff-仍然必须做">2.1 跨机 gather 到单 node：PP-level sharded diff 仍然必须做</h3>
+<p>如果是：</p>
+<pre><code class="language-text">PP0 ─┐
+PP1 ─┤
+PP2 ─┼→ 单 node
+...  │
+     ↓
+完整模型
+     ↓
+disk / S3
+</code></pre>
+<p>即使不考虑性能，也仍然有一个很直接的问题：</p>
+<blockquote>
+<p><strong>完整模型可能放不进单 node 的 CPU RAM。</strong></p>
+</blockquote>
+<p>所以对于 1T 级别模型，PP-level sharded diff / distributed write 仍然非常重要。</p>
+<p>更合理的是：</p>
+<pre><code class="language-text">PP0 → storage
+PP1 → storage
+PP2 → storage
+...
+</code></pre>
+<p>而不是先汇总到一个 node。</p>
+<hr />
+<h3 id="zh-22-pp-stage-内单机-allgathertp-level-sharded-diff-基本没必要">2.2 PP stage 内单机 AllGather：TP-level sharded diff 基本没必要</h3>
+<p>如果已经是 Slime 这类路径：</p>
+<pre><code class="language-text">PP stage 内 TP shards
+   ↓
+单机 NVLink AllGather
+   ↓
+PP source
+   ↓
+diff
+   ↓
+disk / S3
+</code></pre>
+<p>那么 TP-level sharded diff 的收益通常很小。</p>
+<p>例如：</p>
+<pre><code class="language-text">PP stage weight = 200 GB
+NVLink AllGather = 300 GB/s
+storage write    = 5 GB/s
+</code></pre>
+<p>那么：</p>
+<pre><code class="language-text">AllGather:
+200 / 300 ≈ 0.67 s
+
+写 storage:
+200 / 5 = 40 s
+</code></pre>
+<p>即使把 AllGather 从：</p>
+<pre><code class="language-text">0.67 s → 0.07 s
+</code></pre>
+<p>整体也不会快多少。</p>
+<p>所以：</p>
+<blockquote>
+<p><strong>Disk path 下，如果 PP stage 内部的 gather 只走单机 NVLink，那么通常没有必要再做 TP-level sharded diff。</strong></p>
+</blockquote>
+<p>这和 NCCL path 有一个重要区别。</p>
+<p>NCCL 中：</p>
+<pre><code class="language-text">NVLink: 数百 GB/s
+RDMA:   数十 GB/s
+</code></pre>
+<p>差距通常只有一个数量级左右。</p>
+<p>但 disk / object storage 往往只有：</p>
+<pre><code class="language-text">几 GB/s / node
+</code></pre>
+<p>相比 NVLink 慢得多。</p>
+<p>因此 disk path 更容易被 storage bandwidth bound，而不是被 node-local AllGather bound。</p>
+<hr />
+<h2 id="zh-conclusion">Conclusion</h2>
+<div class="table-scroll" role="region" aria-label="Comparison table" tabindex="0"><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>PP-level sharded diff</th>
+<th>TP-level sharded diff</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NCCL：跨机 gather → 单 node broadcast</td>
+<td><strong>必须</strong></td>
+<td><strong>建议做</strong></td>
+</tr>
+<tr>
+<td>NCCL：PP node 内 gather → P2P rollout</td>
+<td><strong>必须保留分布式 PP layout</strong></td>
+<td><strong>可选，但建议做</strong></td>
+</tr>
+<tr>
+<td>Disk：跨机 gather → 单 node 写 storage</td>
+<td><strong>必须</strong></td>
+<td>价值次要</td>
+</tr>
+<tr>
+<td>Disk：PP node 内 gather → 并行写 storage</td>
+<td><strong>必须保留分布式 PP layout</strong></td>
+<td><strong>通常没必要</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>最核心的判断可以简化成两句话：</p>
+<blockquote>
+<p><strong>跨 PP node 的 full-weight gather 应该尽量避免：它既可能放不下，也容易成为跨机通信瓶颈。</strong></p>
+<p><strong>node 内 TP full AllGather 要不要继续做 sharded diff，则看后面的输出链路有多快：NCCL P2P 下值得考虑，disk/object storage 下通常不值得。</strong></p>
+</blockquote>
+      </section>
+      <footer class="page-footer">
+        <a href="../../">← Xiaole Guo</a>
+        <a href="#top">Back to top ↑</a>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>
