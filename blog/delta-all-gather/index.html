@@ -123,7 +123,7 @@
 <h2 id="en-1-nccl-allgather-to-one-node-then-broadcast">1. NCCL: AllGather to one node, then broadcast</h2>
 <pre><code class="language-text">PP nodes → gather to one source node → broadcast to rollout
 </code></pre>
-<p><strong>PP-level sharded diff is required.</strong> Gathering the full model onto one node can exceed its CPU RAM: a 1T-parameter BF16 model alone is about 2 TB. The cross-node gather also uses the network, just like trainer → rollout transfer. If we compress only the latter, the full gather becomes the new bottleneck. Compute the diff within each PP node and gather the deltas instead.</p>
+<p><strong>PP-level sharded diff is required.</strong> Gathering the full model onto one node can exceed its CPU RAM (computing the diff requires keeping a pinned copy of the previous step's weights): a 1T-parameter BF16 model alone is about 2 TB. The cross-node gather also uses the network, just like trainer → rollout transfer. If we compress only the latter, the full gather becomes the new bottleneck. Compute the diff within each PP node and gather the deltas instead.</p>
 <p><strong>TP-level sharded diff is not required, but recommended.</strong> Node-local NVLink is fast, but a sufficiently small delta can make the output transfer faster than a full local gather. For example, with 300 GB of weights, an effective local gather bandwidth of 300 GB/s gives a 1 s gather. A 1% delta sent at 30 GB/s takes only 0.1 s. Making the local gather delta-aware helps avoid that bottleneck.</p>
 <h2 id="en-2-disk-pp-nodes-write-to-storage-in-parallel">2. Disk: PP nodes write to storage in parallel</h2>
 <pre><code class="language-text">Each PP node: local TP AllGather → diff → write delta to storage
@@ -185,7 +185,7 @@
 <h2 id="zh-1-ncclallgather-到一个-node再-broadcast">1. NCCL：AllGather 到一个 node，再 broadcast</h2>
 <pre><code class="language-text">各 PP node → gather 到一个 source node → broadcast 给 rollout
 </code></pre>
-<p><strong>PP-level sharded diff 必须做。</strong> 完整模型聚合到一台机器，CPU RAM 可能放不下：1T 参数的 BF16 模型，仅权重就约 2 TB。同时，跨 PP node 的 gather 和 trainer → rollout 都走跨机网络。如果只压缩后者，前面的全量 gather 就会成为新瓶颈。因此，应该先在各 PP node 内算 diff，再聚合 delta。</p>
+<p><strong>PP-level sharded diff 必须做。</strong> 完整模型聚合到一台机器，CPU RAM 可能放不下（由于要算 diff，所以必须 pin 一版上个 step 的权重）：1T 参数的 BF16 模型，仅权重就约 2 TB。同时，跨 PP node 的 gather 和 trainer → rollout 都走跨机网络。如果只压缩后者，前面的全量 gather 就会成为新瓶颈。因此，应该先在各 PP node 内算 diff，再聚合 delta。</p>
 <p><strong>TP-level sharded diff 非必须，建议做。</strong> 单机 NVLink 虽然快，但 delta 足够小时，输出传输仍可能比全量 local gather 更快。例如，300 GB 权重以 300 GB/s 的有效带宽做 local gather，需要 1 s；如果 delta 只有 1%，以 30 GB/s 发送只需 0.1 s。让单机内部也只 gather delta，可以避免这一步成为瓶颈。</p>
 <h2 id="zh-2-disk各-pp-node-并行写-storage">2. Disk：各 PP node 并行写 storage</h2>
 <pre><code class="language-text">每个 PP node：单机 TP AllGather → diff → 写 delta 到 storage
