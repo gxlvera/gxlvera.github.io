@@ -755,7 +755,7 @@
           <p class="section-label">01</p>
           <div class="slide-title">
             <p class="eyebrow">Part 1 · Delta Weight Sync for verl</p>
-            <h2>Delta Sync Pipeline<span class="title-reveal" data-step="6">: The Naive Version</span></h2>
+            <h2>Delta Sync Pipeline<span class="title-reveal" data-step="7">: The Naive Version</span></h2>
           </div>
           <p class="page-number"></p>
         </header>
@@ -944,28 +944,6 @@
           <p class="chal-eg">e.g. GLM-5 (744B, BF16) ≈ <b>1.5 TB</b> vs. <b>2 TB</b> CPU RAM per DGX H100 node</p>
         </section>
 
-        <svg class="chal-diagram" viewBox="0 0 790 458" role="img" aria-label="Actor rank 0 on node 0 holds the new weights on GPU and a full-model pinned snapshot in CPU memory">
-          <rect class="pipe-zone alert" x="0" y="0" width="790" height="458" rx="16" />
-          <text class="pipe-col-title alert" x="28" y="44">ACTOR RANK 0 · NODE 0</text>
-
-          <g class="pipe-node">
-            <rect class="pipe-box" x="40" y="90" width="330" height="290" rx="14" />
-            <text class="pipe-tag" x="64" y="124">GPU</text>
-            <text class="pipe-big new" x="205" y="236" text-anchor="middle">θₜ₊₁</text>
-            <text class="pipe-meta" x="205" y="282" text-anchor="middle">full weights</text>
-          </g>
-          <g class="pipe-node">
-            <rect class="pipe-box" x="420" y="90" width="330" height="290" rx="14" />
-            <text class="pipe-tag" x="444" y="124">CPU · PINNED</text>
-            <text class="pipe-big" x="585" y="236" text-anchor="middle">θₜ snapshot</text>
-            <text class="pipe-meta" x="585" y="282" text-anchor="middle">full weights</text>
-          </g>
-
-          <rect class="snap-ring" x="404" y="74" width="362" height="322" rx="20" />
-          <rect class="snap-pill" x="600" y="57" width="166" height="34" rx="17" />
-          <text class="snap-pill-text" x="683" y="80" text-anchor="middle">CHALLENGE 1</text>
-          <text class="pipe-meta" x="395" y="430" text-anchor="middle">the whole model, pinned in one node's host memory</text>
-        </svg>
 
         <section class="chal-card chal-speed" data-step="1">
           <p class="chal-label">Challenge 2 · Speed</p>
