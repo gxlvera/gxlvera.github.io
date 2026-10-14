@@ -126,6 +126,62 @@ b {
   display: inline-block;
 }
 
+/* ============================== Cover ============================== */
+
+.cover {
+  padding: 72px 84px 58px;
+}
+
+.cover-copy {
+  position: absolute;
+  left: 84px;
+  right: 84px;
+  top: 200px;
+}
+
+.cover h1 {
+  margin: 0;
+  padding-left: 32px;
+  border-left: 6px solid var(--rust);
+  color: var(--ink);
+  font-size: 84px;
+  font-weight: 740;
+  line-height: 1.1;
+  letter-spacing: -0.045em;
+}
+
+.cover h1 span {
+  display: block;
+}
+
+.cover-author {
+  margin: 56px 0 0 38px;
+  color: var(--ink-soft);
+  font-size: 36px;
+  font-weight: 560;
+  letter-spacing: -0.02em;
+}
+
+.cover-footer {
+  position: absolute;
+  left: 84px;
+  right: 84px;
+  bottom: 52px;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 19px;
+  border-top: 1px solid var(--line);
+}
+
+.cover.is-active .cover-copy,
+.cover.is-active .cover-footer {
+  animation: rise-in 780ms cubic-bezier(0.2, 0.75, 0.2, 1) both;
+}
+
+.cover.is-active .cover-footer {
+  animation-delay: 160ms;
+}
+
 /* ============================== About ============================== */
 
 .about {
