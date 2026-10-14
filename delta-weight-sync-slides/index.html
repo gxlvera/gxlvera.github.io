@@ -1,0 +1,1328 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f1e8" />
+    <title>Delta Weight Sync for verl</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="deck" aria-label="Delta weight sync for verl">
+      <!-- ============================== Cover ============================== -->
+      <section class="slide cover is-active" aria-label="Cover">
+        <div class="cover-copy">
+          <h1>
+            <span>Delta Weight Synchronization</span>
+            <span>for verl</span>
+          </h1>
+          <p class="cover-author">Xiaole Guo</p>
+        </div>
+        <footer class="cover-footer">
+          <p class="page-number"></p>
+        </footer>
+      </section>
+
+      <!-- ============================== 03 · Delta sync: motivation ============================== -->
+      <section class="slide content wsync" aria-label="Delta weight sync: motivation">
+        <header class="slide-header">
+          <p class="section-label"></p>
+          <div class="slide-title">
+            <p class="eyebrow">Delta Weight Sync for verl</p>
+            <h2>Motivation: Weight Sync in RL Could Be a Bottleneck</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <div class="wsync-row">
+          <svg class="rl-loop" viewBox="0 0 760 220" role="img" aria-label="The trainer syncs updated weights to the rollout engine">
+            <defs>
+              <marker id="arrow-coral" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="14" refY="9" orient="auto">
+                <path d="M 0 1 L 16 9 L 0 17 Z" fill="#b4523b" />
+              </marker>
+            </defs>
+
+            <rect class="loop-node" x="6" y="26" width="236" height="168" rx="10" />
+            <text class="loop-tag" x="124" y="72" text-anchor="middle">POLICY UPDATE</text>
+            <text class="loop-title" x="124" y="114" text-anchor="middle">Trainer</text>
+            <text class="loop-sub" x="124" y="148" text-anchor="middle">FSDP / Megatron</text>
+
+            <rect class="loop-node" x="518" y="26" width="236" height="168" rx="10" />
+            <text class="loop-tag" x="636" y="72" text-anchor="middle">GENERATION</text>
+            <text class="loop-title" x="636" y="114" text-anchor="middle">Rollout Engine</text>
+            <text class="loop-sub" x="636" y="148" text-anchor="middle">SGLang / vLLM</text>
+
+            <path class="loop-arrow-sync" d="M 244 110 H 514" marker-end="url(#arrow-coral)" />
+            <rect class="sync-pill" x="310" y="93" width="140" height="34" rx="17" />
+            <text class="sync-pill-text" x="380" y="115" text-anchor="middle">WEIGHT SYNC</text>
+          </svg>
+
+          <ul class="wsync-points">
+            <li>
+              <b>Traditional method:</b> payload is the full model
+              <span class="point-sub">e.g. GLM-5: 744B params × 2 B (BF16) ≈ 1.5 TB per sync</span>
+            </li>
+            <li><b>On the critical path:</b> Either the next rollout waits for the sync, or stale weights keep generating</li>
+          </ul>
+        </div>
+
+        <div class="wsync-panels">
+          <section class="net-panel panel-fast" data-step="1">
+            <p class="scenario">Scenario 1</p>
+            <div class="panel-head">
+              <h3>Training-Rollout in Same Cluster</h3>
+            </div>
+
+            <svg class="topo" viewBox="0 0 660 104" aria-hidden="true">
+              <defs>
+                <marker id="arrow-teal" markerUnits="userSpaceOnUse" markerWidth="20" markerHeight="20" refX="16" refY="10" orient="auto">
+                  <path d="M 0 2 L 18 10 L 0 18 Z" fill="#1d5a57" />
+                </marker>
+              </defs>
+              <rect class="topo-boundary fast" x="2" y="2" width="656" height="100" rx="12" />
+              <rect class="topo-node" x="22" y="20" width="180" height="64" rx="8" />
+              <text class="topo-text" x="112" y="59" text-anchor="middle">Trainer GPUs</text>
+              <rect class="topo-node" x="458" y="20" width="180" height="64" rx="8" />
+              <text class="topo-text" x="548" y="59" text-anchor="middle">Rollout GPUs</text>
+              <line class="topo-link-fast" x1="204" y1="52" x2="446" y2="52" marker-end="url(#arrow-teal)" />
+              <text class="topo-label" x="325" y="36" text-anchor="middle">InfiniBand</text>
+              <text class="topo-label sub" x="325" y="82" text-anchor="middle">NCCL Broadcast</text>
+            </svg>
+
+            <div class="panel-facts">
+              <div><span>effective bandwidth</span><strong>~25 GB/s</strong></div>
+              <div><span>sync 1.5 TB</span><strong>≈ 1 min</strong></div>
+            </div>
+            <div class="time-bar" style="--w: 1.1%"><i></i></div>
+            <p class="panel-note">~1 min vs. tens of minutes per RL step → <b>not the bottleneck</b></p>
+          </section>
+
+          <section class="net-panel panel-slow" data-step="2">
+            <p class="scenario">Scenario 2</p>
+            <div class="panel-head">
+              <h3>External Rollout</h3>
+            </div>
+
+            <svg class="topo" viewBox="0 0 660 104" aria-hidden="true">
+              <defs>
+                <marker id="arrow-rust-sm" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" refX="13" refY="8" orient="auto">
+                  <path d="M 0 2 L 14 8 L 0 14 Z" fill="#b4523b" />
+                </marker>
+              </defs>
+              <rect class="topo-boundary" x="2" y="2" width="196" height="100" rx="12" />
+              <rect class="topo-boundary slow" x="462" y="2" width="196" height="100" rx="12" />
+              <rect class="topo-node" x="18" y="20" width="164" height="64" rx="8" />
+              <text class="topo-text" x="100" y="50" text-anchor="middle">Training</text>
+              <text class="topo-text" x="100" y="72" text-anchor="middle">cluster</text>
+              <rect class="topo-node" x="478" y="20" width="164" height="64" rx="8" />
+              <text class="topo-text" x="560" y="50" text-anchor="middle">Rollout fleet</text>
+              <text class="topo-text small" x="560" y="72" text-anchor="middle">other DC / cloud</text>
+              <line class="topo-link-slow" x1="200" y1="52" x2="452" y2="52" marker-end="url(#arrow-rust-sm)" />
+              <text class="topo-label coral" x="326" y="36" text-anchor="middle">Ethernet / WAN / shared FS</text>
+              <text class="topo-label sub" x="326" y="82" text-anchor="middle">no RDMA</text>
+            </svg>
+
+            <div class="panel-facts">
+              <div><span>effective bandwidth</span><strong>~300 MB/s</strong></div>
+              <div><span>sync 1.5 TB</span><strong class="coral">≈ 83 min</strong></div>
+            </div>
+            <div class="time-bar" style="--w: 92%"><i></i></div>
+            <p class="panel-note">→ <b>Rollout GPUs sit idle, or generation goes stale</b></p>
+          </section>
+        </div>
+
+      </section>
+
+      <!-- ============================== 04 · Delta sync: sparsity ============================== -->
+      <section class="slide content sparse" aria-label="Delta weight sync: weight updates are sparse">
+        <header class="slide-header">
+          <p class="section-label"></p>
+          <div class="slide-title">
+            <p class="eyebrow">Delta Weight Sync for verl</p>
+            <h2>Observation: RL Weight Updates Are Sparse</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <section class="sparse-card">
+          <p class="card-label">θₜ vs θₜ₊₁ · bitwise diff (per element) <span>(illustration)</span></p>
+          <div class="sparse-grid" data-cols="40" data-rows="12" data-changed="10" aria-hidden="true"></div>
+          <p class="sparse-legend">
+            <span class="legend-swatch same"></span>bit-identical
+            <span class="legend-swatch changed"></span>changed this step (~2%)
+          </p>
+        </section>
+
+        <section class="why-card" data-step="1">
+          <h3><span>Why?</span> BF16 rounding absorbs tiny updates</h3>
+        </section>
+
+        <section class="evidence-card">
+          <div class="evidence-head">
+            <h3>Measured across systems</h3>
+            <span>changed / step</span>
+          </div>
+          <ol class="evidence-list">
+            <li>
+              <div><strong>PULSE</strong></div>
+              <em>~1%</em>
+            </li>
+            <li>
+              <div><strong>SparrowRL</strong></div>
+              <em>~1%</em>
+            </li>
+            <li>
+              <div><strong>Fireworks</strong></div>
+              <em>&lt;2%</em>
+            </li>
+            <li>
+              <div><strong>SparseRL-Sync</strong></div>
+              <em>&lt;1%</em>
+            </li>
+          </ol>
+          <p class="evidence-source">Compiled in Changyi Yang, “Delta Weight Sync for RL” (changyi.fun)</p>
+        </section>
+
+        <section class="implication-card" data-step="2">
+          <h3><span>→</span> Basis for delta sync</h3>
+          <p class="impl-lead">Send only the changed <b>(position, value)</b> pairs.</p>
+          <div class="impl-bars">
+            <div class="impl-row">
+              <span class="impl-name">Full</span>
+              <div class="impl-track"><i class="impl-full"></i></div>
+              <span class="impl-val">1.5 TB · ~83 min</span>
+            </div>
+            <div class="impl-row">
+              <span class="impl-name">Delta</span>
+              <div class="impl-track"><i class="impl-delta"></i></div>
+              <span class="impl-val delta">60–90 GB · 3–5 min</span>
+            </div>
+          </div>
+          <p class="impl-foot"><b>Lossless:</b> rollout overwrites exact BF16 bytes, so no drift.</p>
+        </section>
+      </section>
+      <!-- ============================== 05 · Delta representation ============================== -->
+      <section class="slide content repr" aria-label="Delta representation: one parameter from encode to load">
+        <header class="slide-header">
+          <p class="section-label"></p>
+          <div class="slide-title">
+            <p class="eyebrow">Delta Weight Sync for verl</p>
+            <h2>Representing the Delta: One Parameter's Lifecycle</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <section class="rep-card rep-send">
+          <p class="rep-label"><span>1</span>How to represent each changed parameter?</p>
+          <div class="send-chips"><span>HF param name</span><i>+</i><span>flat index</span><i>+</i><span class="new">new value</span></div>
+          <table class="send-table">
+            <thead><tr><th colspan="2">model.layers.3.mlp.down_proj.weight</th></tr><tr><th>flat index</th><th>new value (bf16)</th></tr></thead>
+            <tbody>
+              <tr><td>64</td><td>0x3C22</td></tr>
+              <tr><td>1,207</td><td>0xBC0F</td></tr>
+              <tr><td>90,113</td><td>0x3B9A</td></tr>
+            </tbody>
+          </table>
+          <p class="send-note" data-step="1">Coordinates refer to the full tensor, so neither side's sharding appears in the format.</p>
+          <div class="send-idem" data-step="2">
+            <p class="send-idem-title">We send the <b>new value</b>, not the diff → <b class="ok">idempotent</b></p>
+            <table class="idem-mini">
+              <thead><tr><th></th><th>apply once</th><th>apply twice</th></tr></thead>
+              <tbody>
+                <tr class="add"><td>w ← w + Δ</td><td>w + Δ <i class="ok">✓</i></td><td>w + 2Δ <i class="no">✗</i></td></tr>
+                <tr class="set"><td>w ← new</td><td>new <i class="ok">✓</i></td><td>new <i class="ok">✓</i></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <i class="rep-arrow right a1" data-step="3"></i>
+
+        <section class="rep-card rep-recon" data-step="3">
+          <p class="rep-label teal"><span>2</span>Rollout engine: reconstruct the full tensor</p>
+          <svg class="recon-svg" viewBox="0 0 430 220" role="img" aria-label="A full-shape tensor filled with NaN except the three changed entries">
+              <rect class="cell nan" x="10" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="88" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="192" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="322" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="10" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="36" width="22" height="22" rx="2" />
+              <rect class="cell hit" x="88" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="192" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="322" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="10" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="88" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="192" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="322" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="10" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="88" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="192" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="322" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="10" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="88" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="192" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="114" width="22" height="22" rx="2" />
+              <rect class="cell hit" x="322" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="10" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="88" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="192" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="322" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="10" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="88" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="166" width="22" height="22" rx="2" />
+              <rect class="cell hit" x="192" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="322" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="10" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="88" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="192" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="322" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="192" width="22" height="22" rx="2" />
+          </svg>
+          <p class="rep-caption"><code>torch.full(shape, NaN)</code> + <code>index_copy_(idx, values)</code><br />NaN = unchanged</p>
+        </section>
+
+        <i class="rep-arrow down a2" data-step="4"></i>
+
+        <section class="rep-card rep-load" data-step="4">
+          <p class="rep-label teal"><span>3</span>Rollout engine: load weights</p>
+          <svg class="load-svg" viewBox="0 0 520 200" role="img" aria-label="SGLang's own load_weights splits the NaN tensor by columns into TP shards; a patched copy writes only non-NaN entries">
+              <rect class="cell nan" x="0" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="33" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="77" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="132" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="0" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="33" width="9" height="9" rx="2" />
+              <rect class="cell hit" x="33" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="77" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="132" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="0" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="33" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="77" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="132" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="0" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="33" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="77" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="132" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="0" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="33" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="77" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="66" width="9" height="9" rx="2" />
+              <rect class="cell hit" x="132" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="0" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="33" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="77" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="132" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="0" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="33" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="88" width="9" height="9" rx="2" />
+              <rect class="cell hit" x="77" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="132" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="0" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="33" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="77" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="132" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="99" width="9" height="9" rx="2" />
+              <line class="tp-cut" x1="87" y1="16" x2="87" y2="116" />
+              <text class="load-box-sub" x="87" y="138" text-anchor="middle">split by columns</text>
+              <line class="load-arrow" x1="186" y1="66" x2="214" y2="66" />
+              <path class="load-head" d="M 210 60 L 220 66 L 210 72 Z" />
+              <rect class="load-box" x="224" y="34" width="150" height="64" rx="10" />
+              <text class="load-box-text" x="299" y="73" text-anchor="middle">load_weights</text>
+              <text class="load-box-sub" x="299" y="124" text-anchor="middle">TP split · fuse</text>
+              <text class="load-box-sub teal" x="299" y="146" text-anchor="middle">unchanged</text>
+              <line class="load-arrow" x1="376" y1="50" x2="392" y2="40" />
+              <line class="load-arrow" x1="376" y1="82" x2="392" y2="150" />
+              <rect class="cell keep" x="400" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="11" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="11" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="11" width="9" height="9" rx="2" />
+              <rect class="cell hit" x="433" y="11" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="11" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="11" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="11" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="11" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="66" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="66" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="66" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="66" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="66" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="66" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="66" width="9" height="9" rx="2" />
+              <rect class="cell hit" x="477" y="66" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="156" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="156" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="156" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="156" width="9" height="9" rx="2" />
+              <rect class="cell hit" x="444" y="156" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="156" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="156" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="156" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="189" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="189" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="189" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="189" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="189" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="189" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="189" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="189" width="9" height="9" rx="2" />
+              <text class="tp-label" x="494" y="48">TP0</text>
+              <text class="tp-label" x="494" y="160">TP1</text>
+          </svg>
+          <p class="rep-patch"><code>dst = torch.where(torch.isnan(src), dst, src)</code></p>
+          <p class="rep-note"><b>Non-invasive:</b> SGLang's TP split and fusion run as-is; we only patch the final <code>copy_</code> to skip NaN.</p>
+        </section>
+      </section>
+
+      <!-- ============================== 06 · Delta sync: naive pipeline ============================== -->
+      <section class="slide content pipe" aria-label="Delta weight sync: naive pipeline">
+        <header class="slide-header">
+          <p class="section-label"></p>
+          <div class="slide-title">
+            <p class="eyebrow">Delta Weight Sync for verl</p>
+            <h2>Delta Sync Pipeline<span class="title-reveal" data-step="7">: The Naive Version</span></h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <ol class="pipe-steps" aria-label="Pipeline steps">
+          <li data-hl="0" data-done="0"><span>0</span>snapshot</li>
+          <li data-hl="1" data-done="1"><span>1</span>train</li>
+          <li data-hl="2" data-done="2"><span>2</span>gather</li>
+          <li data-hl="3" data-done="3"><span>3</span>diff</li>
+          <li data-hl="4" data-done="4"><span>4</span>encode</li>
+          <li data-hl="5" data-done="5"><span>5</span>broadcast</li>
+          <li data-hl="6" data-done="6"><span>6</span>load</li>
+        </ol>
+
+        <svg class="pipe-diagram" viewBox="0 0 1460 610" role="img" aria-label="Naive delta sync: other PP stages gather full weights to actor rank 0, which diffs them against a pinned CPU snapshot, encodes the changes, and broadcasts them to SGLang engines that load them in place">
+          <defs>
+            <marker id="pipe-arrow" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+              <path d="M 0 1 L 13 7 L 0 13 Z" fill="#8b7e72" />
+            </marker>
+            <marker id="pipe-arrow-rust" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="15" refY="9" orient="auto">
+              <path d="M 0 1 L 17 9 L 0 17 Z" fill="#b4523b" />
+            </marker>
+            <marker id="pipe-arrow-teal" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+              <path d="M 0 1 L 13 7 L 0 13 Z" fill="#1d5a57" />
+            </marker>
+            <path id="g-path-1" d="M 260 195 C 316 195, 316 180, 366 180" />
+            <path id="g-path-2" d="M 260 325 C 320 325, 316 230, 366 230" />
+            <path id="g-path-3" d="M 260 455 C 324 455, 316 280, 366 280" />
+            <path id="b-path-0" d="M 944 500 C 1004 500, 1000 200, 1056 200" />
+            <path id="b-path-1" d="M 944 500 C 1004 500, 1000 350, 1056 350" />
+            <path id="b-path-2" d="M 944 500 C 1004 500, 1000 500, 1056 500" />
+          </defs>
+
+          <!-- Actor rank 0 on node 0: always on screen -->
+          <rect class="pipe-zone" x="330" y="56" width="640" height="550" rx="16" />
+          <text class="pipe-col-title" x="356" y="94">ACTOR RANK 0 · NODE 0 (PP0)</text>
+
+          <!-- 0 · snapshot -->
+          <g class="pipe-node" data-hl="0 3">
+            <rect class="pipe-box" x="366" y="400" width="290" height="170" rx="12" />
+            <text class="pipe-tag" x="388" y="432">CPU · PINNED</text>
+            <text class="pipe-big" x="511" y="490" text-anchor="middle">θₜ snapshot</text>
+            <text class="pipe-meta" x="511" y="528" text-anchor="middle">full weights</text>
+          </g>
+
+          <!-- 1 · train: new weights on the GPU -->
+          <g class="pipe-node" data-step="1" data-hl="1 2 3">
+            <rect class="pipe-box" x="366" y="130" width="290" height="190" rx="12" />
+            <text class="pipe-tag" x="388" y="162">GPU</text>
+            <text class="pipe-big new" x="511" y="232" text-anchor="middle">θₜ₊₁</text>
+            <text class="pipe-meta" x="511" y="272" text-anchor="middle" data-only="1">weights</text>
+            <text class="pipe-meta" x="511" y="272" text-anchor="middle" data-step="2">full weights, tensor by tensor</text>
+          </g>
+
+          <!-- 2 · gather: the other PP stages appear and funnel full tensors in -->
+          <g data-step="2">
+            <text class="pipe-col-title" x="0" y="130">OTHER PP STAGES</text>
+            <g class="pipe-node" data-hl="2">
+              <rect class="pipe-box" x="0" y="150" width="260" height="90" rx="10" />
+              <text class="pipe-name" x="22" y="190">PP1</text>
+              <text class="pipe-meta" x="22" y="220">Node 1</text>
+              <text class="pipe-state new" x="238" y="205" text-anchor="end">θₜ₊₁</text>
+            </g>
+            <g class="pipe-node" data-hl="2">
+              <rect class="pipe-box" x="0" y="280" width="260" height="90" rx="10" />
+              <text class="pipe-name" x="22" y="320">PP2</text>
+              <text class="pipe-meta" x="22" y="350">Node 2</text>
+              <text class="pipe-state new" x="238" y="335" text-anchor="end">θₜ₊₁</text>
+            </g>
+            <g class="pipe-node" data-hl="2">
+              <rect class="pipe-box" x="0" y="410" width="260" height="90" rx="10" />
+              <text class="pipe-name" x="22" y="450">PP3</text>
+              <text class="pipe-meta" x="22" y="480">Node 3</text>
+              <text class="pipe-state new" x="238" y="465" text-anchor="end">θₜ₊₁</text>
+            </g>
+            <g class="pipe-flow gather">
+              <use href="#g-path-1" /><use href="#g-path-2" /><use href="#g-path-3" />
+            </g>
+            <text class="pipe-flow-label rust" x="130" y="540" text-anchor="middle">gather full weights</text>
+          </g>
+          <g class="pipe-packets" data-only="2">
+            <rect class="pkt-big" x="-11" y="-7" width="22" height="14" rx="2"><animateMotion dur="1.6s" repeatCount="indefinite" rotate="auto"><mpath href="#g-path-1" /></animateMotion></rect>
+            <rect class="pkt-big" x="-11" y="-7" width="22" height="14" rx="2"><animateMotion dur="1.6s" begin="0.5s" repeatCount="indefinite" rotate="auto"><mpath href="#g-path-2" /></animateMotion></rect>
+            <rect class="pkt-big" x="-11" y="-7" width="22" height="14" rx="2"><animateMotion dur="1.6s" begin="1s" repeatCount="indefinite" rotate="auto"><mpath href="#g-path-3" /></animateMotion></rect>
+          </g>
+
+          <!-- 3 · diff -->
+          <g data-step="3">
+            <g class="pipe-link" data-hl="3">
+              <line x1="470" y1="398" x2="470" y2="326" marker-end="url(#pipe-arrow)" />
+              <line x1="552" y1="322" x2="552" y2="394" marker-end="url(#pipe-arrow)" />
+              <text class="pipe-link-label" x="458" y="366" text-anchor="end">H2D</text>
+              <text class="pipe-link-label" x="566" y="366">refresh</text>
+            </g>
+            <g class="pipe-link">
+              <line x1="658" y1="190" x2="698" y2="190" marker-end="url(#pipe-arrow)" />
+            </g>
+            <g class="pipe-node" data-hl="3">
+              <rect class="pipe-box chip" x="702" y="156" width="246" height="68" rx="34" />
+              <text class="pipe-chip-text" x="825" y="187" text-anchor="middle">bitwise diff</text>
+              <text class="pipe-chip-sub" x="825" y="211" text-anchor="middle">(per element)</text>
+            </g>
+            <text class="pipe-caption" x="825" y="252" text-anchor="middle">compare bits → (idx, val)</text>
+          </g>
+
+          <!-- 4 · encode -->
+          <g data-step="4">
+            <g class="pipe-link">
+              <line x1="825" y1="264" x2="825" y2="292" marker-end="url(#pipe-arrow)" />
+              <line x1="825" y1="364" x2="825" y2="396" marker-end="url(#pipe-arrow)" />
+            </g>
+            <g class="pipe-node" data-hl="4">
+              <rect class="pipe-box chip" x="702" y="296" width="246" height="68" rx="34" />
+              <text class="pipe-chip-text" x="825" y="338" text-anchor="middle">encode · indices</text>
+            </g>
+            <g class="pipe-node" data-hl="4 5">
+              <rect class="pipe-box" x="702" y="400" width="246" height="170" rx="12" />
+              <text class="pipe-tag" x="722" y="432">Δ FLUSH</text>
+              <rect class="flush-row meta" x="722" y="452" width="206" height="30" rx="4" />
+              <text class="flush-text" x="736" y="473">manifest</text>
+              <rect class="flush-row pos" x="722" y="490" width="206" height="30" rx="4" />
+              <text class="flush-text" x="736" y="511">positions · int32</text>
+              <rect class="flush-row val" x="722" y="528" width="206" height="30" rx="4" />
+              <text class="flush-text" x="736" y="549">values · bf16</text>
+            </g>
+          </g>
+
+          <!-- 5 · broadcast: rollout appears, only the delta leaves node 0 -->
+          <g data-step="5">
+            <text class="pipe-col-title" x="1060" y="130">ROLLOUT · SGLANG</text>
+            <g class="pipe-node" data-hl="6">
+              <rect class="pipe-box" x="1060" y="150" width="400" height="100" rx="12" />
+              <text class="pipe-name" x="1084" y="192">Engine 1</text>
+              <text class="pipe-meta" x="1084" y="226" data-only="5">serving θₜ</text>
+              <text class="pipe-meta new" x="1084" y="226" data-step="6">θₜ₊₁ applied in place</text>
+            </g>
+            <g class="pipe-node" data-hl="6">
+              <rect class="pipe-box" x="1060" y="300" width="400" height="100" rx="12" />
+              <text class="pipe-name" x="1084" y="342">Engine 2</text>
+              <text class="pipe-meta" x="1084" y="376" data-only="5">serving θₜ</text>
+              <text class="pipe-meta new" x="1084" y="376" data-step="6">θₜ₊₁ applied in place</text>
+            </g>
+            <g class="pipe-node" data-hl="6">
+              <rect class="pipe-box" x="1060" y="450" width="400" height="100" rx="12" />
+              <text class="pipe-name" x="1084" y="492">Engine 3</text>
+              <text class="pipe-meta" x="1084" y="526" data-only="5">serving θₜ</text>
+              <text class="pipe-meta new" x="1084" y="526" data-step="6">θₜ₊₁ applied in place</text>
+            </g>
+            <g class="pipe-flow bcast">
+              <use href="#b-path-0" /><use href="#b-path-1" /><use href="#b-path-2" />
+            </g>
+            <text class="pipe-flow-label teal" x="1260" y="590" text-anchor="middle">NCCL broadcast Δ only</text>
+          </g>
+          <g class="pipe-packets" data-only="5">
+            <circle class="pkt-small" r="6"><animateMotion dur="1.2s" repeatCount="indefinite"><mpath href="#b-path-0" /></animateMotion></circle>
+            <circle class="pkt-small" r="6"><animateMotion dur="1.2s" begin="0.2s" repeatCount="indefinite"><mpath href="#b-path-1" /></animateMotion></circle>
+            <circle class="pkt-small" r="6"><animateMotion dur="1.2s" begin="0.4s" repeatCount="indefinite"><mpath href="#b-path-2" /></animateMotion></circle>
+          </g>
+
+          <!-- 6 · load -->
+          <g data-step="6">
+            <rect class="loader-pill" x="1290" y="172" width="150" height="32" rx="16" />
+            <text class="loader-text" x="1365" y="194" text-anchor="middle">delta_loader</text>
+            <rect class="loader-pill" x="1290" y="322" width="150" height="32" rx="16" />
+            <text class="loader-text" x="1365" y="344" text-anchor="middle">delta_loader</text>
+            <rect class="loader-pill" x="1290" y="472" width="150" height="32" rx="16" />
+            <text class="loader-text" x="1365" y="494" text-anchor="middle">delta_loader</text>
+          </g>
+        </svg>
+      </section>
+      <!-- ============================== 07 · Delta sync: engineering challenges ============================== -->
+      <section class="slide content chal" aria-label="Delta weight sync: engineering challenges">
+        <header class="slide-header">
+          <p class="section-label"></p>
+          <div class="slide-title">
+            <p class="eyebrow">Delta Weight Sync for verl</p>
+            <h2>Delta Weight Sync: Engineering Challenges</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <section class="chal-card chal-mem">
+          <p class="chal-label">Challenge 1 · Memory</p>
+          <h3>One node's CPU RAM can't hold full weights</h3>
+          <p class="chal-sub">A single node pins a full-model snapshot.</p>
+          <p class="chal-eg">e.g. GLM-5 (744B, BF16) ≈ <b>1.5 TB</b> vs. <b>2 TB</b> CPU RAM per DGX H100 node</p>
+        </section>
+
+
+        <section class="chal-card chal-speed" data-step="1">
+          <p class="chal-label">Challenge 2 · Speed</p>
+          <h3>No end-to-end gain</h3>
+          <table class="chal-table">
+            <thead>
+              <tr><th>Model</th><th>NCCL</th><th>Delta</th><th>vs NCCL</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Qwen2.5-32B</td><td>7.63 s</td><td>7.65 s</td><td class="worse">+0.2%</td></tr>
+              <tr><td>Qwen2.5-7B</td><td>1.52 s</td><td>1.76 s</td><td class="worse">+16.0%</td></tr>
+              <tr><td>Qwen3-0.6B</td><td>0.78 s</td><td>0.75 s</td><td>−4.6%</td></tr>
+            </tbody>
+          </table>
+          <p class="chal-cite">per-step weight sync · A100, FSDP2, offload off · my profiling in verl PR #6974</p>
+        </section>
+
+        <section class="chal-card chal-pipe" data-step="2">
+          <p class="chal-label">Why? Per-bucket pipeline on rank 0</p>
+
+          <div class="gantt-area">
+            <div class="gantt">
+              <p class="gantt-title"><span>gather ≈ broadcast per bucket</span></p>
+              <div class="lane">
+                <span class="lane-label">gather → rank 0</span>
+                <div class="track">
+                  <i class="bar g" style="--x: 0; --w: 1; --d: 0">b1</i>
+                  <i class="bar g" style="--x: 1; --w: 1; --d: 1">b2</i>
+                  <i class="bar g" style="--x: 2; --w: 1; --d: 2">b3</i>
+                  <i class="bar g" style="--x: 3; --w: 1; --d: 3">b4</i>
+                  <i class="bar g" style="--x: 4; --w: 1; --d: 4">b5</i>
+                </div>
+              </div>
+              <div class="lane">
+                <span class="lane-label">broadcast → rollout</span>
+                <div class="track">
+                  <i class="bar b" style="--x: 1; --w: 1; --d: 1">b1</i>
+                  <i class="bar b" style="--x: 2; --w: 1; --d: 2">b2</i>
+                  <i class="bar b" style="--x: 3; --w: 1; --d: 3">b3</i>
+                  <i class="bar b" style="--x: 4; --w: 1; --d: 4">b4</i>
+                  <i class="bar b" style="--x: 5; --w: 1; --d: 5">b5</i>
+                </div>
+              </div>
+            </div>
+
+            <div class="gantt gantt-delta" data-step="3">
+              <p class="gantt-title">Delta weight sync <span>broadcast shrinks, gather does not</span></p>
+              <div class="lane bottleneck">
+                <span class="lane-label">gather + diff</span>
+                <div class="track">
+                  <i class="bar g" style="--x: 0; --w: 1; --d: 0">b1</i><i class="bar d" style="--x: 1; --w: 0.17; --d: 0.5"></i>
+                  <i class="bar g" style="--x: 1.17; --w: 1; --d: 1">b2</i><i class="bar d" style="--x: 2.17; --w: 0.17; --d: 1.5"></i>
+                  <i class="bar g" style="--x: 2.34; --w: 1; --d: 2">b3</i><i class="bar d" style="--x: 3.34; --w: 0.17; --d: 2.5"></i>
+                  <i class="bar g" style="--x: 3.51; --w: 1; --d: 3">b4</i><i class="bar d" style="--x: 4.51; --w: 0.17; --d: 3.5"></i>
+                  <i class="bar g" style="--x: 4.68; --w: 1; --d: 4">b5</i><i class="bar d" style="--x: 5.68; --w: 0.17; --d: 4.5"></i>
+                </div>
+              </div>
+              <div class="lane">
+                <span class="lane-label">broadcast Δ</span>
+                <div class="track">
+                  <i class="bar b" style="--x: 1.17; --w: 0.15; --d: 1"></i>
+                  <i class="bar b" style="--x: 2.34; --w: 0.15; --d: 2"></i>
+                  <i class="bar b" style="--x: 3.51; --w: 0.15; --d: 3"></i>
+                  <i class="bar b" style="--x: 4.68; --w: 0.15; --d: 4"></i>
+                  <i class="bar b" style="--x: 5.85; --w: 0.15; --d: 5"></i>
+                </div>
+              </div>
+            </div>
+
+            <i class="gantt-end" data-step="3"><span>≈ same end time</span></i>
+          </div>
+
+          <p class="gantt-legend">
+            <span class="sw g"></span>gather full tensor
+            <span class="sw d"></span>diff + encode
+            <span class="sw b"></span>broadcast
+          </p>
+        </section>
+      </section>
+      <!-- ============================== 08 · Sharded delta ============================== -->
+      <section class="slide content shard" aria-label="Sharded delta: diff before gather">
+        <header class="slide-header">
+          <p class="section-label"></p>
+          <div class="slide-title">
+            <p class="eyebrow">Delta Weight Sync for verl</p>
+            <h2>Sharded Delta: Diff Before Gather</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <svg class="shard-diagram" viewBox="-10 -10 1480 372" role="img" aria-label="Every PP node keeps its own shard snapshot and diffs locally; only the sparse deltas are gathered to rank 0, which encodes and broadcasts them as before">
+          <defs>
+            <marker id="s-arrow" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+              <path d="M 0 1 L 13 7 L 0 13 Z" fill="#8b7e72" />
+            </marker>
+            <marker id="s-arrow-teal" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+              <path d="M 0 1 L 13 7 L 0 13 Z" fill="#1d5a57" />
+            </marker>
+            <path id="s-g-0" d="M 175 180 C 175 222, 468 214, 468 248" />
+            <path id="s-g-1" d="M 545 180 C 545 222, 480 214, 480 248" />
+            <path id="s-g-2" d="M 915 180 C 915 224, 492 210, 492 248" />
+            <path id="s-g-3" d="M 1285 180 C 1285 226, 504 206, 504 248" />
+          </defs>
+
+          <path class="node0-outline" d="M -6 -6 H 356 V 226 H 660 V 352 H -6 Z" />
+
+          <g class="shard-node">
+            <rect class="pipe-box" x="0" y="0" width="350" height="190" rx="12" />
+            <text class="pipe-name" x="22" y="38">PP0 · Node 0</text>
+              <rect class="rank-pill" x="236" y="16" width="96" height="28" rx="14" />
+              <text class="rank-pill-text" x="284" y="36" text-anchor="middle">RANK 0</text>
+            <g class="pipe-node mini">
+              <rect class="pipe-box" x="20" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="34" y="78">GPU</text>
+              <text class="mini-text new" x="95" y="112" text-anchor="middle">θₜ₊₁ shard</text>
+            </g>
+            <g class="pipe-node mini" data-hl="1">
+              <rect class="pipe-box" x="180" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="194" y="78">CPU · PINNED</text>
+              <text class="mini-text" x="255" y="112" text-anchor="middle">θₜ shard</text>
+            </g>
+            <g class="pipe-node">
+              <rect class="pipe-box chip" x="20" y="140" width="310" height="38" rx="19" />
+              <text class="mini-chip" x="175" y="165" text-anchor="middle">bitwise diff → Δ</text>
+            </g>
+          </g>
+          <g class="shard-node">
+            <rect class="pipe-box" x="370" y="0" width="350" height="190" rx="12" />
+            <text class="pipe-name" x="392" y="38">PP1 · Node 1</text>
+            <g class="pipe-node mini">
+              <rect class="pipe-box" x="390" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="404" y="78">GPU</text>
+              <text class="mini-text new" x="465" y="112" text-anchor="middle">θₜ₊₁ shard</text>
+            </g>
+            <g class="pipe-node mini" data-hl="1">
+              <rect class="pipe-box" x="550" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="564" y="78">CPU · PINNED</text>
+              <text class="mini-text" x="625" y="112" text-anchor="middle">θₜ shard</text>
+            </g>
+            <g class="pipe-node">
+              <rect class="pipe-box chip" x="390" y="140" width="310" height="38" rx="19" />
+              <text class="mini-chip" x="545" y="165" text-anchor="middle">bitwise diff → Δ</text>
+            </g>
+          </g>
+          <g class="shard-node">
+            <rect class="pipe-box" x="740" y="0" width="350" height="190" rx="12" />
+            <text class="pipe-name" x="762" y="38">PP2 · Node 2</text>
+            <g class="pipe-node mini">
+              <rect class="pipe-box" x="760" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="774" y="78">GPU</text>
+              <text class="mini-text new" x="835" y="112" text-anchor="middle">θₜ₊₁ shard</text>
+            </g>
+            <g class="pipe-node mini" data-hl="1">
+              <rect class="pipe-box" x="920" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="934" y="78">CPU · PINNED</text>
+              <text class="mini-text" x="995" y="112" text-anchor="middle">θₜ shard</text>
+            </g>
+            <g class="pipe-node">
+              <rect class="pipe-box chip" x="760" y="140" width="310" height="38" rx="19" />
+              <text class="mini-chip" x="915" y="165" text-anchor="middle">bitwise diff → Δ</text>
+            </g>
+          </g>
+          <g class="shard-node">
+            <rect class="pipe-box" x="1110" y="0" width="350" height="190" rx="12" />
+            <text class="pipe-name" x="1132" y="38">PP3 · Node 3</text>
+            <g class="pipe-node mini">
+              <rect class="pipe-box" x="1130" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="1144" y="78">GPU</text>
+              <text class="mini-text new" x="1205" y="112" text-anchor="middle">θₜ₊₁ shard</text>
+            </g>
+            <g class="pipe-node mini" data-hl="1">
+              <rect class="pipe-box" x="1290" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="1304" y="78">CPU · PINNED</text>
+              <text class="mini-text" x="1365" y="112" text-anchor="middle">θₜ shard</text>
+            </g>
+            <g class="pipe-node">
+              <rect class="pipe-box chip" x="1130" y="140" width="310" height="38" rx="19" />
+              <text class="mini-chip" x="1285" y="165" text-anchor="middle">bitwise diff → Δ</text>
+            </g>
+          </g>
+
+          <!-- sparse gather into rank 0 -->
+          <g class="shard-flow" data-hl="2">
+            <use href="#s-g-0" /><use href="#s-g-1" /><use href="#s-g-2" /><use href="#s-g-3" />
+          </g>
+
+          <!-- rank 0 strip: everything after the gather is unchanged -->
+          <text class="pipe-col-title node0" x="16" y="282">NODE 0 · ACTOR RANK 0</text>
+          <text class="pipe-meta" x="16" y="312">no full-model copy</text>
+          <g class="pipe-node" data-hl="2">
+            <rect class="pipe-box chip" x="330" y="252" width="300" height="80" rx="40" />
+            <text class="pipe-chip-text" x="480" y="286" text-anchor="middle">sparse gather Δ</text>
+            <text class="pipe-chip-sub" x="480" y="312" text-anchor="middle">only changed elements</text>
+          </g>
+        </svg>
+
+        <section class="fix-card fix-mem" data-step="1">
+          <p class="fix-label">Challenge 1 · solved</p>
+          <h3>Single-node CPU RAM bottleneck solved</h3>
+        </section>
+
+        <section class="fix-card fix-pipe" data-step="2">
+          <p class="fix-label">Challenge 2 · solved</p>
+          <h3>The gather is sparse too</h3>
+          <p class="fix-sub">Diff before gather, so the gather stage shrinks with the broadcast.</p>
+          <div class="mini-bars">
+            <div class="mini-row"><span>full gather</span><div class="mini-track"><i class="mb-full"></i></div><em>2.7–3.0 s</em></div>
+            <div class="mini-row"><span>sparse gather</span><div class="mini-track"><i class="mb-sparse"></i></div><em class="teal">0.75–1.0 s</em></div>
+          </div>
+        </section>
+
+        <section class="fix-card fix-result" data-step="3">
+          <p class="fix-label">Result · per-step weight sync</p>
+          <table class="res-table">
+            <thead>
+              <tr><th>Model</th><th>Full</th><th>naive Δ</th><th>sharded Δ</th><th>vs Full</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Qwen2.5-7B</td><td>1.52 s</td><td>1.76 s</td><td class="win">1.04 s</td><td class="win">−32%</td></tr>
+              <tr><td>Qwen2.5-32B</td><td>7.63 s</td><td>7.65 s</td><td class="win">2.96 s</td><td class="win">−61%</td></tr>
+              <tr><td>Qwen2.5-72B</td><td>36.9 s</td><td>—</td><td class="win">12.0 s</td><td class="win">−67%</td></tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+
+      <!-- ============================== 09 · Local diff -> global HF coordinates ============================== -->
+      <section class="slide content coord" aria-label="Engineering challenge: local shard diff to global HF coordinates">
+        <header class="slide-header">
+          <p class="section-label"></p>
+          <div class="slide-title">
+            <p class="eyebrow">Delta Weight Sync for verl</p>
+            <h2>Engineering Challenge: How to Transform from Global Diff to Sharded Diff?</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <p class="co-lead">Each rank diffs its <b>own shard</b>, so positions are <b>local</b>. How do we get <b>global HF</b> positions?</p>
+
+        <section class="co-card co-fsdp">
+          <p class="rep-label"><span>1</span>FSDP: one fixed formula</p>
+          <svg class="co-fsdp-svg" viewBox="0 0 380 210" role="img" aria-label="A weight matrix split into four contiguous row blocks, one per rank; a changed element in rank 2's block">
+            <line class="co-band-line" x1="74" y1="64" x2="356" y2="64" />
+            <line class="co-band-line" x1="74" y1="110" x2="356" y2="110" />
+            <line class="co-band-line" x1="74" y1="156" x2="356" y2="156" />
+            <text class="co-band-label" x="66" y="48" text-anchor="end">rank 0</text>
+            <text class="co-band-label" x="66" y="94" text-anchor="end">rank 1</text>
+            <text class="co-band-label on" x="66" y="140" text-anchor="end">rank 2</text>
+            <text class="co-band-label" x="66" y="186" text-anchor="end">rank 3</text>
+              <rect class="co-cell b0" x="78" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="101" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="124" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="147" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="170" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="193" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="216" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="239" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="262" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="285" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="308" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="331" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="78" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="101" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="124" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="147" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="170" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="193" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="216" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="239" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="262" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="285" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="308" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="331" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="78" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="101" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="124" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="147" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="170" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="193" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="216" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="239" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="262" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="285" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="308" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="331" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="78" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="101" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="124" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="147" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="170" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="193" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="216" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="239" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="262" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="285" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="308" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="331" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="78" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="101" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="124" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="147" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="170" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="193" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="216" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="239" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="262" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="285" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="308" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="331" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="78" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="101" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="124" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="147" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell hit" x="170" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="193" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="216" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="239" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="262" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="285" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="308" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="331" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="78" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="101" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="124" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="147" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="170" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="193" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="216" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="239" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="262" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="285" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="308" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="331" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="78" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="101" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="124" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="147" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="170" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="193" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="216" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="239" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="262" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="285" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="308" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="331" y="181" width="20" height="20" rx="2" />
+          </svg>
+          <p class="co-formula">global = <b>offset</b> + local</p>
+          <p class="co-formula-sub">rank 2: 48 + 16 = 64</p>
+        </section>
+
+        <section class="co-card co-mcore" data-step="1">
+          <p class="rep-label teal"><span>2</span>Megatron: also needs mcore → HF conversion</p>
+          <svg class="co-mcore-svg" viewBox="0 0 900 305" role="img" aria-label="megatron_to_hf all-gathers the full tensor before converting; the patched version fakes the gather with NaN for other ranks, runs the same conversion, and the surviving non-NaN entries are this rank's changes at global HF positions">
+            <!-- as is: real all-gather, then convert -->
+            <text class="co-row-cap" x="0" y="18"><tspan class="code">megatron_to_hf</tspan> as is</text>
+            <rect class="co-box warn" x="0" y="30" width="230" height="96" rx="10" />
+            <text class="co-box-title warn" x="115" y="57" text-anchor="middle">all-gather</text>
+            <rect class="co-chunk full" x="23" y="70" width="40" height="44" rx="3" />
+            <rect class="co-chunk full" x="71" y="70" width="40" height="44" rx="3" />
+            <rect class="co-chunk full" x="119" y="70" width="40" height="44" rx="3" />
+            <rect class="co-chunk full" x="167" y="70" width="40" height="44" rx="3" />
+            <line class="load-arrow" x1="240" y1="78" x2="282" y2="78" />
+            <path class="load-head" d="M 280 72 L 290 78 L 280 84 Z" />
+            <rect class="co-box" x="296" y="50" width="200" height="56" rx="10" />
+            <text class="co-box-text" x="396" y="85" text-anchor="middle">mcore → HF</text>
+            <line class="load-arrow" x1="506" y1="78" x2="546" y2="78" />
+            <path class="load-head" d="M 544 72 L 554 78 L 544 84 Z" />
+            <text class="co-bad" x="566" y="74">✗ full all-gather</text>
+            <text class="co-bad-sub" x="566" y="102">the cost we want to avoid</text>
+
+            <!-- patched: fake the gather with NaN, same conversion -->
+            <g data-step="2">
+              <text class="co-row-cap teal" x="0" y="178">patched: fake the gather</text>
+              <rect class="co-box ok" x="0" y="190" width="230" height="96" rx="10" />
+              <text class="co-box-title ok" x="115" y="217" text-anchor="middle">NaN + my shard</text>
+              <rect class="co-chunk nan" x="23" y="230" width="40" height="44" rx="3" />
+              <rect class="co-chunk nan" x="71" y="230" width="40" height="44" rx="3" />
+              <rect class="co-chunk gate" x="119" y="230" width="40" height="22" rx="3" />
+              <rect class="co-chunk up" x="119" y="252" width="40" height="22" rx="3" />
+              <rect class="co-hit" x="125" y="237" width="9" height="9" rx="1.5" />
+              <rect class="co-hit" x="145" y="259" width="9" height="9" rx="1.5" />
+              <rect class="co-chunk nan" x="167" y="230" width="40" height="44" rx="3" />
+              <line class="load-arrow" x1="240" y1="238" x2="282" y2="238" />
+              <path class="load-head" d="M 280 232 L 290 238 L 280 244 Z" />
+              <rect class="co-box" x="296" y="210" width="200" height="56" rx="10" />
+              <text class="co-box-text" x="396" y="245" text-anchor="middle">mcore → HF</text>
+              <text class="co-box-sub" x="396" y="292" text-anchor="middle">same code</text>
+              <line class="load-arrow" x1="506" y1="238" x2="546" y2="238" />
+              <path class="load-head" d="M 544 232 L 554 238 L 544 244 Z" />
+
+              <!-- HF outputs: only my rows survive, at their global positions -->
+              <rect class="co-band nan" x="566" y="196" width="140" height="20" />
+              <rect class="co-band nan" x="566" y="216" width="140" height="20" />
+              <rect class="co-band gate" x="566" y="236" width="140" height="20" />
+              <rect class="co-band nan" x="566" y="256" width="140" height="20" />
+              <rect class="co-hit" x="578" y="241" width="9" height="9" rx="1.5" />
+              <rect class="co-band-frame" x="566" y="196" width="140" height="80" rx="3" />
+              <text class="co-tensor-name" x="636" y="298" text-anchor="middle">gate_proj</text>
+              <rect class="co-band nan" x="740" y="196" width="140" height="20" />
+              <rect class="co-band nan" x="740" y="216" width="140" height="20" />
+              <rect class="co-band up" x="740" y="236" width="140" height="20" />
+              <rect class="co-band nan" x="740" y="256" width="140" height="20" />
+              <rect class="co-hit" x="818" y="241" width="9" height="9" rx="1.5" />
+              <rect class="co-band-frame" x="740" y="196" width="140" height="80" rx="3" />
+              <text class="co-tensor-name" x="810" y="298" text-anchor="middle">up_proj</text>
+            </g>
+          </svg>
+          <p class="co-mcore-note" data-step="2">We got <b>delta at global HF positions</b> without the cost of all-gathering full weights.</p>
+        </section>
+
+        <section class="co-card co-unify" data-step="3">
+          <p class="rep-label"><span>3</span>One clean interface at rank 0: HF deltas from any backend</p>
+          <svg class="co-unify-svg" viewBox="0 0 1404 112" role="img" aria-label="FSDP and Megatron deltas both become HF deltas (name, HF index, new value), are sparsely gathered to rank 0, then bucketed and broadcast exactly as before">
+            <rect class="co-src" x="0" y="4" width="180" height="44" rx="22" />
+            <text class="co-src-text" x="90" y="34" text-anchor="middle">FSDP</text>
+            <rect class="co-src" x="0" y="64" width="180" height="44" rx="22" />
+            <text class="co-src-text" x="90" y="94" text-anchor="middle">Megatron</text>
+            <path class="co-merge" d="M 180 26 C 214 26, 214 56, 240 56" />
+            <path class="co-merge" d="M 180 86 C 214 86, 214 56, 240 56" />
+            <path class="load-head" d="M 238 50 L 248 56 L 238 62 Z" />
+            <rect class="co-chip hf" x="256" y="20" width="460" height="72" rx="36" />
+            <text class="co-chip-text hf" x="486" y="64" text-anchor="middle">HF Δ: (name, HF idx, new value)</text>
+            <line class="load-arrow" x1="726" y1="56" x2="764" y2="56" />
+            <path class="load-head" d="M 762 50 L 772 56 L 762 62 Z" />
+            <rect class="co-chip" x="782" y="20" width="320" height="72" rx="36" />
+            <text class="co-chip-text" x="942" y="64" text-anchor="middle">gather → rank 0</text>
+            <line class="load-arrow" x1="1112" y1="56" x2="1150" y2="56" />
+            <path class="load-head" d="M 1148 50 L 1158 56 L 1148 62 Z" />
+            <rect class="co-chip" x="1168" y="20" width="236" height="72" rx="36" />
+            <text class="co-chip-text" x="1286" y="64" text-anchor="middle">broadcast</text>
+          </svg>
+        </section>
+      </section>
+
+      <!-- ============================== 10 · Delta sync: summary & insights ============================== -->
+      <section class="slide content wrap" aria-label="Delta weight sync: summary and insights">
+        <header class="slide-header">
+          <p class="section-label"></p>
+          <div class="slide-title">
+            <p class="eyebrow">Delta Weight Sync for verl</p>
+            <h2>Summary &amp; Insights</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <section class="gcard sum-card" style="left: 70px; top: 164px; width: 640px; height: 706px">
+          <p class="glabel">Summary</p>
+          <ol class="sum-steps">
+            <li><b>Problem</b><span>Off the RDMA fabric, weight synchronization becomes a bottleneck.</span></li>
+            <li><b>Observation</b><span>In BF16 or FP8, weight updates in RL are sparse.</span></li>
+            <li><b>Naive implementation</b><span>CPU RAM bottleneck, AllGather bottleneck.</span></li>
+            <li><b>Optimization</b><span>3.1× faster on 72B, lossless, works for both FSDP and Megatron.</span></li>
+          </ol>
+        </section>
+
+        <section class="gcard ins-card" style="left: 740px; top: 164px; width: 790px; height: 340px" data-step="1">
+          <p class="glabel rust">Insight 1 · Why it matters</p>
+          <h3>Cross-cluster rollout becomes practical</h3>
+          <p>With weight sync no longer a bottleneck, trainer and rollout placement become independent choices: external rollout decouples training from inference.</p>
+        </section>
+        <section class="gcard ins-card" style="left: 740px; top: 530px; width: 790px; height: 340px" data-step="2">
+          <p class="glabel rust">Insight 2 · System design</p>
+          <h3>Leverage the distributed setting of RL systems</h3>
+          <p>Don't send all data to rank 0 or put all compute on rank 0: avoid the full gather, and reduce before any bytes move.</p>
+        </section>
+      </section>
+
+    </main>
+
+    <div class="progress-track" aria-hidden="true">
+      <span id="progress-fill"></span>
+    </div>
+
+    <script src="slides.js"></script>
+  </body>
+</html>
