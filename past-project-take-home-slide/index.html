@@ -1404,7 +1404,7 @@
           <p class="page-number"></p>
         </header>
 
-        <section class="gcard sum-card" style="left: 70px; top: 164px; width: 640px; height: 706px">
+        <section class="gcard sum-card" style="left: 70px; top: 164px; width: 640px; height: 646px">
           <p class="glabel">Summary</p>
           <ol class="sum-steps">
             <li><b>Problem</b><span>Off the RDMA fabric, weight synchronization becomes a bottleneck.</span></li>
@@ -1414,16 +1414,18 @@
           </ol>
         </section>
 
-        <section class="gcard ins-card" style="left: 740px; top: 164px; width: 790px; height: 340px" data-step="1">
+        <section class="gcard ins-card" style="left: 740px; top: 164px; width: 790px; height: 310px" data-step="1">
           <p class="glabel rust">Insight 1 · Why it matters</p>
           <h3>Cross-cluster rollout becomes practical</h3>
           <p>With weight sync no longer a bottleneck, trainer and rollout placement become independent choices: external rollout decouples training from inference.</p>
         </section>
-        <section class="gcard ins-card" style="left: 740px; top: 530px; width: 790px; height: 340px" data-step="2">
+        <section class="gcard ins-card" style="left: 740px; top: 500px; width: 790px; height: 310px" data-step="2">
           <p class="glabel rust">Insight 2 · System design</p>
           <h3>Leverage the distributed setting of RL systems</h3>
           <p>Don't send all data to rank 0 or put all compute on rank 0: avoid the full gather, and reduce before any bytes move.</p>
         </section>
+
+        <p class="credits"><span>Credits</span>Changyi Yang <i>@ Liquid AI</i> · Nan Jiang <i>@ Modal</i> · Xibin Wu <i>@ ByteDance</i></p>
       </section>
 
       <!-- ============================== Outline (Part 2 next) ============================== -->
