@@ -1,0 +1,2141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f1e8" />
+    <title>Xiaole Guo — Projects</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="deck" aria-label="Xiaole Guo presentation">
+      <!-- ============================== 01 · About me ============================== -->
+      <section class="slide about is-active" aria-label="About me">
+        <p class="kicker">SELF INTRODUCTION</p>
+
+        <div class="about-hero">
+          <h1>Xiaole Guo</h1>
+        </div>
+
+        <div class="about-grid">
+          <section class="about-card card-education">
+            <h3>Education</h3>
+            <ul>
+              <li>
+                <strong>Carnegie Mellon University</strong>
+                <span>Master, Computer Systems</span>
+              </li>
+              <li>
+                <strong>The University of Hong Kong</strong>
+                <span>Bachelor, Computer Science</span>
+              </li>
+            </ul>
+          </section>
+
+          <section class="about-card card-industry">
+            <h3>Industry</h3>
+            <ul>
+              <li>
+                <strong>ByteDance Seed</strong>
+                <span>Infra-Training Team · Intern</span>
+              </li>
+              <li>
+                <strong>Apple</strong>
+                <span>Machine Learning Engineer Intern</span>
+              </li>
+            </ul>
+          </section>
+
+          <section class="about-card card-oss">
+            <h3>Open-Source Contributions</h3>
+            <div class="oss-list">
+              <div class="oss-chip"><strong>miles</strong></div>
+              <div class="oss-chip"><strong>slime</strong></div>
+              <div class="oss-chip"><strong>verl</strong></div>
+              <div class="oss-chip"><strong>SGLang</strong></div>
+            </div>
+          </section>
+        </div>
+
+        <footer class="about-footer">
+          <div class="contact-row">
+            <a class="contact" href="https://www.linkedin.com/in/gxlvera/" target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="2.5" y="2.5" width="19" height="19" rx="3" fill="currentColor"></rect>
+                <circle cx="7.4" cy="8" r="1.45" fill="#ffffff"></circle>
+                <path d="M6.15 10.3h2.5v7.55h-2.5zM10.45 10.3h2.4v1.03c.72-.85 1.65-1.3 2.8-1.3 2.12 0 3.2 1.28 3.2 3.82v4h-2.5v-3.7c0-1.35-.44-2.02-1.34-2.02-1.08 0-1.62.76-1.62 2.28v3.44h-2.5v-7.55z" fill="#ffffff"></path>
+              </svg>
+              linkedin.com/in/gxlvera
+            </a>
+            <a class="contact" href="https://x.com/gxlvera" target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M4.2 3h4.55l4.17 5.57L17.84 3H20l-6.08 7.15L20.5 21h-4.55l-4.62-6.17L6.08 21H3.9l6.43-7.56L4.2 3Zm3.48 1.7 9.12 14.6h1.9L9.58 4.7h-1.9Z"></path>
+              </svg>
+              gxlvera
+            </a>
+            <a class="contact" href="mailto:xiaoleg@andrew.cmu.edu">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" stroke="currentColor" stroke-width="2"></rect>
+                <path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              xiaoleg@andrew.cmu.edu
+            </a>
+          </div>
+          <p class="page-number"></p>
+        </footer>
+      </section>
+
+      <!-- ============================== 02 · Outline ============================== -->
+      <section class="slide content outline" aria-label="Outline">
+        <header class="slide-header">
+          <p class="section-label"></p>
+          <div class="slide-title">
+            <p class="eyebrow">Today's talk</p>
+            <h2>Outline</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <div class="outline-list">
+          <section class="outline-item part-1">
+            <span class="outline-num">01</span>
+            <div>
+              <p class="outline-kicker">Part 1 · Past project</p>
+              <h3>Delta Weight Synchronization for verl</h3>
+              <p class="outline-sub">Speed up weight synchronization in the RL pipeline through sparse weight updates</p>
+            </div>
+          </section>
+
+          <section class="outline-item part-2">
+            <span class="outline-num">02</span>
+            <div>
+              <p class="outline-kicker">Part 2 · Take-home</p>
+              <h3>Trajectory Representation and Tokenization</h3>
+              <p class="outline-sub">for multi-turn agentic RL at scale</p>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ============================== 03 · Delta sync: motivation ============================== -->
+      <section class="slide content wsync" aria-label="Delta weight sync: motivation">
+        <header class="slide-header">
+          <p class="section-label">01</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 1 · Delta Weight Sync for verl</p>
+            <h2>Motivation: Weight Sync in RL Could Be a Bottleneck</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <div class="wsync-row">
+          <svg class="rl-loop" viewBox="0 0 760 220" role="img" aria-label="The trainer syncs updated weights to the rollout engine">
+            <defs>
+              <marker id="arrow-coral" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="14" refY="9" orient="auto">
+                <path d="M 0 1 L 16 9 L 0 17 Z" fill="#b4523b" />
+              </marker>
+            </defs>
+
+            <rect class="loop-node" x="6" y="26" width="236" height="168" rx="10" />
+            <text class="loop-tag" x="124" y="72" text-anchor="middle">POLICY UPDATE</text>
+            <text class="loop-title" x="124" y="114" text-anchor="middle">Trainer</text>
+            <text class="loop-sub" x="124" y="148" text-anchor="middle">FSDP / Megatron</text>
+
+            <rect class="loop-node" x="518" y="26" width="236" height="168" rx="10" />
+            <text class="loop-tag" x="636" y="72" text-anchor="middle">GENERATION</text>
+            <text class="loop-title" x="636" y="114" text-anchor="middle">Rollout Engine</text>
+            <text class="loop-sub" x="636" y="148" text-anchor="middle">SGLang / vLLM</text>
+
+            <path class="loop-arrow-sync" d="M 244 110 H 514" marker-end="url(#arrow-coral)" />
+            <rect class="sync-pill" x="310" y="93" width="140" height="34" rx="17" />
+            <text class="sync-pill-text" x="380" y="115" text-anchor="middle">WEIGHT SYNC</text>
+          </svg>
+
+          <ul class="wsync-points">
+            <li>
+              <b>Traditional method:</b> payload is the full model
+              <span class="point-sub">e.g. GLM-5: 744B params × 2 B (BF16) ≈ 1.5 TB per sync</span>
+            </li>
+            <li><b>On the critical path:</b> Either the next rollout waits for the sync, or stale weights keep generating</li>
+          </ul>
+        </div>
+
+        <div class="wsync-panels">
+          <section class="net-panel panel-fast" data-step="1">
+            <p class="scenario">Scenario 1</p>
+            <div class="panel-head">
+              <h3>Training-Rollout in Same Cluster</h3>
+            </div>
+
+            <svg class="topo" viewBox="0 0 660 104" aria-hidden="true">
+              <defs>
+                <marker id="arrow-teal" markerUnits="userSpaceOnUse" markerWidth="20" markerHeight="20" refX="16" refY="10" orient="auto">
+                  <path d="M 0 2 L 18 10 L 0 18 Z" fill="#1d5a57" />
+                </marker>
+              </defs>
+              <rect class="topo-boundary fast" x="2" y="2" width="656" height="100" rx="12" />
+              <rect class="topo-node" x="22" y="20" width="180" height="64" rx="8" />
+              <text class="topo-text" x="112" y="59" text-anchor="middle">Trainer GPUs</text>
+              <rect class="topo-node" x="458" y="20" width="180" height="64" rx="8" />
+              <text class="topo-text" x="548" y="59" text-anchor="middle">Rollout GPUs</text>
+              <line class="topo-link-fast" x1="204" y1="52" x2="446" y2="52" marker-end="url(#arrow-teal)" />
+              <text class="topo-label" x="325" y="36" text-anchor="middle">InfiniBand</text>
+              <text class="topo-label sub" x="325" y="82" text-anchor="middle">NCCL Broadcast</text>
+            </svg>
+
+            <div class="panel-facts">
+              <div><span>effective bandwidth</span><strong>~25 GB/s</strong></div>
+              <div><span>sync 1.5 TB</span><strong>≈ 1 min</strong></div>
+            </div>
+            <div class="time-bar" style="--w: 1.1%"><i></i></div>
+            <p class="panel-note">~1 min vs. tens of minutes per RL step → <b>not the bottleneck</b></p>
+          </section>
+
+          <section class="net-panel panel-slow" data-step="2">
+            <p class="scenario">Scenario 2</p>
+            <div class="panel-head">
+              <h3>External Rollout</h3>
+            </div>
+
+            <svg class="topo" viewBox="0 0 660 104" aria-hidden="true">
+              <defs>
+                <marker id="arrow-rust-sm" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" refX="13" refY="8" orient="auto">
+                  <path d="M 0 2 L 14 8 L 0 14 Z" fill="#b4523b" />
+                </marker>
+              </defs>
+              <rect class="topo-boundary" x="2" y="2" width="196" height="100" rx="12" />
+              <rect class="topo-boundary slow" x="462" y="2" width="196" height="100" rx="12" />
+              <rect class="topo-node" x="18" y="20" width="164" height="64" rx="8" />
+              <text class="topo-text" x="100" y="50" text-anchor="middle">Training</text>
+              <text class="topo-text" x="100" y="72" text-anchor="middle">cluster</text>
+              <rect class="topo-node" x="478" y="20" width="164" height="64" rx="8" />
+              <text class="topo-text" x="560" y="50" text-anchor="middle">Rollout fleet</text>
+              <text class="topo-text small" x="560" y="72" text-anchor="middle">other DC / cloud</text>
+              <line class="topo-link-slow" x1="200" y1="52" x2="452" y2="52" marker-end="url(#arrow-rust-sm)" />
+              <text class="topo-label coral" x="326" y="36" text-anchor="middle">Ethernet / WAN / shared FS</text>
+              <text class="topo-label sub" x="326" y="82" text-anchor="middle">no RDMA</text>
+            </svg>
+
+            <div class="panel-facts">
+              <div><span>effective bandwidth</span><strong>~300 MB/s</strong></div>
+              <div><span>sync 1.5 TB</span><strong class="coral">≈ 83 min</strong></div>
+            </div>
+            <div class="time-bar" style="--w: 92%"><i></i></div>
+            <p class="panel-note">→ <b>Rollout GPUs sit idle, or generation goes stale</b></p>
+          </section>
+        </div>
+
+      </section>
+
+      <!-- ============================== 04 · Delta sync: sparsity ============================== -->
+      <section class="slide content sparse" aria-label="Delta weight sync: weight updates are sparse">
+        <header class="slide-header">
+          <p class="section-label">01</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 1 · Delta Weight Sync for verl</p>
+            <h2>Observation: RL Weight Updates Are Sparse</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <section class="sparse-card">
+          <p class="card-label">θₜ vs θₜ₊₁ · bitwise diff (per element) <span>(illustration)</span></p>
+          <div class="sparse-grid" data-cols="40" data-rows="12" data-changed="10" aria-hidden="true"></div>
+          <p class="sparse-legend">
+            <span class="legend-swatch same"></span>bit-identical
+            <span class="legend-swatch changed"></span>changed this step (~2%)
+          </p>
+        </section>
+
+        <section class="why-card" data-step="1">
+          <h3><span>Why?</span> BF16 rounding absorbs tiny updates</h3>
+        </section>
+
+        <section class="evidence-card">
+          <div class="evidence-head">
+            <h3>Measured across systems</h3>
+            <span>changed / step</span>
+          </div>
+          <ol class="evidence-list">
+            <li>
+              <div><strong>PULSE</strong></div>
+              <em>~1%</em>
+            </li>
+            <li>
+              <div><strong>SparrowRL</strong></div>
+              <em>~1%</em>
+            </li>
+            <li>
+              <div><strong>Fireworks</strong></div>
+              <em>&lt;2%</em>
+            </li>
+            <li>
+              <div><strong>SparseRL-Sync</strong></div>
+              <em>&lt;1%</em>
+            </li>
+          </ol>
+          <p class="evidence-source">Compiled in Changyi Yang, “Delta Weight Sync for RL” (changyi.fun)</p>
+        </section>
+
+        <section class="implication-card" data-step="2">
+          <h3><span>→</span> Basis for delta sync</h3>
+          <p class="impl-lead">Send only the changed <b>(position, value)</b> pairs.</p>
+          <div class="impl-bars">
+            <div class="impl-row">
+              <span class="impl-name">Full</span>
+              <div class="impl-track"><i class="impl-full"></i></div>
+              <span class="impl-val">1.5 TB · ~83 min</span>
+            </div>
+            <div class="impl-row">
+              <span class="impl-name">Delta</span>
+              <div class="impl-track"><i class="impl-delta"></i></div>
+              <span class="impl-val delta">60–90 GB · 3–5 min</span>
+            </div>
+          </div>
+          <p class="impl-foot"><b>Lossless:</b> rollout overwrites exact BF16 bytes, so no drift.</p>
+        </section>
+      </section>
+      <!-- ============================== 05 · Delta representation ============================== -->
+      <section class="slide content repr" aria-label="Delta representation: one parameter from encode to load">
+        <header class="slide-header">
+          <p class="section-label">01</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 1 · Delta Weight Sync for verl</p>
+            <h2>Representing the Delta: One Parameter's Lifecycle</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <section class="rep-card rep-send">
+          <p class="rep-label"><span>1</span>How to represent each changed parameter?</p>
+          <div class="send-chips"><span>HF param name</span><i>+</i><span>flat index</span><i>+</i><span class="new">new value</span></div>
+          <table class="send-table">
+            <thead><tr><th colspan="2">model.layers.3.mlp.down_proj.weight</th></tr><tr><th>flat index</th><th>new value (bf16)</th></tr></thead>
+            <tbody>
+              <tr><td>64</td><td>0x3C22</td></tr>
+              <tr><td>1,207</td><td>0xBC0F</td></tr>
+              <tr><td>90,113</td><td>0x3B9A</td></tr>
+            </tbody>
+          </table>
+          <p class="send-note" data-step="1">Coordinates refer to the full tensor, so neither side's sharding appears in the format.</p>
+          <div class="send-idem" data-step="2">
+            <p class="send-idem-title">We send the <b>new value</b>, not the diff → <b class="ok">idempotent</b></p>
+            <table class="idem-mini">
+              <thead><tr><th></th><th>apply once</th><th>apply twice</th></tr></thead>
+              <tbody>
+                <tr class="add"><td>w ← w + Δ</td><td>w + Δ <i class="ok">✓</i></td><td>w + 2Δ <i class="no">✗</i></td></tr>
+                <tr class="set"><td>w ← new</td><td>new <i class="ok">✓</i></td><td>new <i class="ok">✓</i></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <i class="rep-arrow right a1" data-step="3"></i>
+
+        <section class="rep-card rep-recon" data-step="3">
+          <p class="rep-label teal"><span>2</span>Rollout engine: reconstruct the full tensor</p>
+          <svg class="recon-svg" viewBox="0 0 430 220" role="img" aria-label="A full-shape tensor filled with NaN except the three changed entries">
+              <rect class="cell nan" x="10" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="88" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="192" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="322" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="10" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="10" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="36" width="22" height="22" rx="2" />
+              <rect class="cell hit" x="88" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="192" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="322" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="36" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="10" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="88" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="192" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="322" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="62" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="10" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="88" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="192" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="322" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="88" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="10" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="88" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="192" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="114" width="22" height="22" rx="2" />
+              <rect class="cell hit" x="322" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="114" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="10" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="88" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="192" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="322" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="140" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="10" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="88" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="166" width="22" height="22" rx="2" />
+              <rect class="cell hit" x="192" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="322" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="166" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="10" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="36" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="62" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="88" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="114" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="140" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="166" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="192" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="218" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="244" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="270" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="296" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="322" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="348" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="374" y="192" width="22" height="22" rx="2" />
+              <rect class="cell nan" x="400" y="192" width="22" height="22" rx="2" />
+          </svg>
+          <p class="rep-caption"><code>torch.full(shape, NaN)</code> + <code>index_copy_(idx, values)</code><br />NaN = unchanged</p>
+        </section>
+
+        <i class="rep-arrow down a2" data-step="4"></i>
+
+        <section class="rep-card rep-load" data-step="4">
+          <p class="rep-label teal"><span>3</span>Rollout engine: load weights</p>
+          <svg class="load-svg" viewBox="0 0 520 200" role="img" aria-label="SGLang's own load_weights splits the NaN tensor by columns into TP shards; a patched copy writes only non-NaN entries">
+              <rect class="cell nan" x="0" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="33" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="77" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="132" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="22" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="0" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="33" width="9" height="9" rx="2" />
+              <rect class="cell hit" x="33" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="77" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="132" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="33" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="0" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="33" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="77" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="132" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="44" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="0" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="33" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="77" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="132" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="55" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="0" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="33" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="77" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="66" width="9" height="9" rx="2" />
+              <rect class="cell hit" x="132" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="66" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="0" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="33" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="77" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="132" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="77" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="0" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="33" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="88" width="9" height="9" rx="2" />
+              <rect class="cell hit" x="77" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="132" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="88" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="0" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="11" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="22" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="33" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="44" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="55" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="66" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="77" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="88" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="99" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="110" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="121" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="132" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="143" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="154" y="99" width="9" height="9" rx="2" />
+              <rect class="cell nan" x="165" y="99" width="9" height="9" rx="2" />
+              <line class="tp-cut" x1="87" y1="16" x2="87" y2="116" />
+              <text class="load-box-sub" x="87" y="138" text-anchor="middle">split by columns</text>
+              <line class="load-arrow" x1="186" y1="66" x2="214" y2="66" />
+              <path class="load-head" d="M 210 60 L 220 66 L 210 72 Z" />
+              <rect class="load-box" x="224" y="34" width="150" height="64" rx="10" />
+              <text class="load-box-text" x="299" y="73" text-anchor="middle">load_weights</text>
+              <text class="load-box-sub" x="299" y="124" text-anchor="middle">TP split · fuse</text>
+              <text class="load-box-sub teal" x="299" y="146" text-anchor="middle">unchanged</text>
+              <line class="load-arrow" x1="376" y1="50" x2="392" y2="40" />
+              <line class="load-arrow" x1="376" y1="82" x2="392" y2="150" />
+              <rect class="cell keep" x="400" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="0" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="11" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="11" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="11" width="9" height="9" rx="2" />
+              <rect class="cell hit" x="433" y="11" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="11" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="11" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="11" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="11" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="22" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="33" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="44" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="55" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="66" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="66" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="66" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="66" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="66" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="66" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="66" width="9" height="9" rx="2" />
+              <rect class="cell hit" x="477" y="66" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="77" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="112" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="123" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="134" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="145" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="156" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="156" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="156" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="156" width="9" height="9" rx="2" />
+              <rect class="cell hit" x="444" y="156" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="156" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="156" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="156" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="167" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="178" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="400" y="189" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="411" y="189" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="422" y="189" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="433" y="189" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="444" y="189" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="455" y="189" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="466" y="189" width="9" height="9" rx="2" />
+              <rect class="cell keep" x="477" y="189" width="9" height="9" rx="2" />
+              <text class="tp-label" x="494" y="48">TP0</text>
+              <text class="tp-label" x="494" y="160">TP1</text>
+          </svg>
+          <p class="rep-patch"><code>dst = torch.where(torch.isnan(src), dst, src)</code></p>
+          <p class="rep-note"><b>Non-invasive:</b> SGLang's TP split and fusion run as-is; we only patch the final <code>copy_</code> to skip NaN.</p>
+        </section>
+      </section>
+
+      <!-- ============================== 06 · Delta sync: naive pipeline ============================== -->
+      <section class="slide content pipe" aria-label="Delta weight sync: naive pipeline">
+        <header class="slide-header">
+          <p class="section-label">01</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 1 · Delta Weight Sync for verl</p>
+            <h2>Delta Sync Pipeline<span class="title-reveal" data-step="6">: The Naive Version</span></h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <ol class="pipe-steps" aria-label="Pipeline steps">
+          <li data-hl="0" data-done="0"><span>0</span>snapshot</li>
+          <li data-hl="1" data-done="1"><span>1</span>train</li>
+          <li data-hl="2" data-done="2"><span>2</span>gather</li>
+          <li data-hl="3" data-done="3"><span>3</span>diff</li>
+          <li data-hl="4" data-done="4"><span>4</span>encode</li>
+          <li data-hl="5" data-done="5"><span>5</span>broadcast</li>
+          <li data-hl="6" data-done="6"><span>6</span>load</li>
+        </ol>
+
+        <svg class="pipe-diagram" viewBox="0 0 1460 610" role="img" aria-label="Naive delta sync: other PP stages gather full weights to actor rank 0, which diffs them against a pinned CPU snapshot, encodes the changes, and broadcasts them to SGLang engines that load them in place">
+          <defs>
+            <marker id="pipe-arrow" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+              <path d="M 0 1 L 13 7 L 0 13 Z" fill="#8b7e72" />
+            </marker>
+            <marker id="pipe-arrow-rust" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="15" refY="9" orient="auto">
+              <path d="M 0 1 L 17 9 L 0 17 Z" fill="#b4523b" />
+            </marker>
+            <marker id="pipe-arrow-teal" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+              <path d="M 0 1 L 13 7 L 0 13 Z" fill="#1d5a57" />
+            </marker>
+            <path id="g-path-1" d="M 260 195 C 316 195, 316 180, 366 180" />
+            <path id="g-path-2" d="M 260 325 C 320 325, 316 230, 366 230" />
+            <path id="g-path-3" d="M 260 455 C 324 455, 316 280, 366 280" />
+            <path id="b-path-0" d="M 944 500 C 1004 500, 1000 200, 1056 200" />
+            <path id="b-path-1" d="M 944 500 C 1004 500, 1000 350, 1056 350" />
+            <path id="b-path-2" d="M 944 500 C 1004 500, 1000 500, 1056 500" />
+          </defs>
+
+          <!-- Actor rank 0 on node 0: always on screen -->
+          <rect class="pipe-zone" x="330" y="56" width="640" height="550" rx="16" />
+          <text class="pipe-col-title" x="356" y="94">ACTOR RANK 0 · NODE 0 (PP0)</text>
+
+          <!-- 0 · snapshot -->
+          <g class="pipe-node" data-hl="0 3">
+            <rect class="pipe-box" x="366" y="400" width="290" height="170" rx="12" />
+            <text class="pipe-tag" x="388" y="432">CPU · PINNED</text>
+            <text class="pipe-big" x="511" y="490" text-anchor="middle">θₜ snapshot</text>
+            <text class="pipe-meta" x="511" y="528" text-anchor="middle">full weights</text>
+          </g>
+
+          <!-- 1 · train: new weights on the GPU -->
+          <g class="pipe-node" data-step="1" data-hl="1 2 3">
+            <rect class="pipe-box" x="366" y="130" width="290" height="190" rx="12" />
+            <text class="pipe-tag" x="388" y="162">GPU</text>
+            <text class="pipe-big new" x="511" y="232" text-anchor="middle">θₜ₊₁</text>
+            <text class="pipe-meta" x="511" y="272" text-anchor="middle" data-only="1">weights</text>
+            <text class="pipe-meta" x="511" y="272" text-anchor="middle" data-step="2">full weights, tensor by tensor</text>
+          </g>
+
+          <!-- 2 · gather: the other PP stages appear and funnel full tensors in -->
+          <g data-step="2">
+            <text class="pipe-col-title" x="0" y="130">OTHER PP STAGES</text>
+            <g class="pipe-node" data-hl="2">
+              <rect class="pipe-box" x="0" y="150" width="260" height="90" rx="10" />
+              <text class="pipe-name" x="22" y="190">PP1</text>
+              <text class="pipe-meta" x="22" y="220">Node 1</text>
+              <text class="pipe-state new" x="238" y="205" text-anchor="end">θₜ₊₁</text>
+            </g>
+            <g class="pipe-node" data-hl="2">
+              <rect class="pipe-box" x="0" y="280" width="260" height="90" rx="10" />
+              <text class="pipe-name" x="22" y="320">PP2</text>
+              <text class="pipe-meta" x="22" y="350">Node 2</text>
+              <text class="pipe-state new" x="238" y="335" text-anchor="end">θₜ₊₁</text>
+            </g>
+            <g class="pipe-node" data-hl="2">
+              <rect class="pipe-box" x="0" y="410" width="260" height="90" rx="10" />
+              <text class="pipe-name" x="22" y="450">PP3</text>
+              <text class="pipe-meta" x="22" y="480">Node 3</text>
+              <text class="pipe-state new" x="238" y="465" text-anchor="end">θₜ₊₁</text>
+            </g>
+            <g class="pipe-flow gather">
+              <use href="#g-path-1" /><use href="#g-path-2" /><use href="#g-path-3" />
+            </g>
+            <text class="pipe-flow-label rust" x="130" y="540" text-anchor="middle">gather full weights</text>
+          </g>
+          <g class="pipe-packets" data-only="2">
+            <rect class="pkt-big" x="-11" y="-7" width="22" height="14" rx="2"><animateMotion dur="1.6s" repeatCount="indefinite" rotate="auto"><mpath href="#g-path-1" /></animateMotion></rect>
+            <rect class="pkt-big" x="-11" y="-7" width="22" height="14" rx="2"><animateMotion dur="1.6s" begin="0.5s" repeatCount="indefinite" rotate="auto"><mpath href="#g-path-2" /></animateMotion></rect>
+            <rect class="pkt-big" x="-11" y="-7" width="22" height="14" rx="2"><animateMotion dur="1.6s" begin="1s" repeatCount="indefinite" rotate="auto"><mpath href="#g-path-3" /></animateMotion></rect>
+          </g>
+
+          <!-- 3 · diff -->
+          <g data-step="3">
+            <g class="pipe-link" data-hl="3">
+              <line x1="470" y1="398" x2="470" y2="326" marker-end="url(#pipe-arrow)" />
+              <line x1="552" y1="322" x2="552" y2="394" marker-end="url(#pipe-arrow)" />
+              <text class="pipe-link-label" x="458" y="366" text-anchor="end">H2D</text>
+              <text class="pipe-link-label" x="566" y="366">refresh</text>
+            </g>
+            <g class="pipe-link">
+              <line x1="658" y1="190" x2="698" y2="190" marker-end="url(#pipe-arrow)" />
+            </g>
+            <g class="pipe-node" data-hl="3">
+              <rect class="pipe-box chip" x="702" y="156" width="246" height="68" rx="34" />
+              <text class="pipe-chip-text" x="825" y="187" text-anchor="middle">bitwise diff</text>
+              <text class="pipe-chip-sub" x="825" y="211" text-anchor="middle">(per element)</text>
+            </g>
+            <text class="pipe-caption" x="825" y="252" text-anchor="middle">compare bits → (idx, val)</text>
+          </g>
+
+          <!-- 4 · encode -->
+          <g data-step="4">
+            <g class="pipe-link">
+              <line x1="825" y1="264" x2="825" y2="292" marker-end="url(#pipe-arrow)" />
+              <line x1="825" y1="364" x2="825" y2="396" marker-end="url(#pipe-arrow)" />
+            </g>
+            <g class="pipe-node" data-hl="4">
+              <rect class="pipe-box chip" x="702" y="296" width="246" height="68" rx="34" />
+              <text class="pipe-chip-text" x="825" y="338" text-anchor="middle">encode · indices</text>
+            </g>
+            <g class="pipe-node" data-hl="4 5">
+              <rect class="pipe-box" x="702" y="400" width="246" height="170" rx="12" />
+              <text class="pipe-tag" x="722" y="432">Δ FLUSH</text>
+              <rect class="flush-row meta" x="722" y="452" width="206" height="30" rx="4" />
+              <text class="flush-text" x="736" y="473">manifest</text>
+              <rect class="flush-row pos" x="722" y="490" width="206" height="30" rx="4" />
+              <text class="flush-text" x="736" y="511">positions · int32</text>
+              <rect class="flush-row val" x="722" y="528" width="206" height="30" rx="4" />
+              <text class="flush-text" x="736" y="549">values · bf16</text>
+            </g>
+          </g>
+
+          <!-- 5 · broadcast: rollout appears, only the delta leaves node 0 -->
+          <g data-step="5">
+            <text class="pipe-col-title" x="1060" y="130">ROLLOUT · SGLANG</text>
+            <g class="pipe-node" data-hl="6">
+              <rect class="pipe-box" x="1060" y="150" width="400" height="100" rx="12" />
+              <text class="pipe-name" x="1084" y="192">Engine 1</text>
+              <text class="pipe-meta" x="1084" y="226" data-only="5">serving θₜ</text>
+              <text class="pipe-meta new" x="1084" y="226" data-step="6">θₜ₊₁ applied in place</text>
+            </g>
+            <g class="pipe-node" data-hl="6">
+              <rect class="pipe-box" x="1060" y="300" width="400" height="100" rx="12" />
+              <text class="pipe-name" x="1084" y="342">Engine 2</text>
+              <text class="pipe-meta" x="1084" y="376" data-only="5">serving θₜ</text>
+              <text class="pipe-meta new" x="1084" y="376" data-step="6">θₜ₊₁ applied in place</text>
+            </g>
+            <g class="pipe-node" data-hl="6">
+              <rect class="pipe-box" x="1060" y="450" width="400" height="100" rx="12" />
+              <text class="pipe-name" x="1084" y="492">Engine 3</text>
+              <text class="pipe-meta" x="1084" y="526" data-only="5">serving θₜ</text>
+              <text class="pipe-meta new" x="1084" y="526" data-step="6">θₜ₊₁ applied in place</text>
+            </g>
+            <g class="pipe-flow bcast">
+              <use href="#b-path-0" /><use href="#b-path-1" /><use href="#b-path-2" />
+            </g>
+            <text class="pipe-flow-label teal" x="1260" y="590" text-anchor="middle">NCCL broadcast Δ only</text>
+          </g>
+          <g class="pipe-packets" data-only="5">
+            <circle class="pkt-small" r="6"><animateMotion dur="1.2s" repeatCount="indefinite"><mpath href="#b-path-0" /></animateMotion></circle>
+            <circle class="pkt-small" r="6"><animateMotion dur="1.2s" begin="0.2s" repeatCount="indefinite"><mpath href="#b-path-1" /></animateMotion></circle>
+            <circle class="pkt-small" r="6"><animateMotion dur="1.2s" begin="0.4s" repeatCount="indefinite"><mpath href="#b-path-2" /></animateMotion></circle>
+          </g>
+
+          <!-- 6 · load -->
+          <g data-step="6">
+            <rect class="loader-pill" x="1290" y="172" width="150" height="32" rx="16" />
+            <text class="loader-text" x="1365" y="194" text-anchor="middle">delta_loader</text>
+            <rect class="loader-pill" x="1290" y="322" width="150" height="32" rx="16" />
+            <text class="loader-text" x="1365" y="344" text-anchor="middle">delta_loader</text>
+            <rect class="loader-pill" x="1290" y="472" width="150" height="32" rx="16" />
+            <text class="loader-text" x="1365" y="494" text-anchor="middle">delta_loader</text>
+          </g>
+        </svg>
+      </section>
+      <!-- ============================== 07 · Delta sync: engineering challenges ============================== -->
+      <section class="slide content chal" aria-label="Delta weight sync: engineering challenges">
+        <header class="slide-header">
+          <p class="section-label">01</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 1 · Delta Weight Sync for verl</p>
+            <h2>Delta Weight Sync: Engineering Challenges</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <section class="chal-card chal-mem">
+          <p class="chal-label">Challenge 1 · Memory</p>
+          <h3>One node's CPU RAM can't hold full weights</h3>
+          <p class="chal-sub">A single node pins a full-model snapshot.</p>
+          <p class="chal-eg">e.g. GLM-5 (744B, BF16) ≈ <b>1.5 TB</b> vs. <b>2 TB</b> CPU RAM per DGX H100 node</p>
+        </section>
+
+        <svg class="chal-diagram" viewBox="0 0 790 458" role="img" aria-label="Actor rank 0 on node 0 holds the new weights on GPU and a full-model pinned snapshot in CPU memory">
+          <rect class="pipe-zone alert" x="0" y="0" width="790" height="458" rx="16" />
+          <text class="pipe-col-title alert" x="28" y="44">ACTOR RANK 0 · NODE 0</text>
+
+          <g class="pipe-node">
+            <rect class="pipe-box" x="40" y="90" width="330" height="290" rx="14" />
+            <text class="pipe-tag" x="64" y="124">GPU</text>
+            <text class="pipe-big new" x="205" y="236" text-anchor="middle">θₜ₊₁</text>
+            <text class="pipe-meta" x="205" y="282" text-anchor="middle">full weights</text>
+          </g>
+          <g class="pipe-node">
+            <rect class="pipe-box" x="420" y="90" width="330" height="290" rx="14" />
+            <text class="pipe-tag" x="444" y="124">CPU · PINNED</text>
+            <text class="pipe-big" x="585" y="236" text-anchor="middle">θₜ snapshot</text>
+            <text class="pipe-meta" x="585" y="282" text-anchor="middle">full weights</text>
+          </g>
+
+          <rect class="snap-ring" x="404" y="74" width="362" height="322" rx="20" />
+          <rect class="snap-pill" x="600" y="57" width="166" height="34" rx="17" />
+          <text class="snap-pill-text" x="683" y="80" text-anchor="middle">CHALLENGE 1</text>
+          <text class="pipe-meta" x="395" y="430" text-anchor="middle">the whole model, pinned in one node's host memory</text>
+        </svg>
+
+        <section class="chal-card chal-speed" data-step="1">
+          <p class="chal-label">Challenge 2 · Speed</p>
+          <h3>No end-to-end gain</h3>
+          <table class="chal-table">
+            <thead>
+              <tr><th>Model</th><th>NCCL</th><th>Delta</th><th>vs NCCL</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Qwen2.5-32B</td><td>7.63 s</td><td>7.65 s</td><td class="worse">+0.2%</td></tr>
+              <tr><td>Qwen2.5-7B</td><td>1.52 s</td><td>1.76 s</td><td class="worse">+16.0%</td></tr>
+              <tr><td>Qwen3-0.6B</td><td>0.78 s</td><td>0.75 s</td><td>−4.6%</td></tr>
+            </tbody>
+          </table>
+          <p class="chal-cite">per-step weight sync · A100, FSDP2, offload off · my profiling in verl PR #6974</p>
+        </section>
+
+        <section class="chal-card chal-pipe" data-step="2">
+          <p class="chal-label">Why? Per-bucket pipeline on rank 0</p>
+
+          <div class="gantt-area">
+            <div class="gantt">
+              <p class="gantt-title"><span>gather ≈ broadcast per bucket</span></p>
+              <div class="lane">
+                <span class="lane-label">gather → rank 0</span>
+                <div class="track">
+                  <i class="bar g" style="--x: 0; --w: 1; --d: 0">b1</i>
+                  <i class="bar g" style="--x: 1; --w: 1; --d: 1">b2</i>
+                  <i class="bar g" style="--x: 2; --w: 1; --d: 2">b3</i>
+                  <i class="bar g" style="--x: 3; --w: 1; --d: 3">b4</i>
+                  <i class="bar g" style="--x: 4; --w: 1; --d: 4">b5</i>
+                </div>
+              </div>
+              <div class="lane">
+                <span class="lane-label">broadcast → rollout</span>
+                <div class="track">
+                  <i class="bar b" style="--x: 1; --w: 1; --d: 1">b1</i>
+                  <i class="bar b" style="--x: 2; --w: 1; --d: 2">b2</i>
+                  <i class="bar b" style="--x: 3; --w: 1; --d: 3">b3</i>
+                  <i class="bar b" style="--x: 4; --w: 1; --d: 4">b4</i>
+                  <i class="bar b" style="--x: 5; --w: 1; --d: 5">b5</i>
+                </div>
+              </div>
+            </div>
+
+            <div class="gantt gantt-delta" data-step="3">
+              <p class="gantt-title">Delta weight sync <span>broadcast shrinks, gather does not</span></p>
+              <div class="lane bottleneck">
+                <span class="lane-label">gather + diff</span>
+                <div class="track">
+                  <i class="bar g" style="--x: 0; --w: 1; --d: 0">b1</i><i class="bar d" style="--x: 1; --w: 0.17; --d: 0.5"></i>
+                  <i class="bar g" style="--x: 1.17; --w: 1; --d: 1">b2</i><i class="bar d" style="--x: 2.17; --w: 0.17; --d: 1.5"></i>
+                  <i class="bar g" style="--x: 2.34; --w: 1; --d: 2">b3</i><i class="bar d" style="--x: 3.34; --w: 0.17; --d: 2.5"></i>
+                  <i class="bar g" style="--x: 3.51; --w: 1; --d: 3">b4</i><i class="bar d" style="--x: 4.51; --w: 0.17; --d: 3.5"></i>
+                  <i class="bar g" style="--x: 4.68; --w: 1; --d: 4">b5</i><i class="bar d" style="--x: 5.68; --w: 0.17; --d: 4.5"></i>
+                </div>
+              </div>
+              <div class="lane">
+                <span class="lane-label">broadcast Δ</span>
+                <div class="track">
+                  <i class="bar b" style="--x: 1.17; --w: 0.15; --d: 1"></i>
+                  <i class="bar b" style="--x: 2.34; --w: 0.15; --d: 2"></i>
+                  <i class="bar b" style="--x: 3.51; --w: 0.15; --d: 3"></i>
+                  <i class="bar b" style="--x: 4.68; --w: 0.15; --d: 4"></i>
+                  <i class="bar b" style="--x: 5.85; --w: 0.15; --d: 5"></i>
+                </div>
+              </div>
+            </div>
+
+            <i class="gantt-end" data-step="3"><span>≈ same end time</span></i>
+          </div>
+
+          <p class="gantt-legend">
+            <span class="sw g"></span>gather full tensor
+            <span class="sw d"></span>diff + encode
+            <span class="sw b"></span>broadcast
+          </p>
+        </section>
+      </section>
+      <!-- ============================== 08 · Sharded delta ============================== -->
+      <section class="slide content shard" aria-label="Sharded delta: diff before gather">
+        <header class="slide-header">
+          <p class="section-label">01</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 1 · Delta Weight Sync for verl</p>
+            <h2>Sharded Delta: Diff Before Gather</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <svg class="shard-diagram" viewBox="-10 -10 1480 372" role="img" aria-label="Every PP node keeps its own shard snapshot and diffs locally; only the sparse deltas are gathered to rank 0, which encodes and broadcasts them as before">
+          <defs>
+            <marker id="s-arrow" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+              <path d="M 0 1 L 13 7 L 0 13 Z" fill="#8b7e72" />
+            </marker>
+            <marker id="s-arrow-teal" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+              <path d="M 0 1 L 13 7 L 0 13 Z" fill="#1d5a57" />
+            </marker>
+            <path id="s-g-0" d="M 175 180 C 175 222, 468 214, 468 248" />
+            <path id="s-g-1" d="M 545 180 C 545 222, 480 214, 480 248" />
+            <path id="s-g-2" d="M 915 180 C 915 224, 492 210, 492 248" />
+            <path id="s-g-3" d="M 1285 180 C 1285 226, 504 206, 504 248" />
+          </defs>
+
+          <path class="node0-outline" d="M -6 -6 H 356 V 226 H 660 V 352 H -6 Z" />
+
+          <g class="shard-node">
+            <rect class="pipe-box" x="0" y="0" width="350" height="190" rx="12" />
+            <text class="pipe-name" x="22" y="38">PP0 · Node 0</text>
+              <rect class="rank-pill" x="236" y="16" width="96" height="28" rx="14" />
+              <text class="rank-pill-text" x="284" y="36" text-anchor="middle">RANK 0</text>
+            <g class="pipe-node mini">
+              <rect class="pipe-box" x="20" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="34" y="78">GPU</text>
+              <text class="mini-text new" x="95" y="112" text-anchor="middle">θₜ₊₁ shard</text>
+            </g>
+            <g class="pipe-node mini" data-hl="1">
+              <rect class="pipe-box" x="180" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="194" y="78">CPU · PINNED</text>
+              <text class="mini-text" x="255" y="112" text-anchor="middle">θₜ shard</text>
+            </g>
+            <g class="pipe-node">
+              <rect class="pipe-box chip" x="20" y="140" width="310" height="38" rx="19" />
+              <text class="mini-chip" x="175" y="165" text-anchor="middle">bitwise diff → Δ</text>
+            </g>
+          </g>
+          <g class="shard-node">
+            <rect class="pipe-box" x="370" y="0" width="350" height="190" rx="12" />
+            <text class="pipe-name" x="392" y="38">PP1 · Node 1</text>
+            <g class="pipe-node mini">
+              <rect class="pipe-box" x="390" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="404" y="78">GPU</text>
+              <text class="mini-text new" x="465" y="112" text-anchor="middle">θₜ₊₁ shard</text>
+            </g>
+            <g class="pipe-node mini" data-hl="1">
+              <rect class="pipe-box" x="550" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="564" y="78">CPU · PINNED</text>
+              <text class="mini-text" x="625" y="112" text-anchor="middle">θₜ shard</text>
+            </g>
+            <g class="pipe-node">
+              <rect class="pipe-box chip" x="390" y="140" width="310" height="38" rx="19" />
+              <text class="mini-chip" x="545" y="165" text-anchor="middle">bitwise diff → Δ</text>
+            </g>
+          </g>
+          <g class="shard-node">
+            <rect class="pipe-box" x="740" y="0" width="350" height="190" rx="12" />
+            <text class="pipe-name" x="762" y="38">PP2 · Node 2</text>
+            <g class="pipe-node mini">
+              <rect class="pipe-box" x="760" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="774" y="78">GPU</text>
+              <text class="mini-text new" x="835" y="112" text-anchor="middle">θₜ₊₁ shard</text>
+            </g>
+            <g class="pipe-node mini" data-hl="1">
+              <rect class="pipe-box" x="920" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="934" y="78">CPU · PINNED</text>
+              <text class="mini-text" x="995" y="112" text-anchor="middle">θₜ shard</text>
+            </g>
+            <g class="pipe-node">
+              <rect class="pipe-box chip" x="760" y="140" width="310" height="38" rx="19" />
+              <text class="mini-chip" x="915" y="165" text-anchor="middle">bitwise diff → Δ</text>
+            </g>
+          </g>
+          <g class="shard-node">
+            <rect class="pipe-box" x="1110" y="0" width="350" height="190" rx="12" />
+            <text class="pipe-name" x="1132" y="38">PP3 · Node 3</text>
+            <g class="pipe-node mini">
+              <rect class="pipe-box" x="1130" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="1144" y="78">GPU</text>
+              <text class="mini-text new" x="1205" y="112" text-anchor="middle">θₜ₊₁ shard</text>
+            </g>
+            <g class="pipe-node mini" data-hl="1">
+              <rect class="pipe-box" x="1290" y="56" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="1304" y="78">CPU · PINNED</text>
+              <text class="mini-text" x="1365" y="112" text-anchor="middle">θₜ shard</text>
+            </g>
+            <g class="pipe-node">
+              <rect class="pipe-box chip" x="1130" y="140" width="310" height="38" rx="19" />
+              <text class="mini-chip" x="1285" y="165" text-anchor="middle">bitwise diff → Δ</text>
+            </g>
+          </g>
+
+          <!-- sparse gather into rank 0 -->
+          <g class="shard-flow" data-hl="2">
+            <use href="#s-g-0" /><use href="#s-g-1" /><use href="#s-g-2" /><use href="#s-g-3" />
+          </g>
+
+          <!-- rank 0 strip: everything after the gather is unchanged -->
+          <text class="pipe-col-title node0" x="16" y="282">NODE 0 · ACTOR RANK 0</text>
+          <text class="pipe-meta" x="16" y="312">no full-model copy</text>
+          <g class="pipe-node" data-hl="2">
+            <rect class="pipe-box chip" x="330" y="252" width="300" height="80" rx="40" />
+            <text class="pipe-chip-text" x="480" y="286" text-anchor="middle">sparse gather Δ</text>
+            <text class="pipe-chip-sub" x="480" y="312" text-anchor="middle">only changed elements</text>
+          </g>
+        </svg>
+
+        <section class="fix-card fix-mem" data-step="1">
+          <p class="fix-label">Challenge 1 · solved</p>
+          <h3>Single-node CPU RAM bottleneck solved</h3>
+        </section>
+
+        <section class="fix-card fix-pipe" data-step="2">
+          <p class="fix-label">Challenge 2 · solved</p>
+          <h3>The gather is sparse too</h3>
+          <p class="fix-sub">Diff before gather, so the gather stage shrinks with the broadcast.</p>
+          <div class="mini-bars">
+            <div class="mini-row"><span>full gather</span><div class="mini-track"><i class="mb-full"></i></div><em>2.7–3.0 s</em></div>
+            <div class="mini-row"><span>sparse gather</span><div class="mini-track"><i class="mb-sparse"></i></div><em class="teal">0.75–1.0 s</em></div>
+          </div>
+        </section>
+
+        <section class="fix-card fix-result" data-step="3">
+          <p class="fix-label">Result · per-step weight sync</p>
+          <table class="res-table">
+            <thead>
+              <tr><th>Model</th><th>Full</th><th>naive Δ</th><th>sharded Δ</th><th>vs Full</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Qwen2.5-7B</td><td>1.52 s</td><td>1.76 s</td><td class="win">1.04 s</td><td class="win">−32%</td></tr>
+              <tr><td>Qwen2.5-32B</td><td>7.63 s</td><td>7.65 s</td><td class="win">2.96 s</td><td class="win">−61%</td></tr>
+              <tr><td>Qwen2.5-72B</td><td>36.9 s</td><td>—</td><td class="win">12.0 s</td><td class="win">−67%</td></tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+
+      <!-- ============================== 09 · Local diff -> global HF coordinates ============================== -->
+      <section class="slide content coord" aria-label="Engineering challenge: local shard diff to global HF coordinates">
+        <header class="slide-header">
+          <p class="section-label">01</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 1 · Delta Weight Sync for verl</p>
+            <h2>Engineering Challenge: How to Transform from Global Diff to Sharded Diff?</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <p class="co-lead">Each rank diffs its <b>own shard</b>, so positions are <b>local</b>. How do we get <b>global HF</b> positions?</p>
+
+        <section class="co-card co-fsdp">
+          <p class="rep-label"><span>1</span>FSDP: one fixed formula</p>
+          <svg class="co-fsdp-svg" viewBox="0 0 380 210" role="img" aria-label="A weight matrix split into four contiguous row blocks, one per rank; a changed element in rank 2's block">
+            <line class="co-band-line" x1="74" y1="64" x2="356" y2="64" />
+            <line class="co-band-line" x1="74" y1="110" x2="356" y2="110" />
+            <line class="co-band-line" x1="74" y1="156" x2="356" y2="156" />
+            <text class="co-band-label" x="66" y="48" text-anchor="end">rank 0</text>
+            <text class="co-band-label" x="66" y="94" text-anchor="end">rank 1</text>
+            <text class="co-band-label on" x="66" y="140" text-anchor="end">rank 2</text>
+            <text class="co-band-label" x="66" y="186" text-anchor="end">rank 3</text>
+              <rect class="co-cell b0" x="78" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="101" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="124" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="147" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="170" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="193" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="216" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="239" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="262" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="285" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="308" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="331" y="20" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="78" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="101" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="124" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="147" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="170" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="193" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="216" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="239" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="262" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="285" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="308" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b0" x="331" y="43" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="78" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="101" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="124" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="147" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="170" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="193" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="216" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="239" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="262" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="285" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="308" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="331" y="66" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="78" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="101" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="124" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="147" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="170" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="193" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="216" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="239" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="262" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="285" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="308" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="331" y="89" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="78" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="101" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="124" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="147" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="170" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="193" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="216" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="239" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="262" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="285" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="308" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="331" y="112" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="78" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="101" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="124" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="147" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell hit" x="170" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="193" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="216" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="239" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="262" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="285" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="308" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell mine" x="331" y="135" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="78" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="101" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="124" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="147" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="170" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="193" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="216" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="239" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="262" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="285" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="308" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="331" y="158" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="78" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="101" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="124" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="147" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="170" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="193" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="216" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="239" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="262" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="285" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="308" y="181" width="20" height="20" rx="2" />
+              <rect class="co-cell b1" x="331" y="181" width="20" height="20" rx="2" />
+          </svg>
+          <p class="co-formula">global = <b>offset</b> + local</p>
+          <p class="co-formula-sub">rank 2: 48 + 16 = 64</p>
+        </section>
+
+        <section class="co-card co-mcore" data-step="1">
+          <p class="rep-label teal"><span>2</span>Megatron: also needs mcore → HF conversion</p>
+          <svg class="co-mcore-svg" viewBox="0 0 900 305" role="img" aria-label="megatron_to_hf all-gathers the full tensor before converting; the patched version fakes the gather with NaN for other ranks, runs the same conversion, and the surviving non-NaN entries are this rank's changes at global HF positions">
+            <!-- as is: real all-gather, then convert -->
+            <text class="co-row-cap" x="0" y="18"><tspan class="code">megatron_to_hf</tspan> as is</text>
+            <rect class="co-box warn" x="0" y="30" width="230" height="96" rx="10" />
+            <text class="co-box-title warn" x="115" y="57" text-anchor="middle">all-gather</text>
+            <rect class="co-chunk full" x="23" y="70" width="40" height="44" rx="3" />
+            <rect class="co-chunk full" x="71" y="70" width="40" height="44" rx="3" />
+            <rect class="co-chunk full" x="119" y="70" width="40" height="44" rx="3" />
+            <rect class="co-chunk full" x="167" y="70" width="40" height="44" rx="3" />
+            <line class="load-arrow" x1="240" y1="78" x2="282" y2="78" />
+            <path class="load-head" d="M 280 72 L 290 78 L 280 84 Z" />
+            <rect class="co-box" x="296" y="50" width="200" height="56" rx="10" />
+            <text class="co-box-text" x="396" y="85" text-anchor="middle">mcore → HF</text>
+            <line class="load-arrow" x1="506" y1="78" x2="546" y2="78" />
+            <path class="load-head" d="M 544 72 L 554 78 L 544 84 Z" />
+            <text class="co-bad" x="566" y="74">✗ full all-gather</text>
+            <text class="co-bad-sub" x="566" y="102">the cost we want to avoid</text>
+
+            <!-- patched: fake the gather with NaN, same conversion -->
+            <g data-step="2">
+              <text class="co-row-cap teal" x="0" y="178">patched: fake the gather</text>
+              <rect class="co-box ok" x="0" y="190" width="230" height="96" rx="10" />
+              <text class="co-box-title ok" x="115" y="217" text-anchor="middle">NaN + my shard</text>
+              <rect class="co-chunk nan" x="23" y="230" width="40" height="44" rx="3" />
+              <rect class="co-chunk nan" x="71" y="230" width="40" height="44" rx="3" />
+              <rect class="co-chunk gate" x="119" y="230" width="40" height="22" rx="3" />
+              <rect class="co-chunk up" x="119" y="252" width="40" height="22" rx="3" />
+              <rect class="co-hit" x="125" y="237" width="9" height="9" rx="1.5" />
+              <rect class="co-hit" x="145" y="259" width="9" height="9" rx="1.5" />
+              <rect class="co-chunk nan" x="167" y="230" width="40" height="44" rx="3" />
+              <line class="load-arrow" x1="240" y1="238" x2="282" y2="238" />
+              <path class="load-head" d="M 280 232 L 290 238 L 280 244 Z" />
+              <rect class="co-box" x="296" y="210" width="200" height="56" rx="10" />
+              <text class="co-box-text" x="396" y="245" text-anchor="middle">mcore → HF</text>
+              <text class="co-box-sub" x="396" y="292" text-anchor="middle">same code</text>
+              <line class="load-arrow" x1="506" y1="238" x2="546" y2="238" />
+              <path class="load-head" d="M 544 232 L 554 238 L 544 244 Z" />
+
+              <!-- HF outputs: only my rows survive, at their global positions -->
+              <rect class="co-band nan" x="566" y="196" width="140" height="20" />
+              <rect class="co-band nan" x="566" y="216" width="140" height="20" />
+              <rect class="co-band gate" x="566" y="236" width="140" height="20" />
+              <rect class="co-band nan" x="566" y="256" width="140" height="20" />
+              <rect class="co-hit" x="578" y="241" width="9" height="9" rx="1.5" />
+              <rect class="co-band-frame" x="566" y="196" width="140" height="80" rx="3" />
+              <text class="co-tensor-name" x="636" y="298" text-anchor="middle">gate_proj</text>
+              <rect class="co-band nan" x="740" y="196" width="140" height="20" />
+              <rect class="co-band nan" x="740" y="216" width="140" height="20" />
+              <rect class="co-band up" x="740" y="236" width="140" height="20" />
+              <rect class="co-band nan" x="740" y="256" width="140" height="20" />
+              <rect class="co-hit" x="818" y="241" width="9" height="9" rx="1.5" />
+              <rect class="co-band-frame" x="740" y="196" width="140" height="80" rx="3" />
+              <text class="co-tensor-name" x="810" y="298" text-anchor="middle">up_proj</text>
+            </g>
+          </svg>
+          <p class="co-mcore-note" data-step="2">We got <b>delta at global HF positions</b> without the cost of all-gathering full weights.</p>
+        </section>
+
+        <section class="co-card co-unify" data-step="3">
+          <p class="rep-label"><span>3</span>One clean interface at rank 0: HF deltas from any backend</p>
+          <svg class="co-unify-svg" viewBox="0 0 1404 112" role="img" aria-label="FSDP and Megatron deltas both become HF deltas (name, HF index, new value), are sparsely gathered to rank 0, then bucketed and broadcast exactly as before">
+            <rect class="co-src" x="0" y="4" width="180" height="44" rx="22" />
+            <text class="co-src-text" x="90" y="34" text-anchor="middle">FSDP</text>
+            <rect class="co-src" x="0" y="64" width="180" height="44" rx="22" />
+            <text class="co-src-text" x="90" y="94" text-anchor="middle">Megatron</text>
+            <path class="co-merge" d="M 180 26 C 214 26, 214 56, 240 56" />
+            <path class="co-merge" d="M 180 86 C 214 86, 214 56, 240 56" />
+            <path class="load-head" d="M 238 50 L 248 56 L 238 62 Z" />
+            <rect class="co-chip hf" x="256" y="20" width="460" height="72" rx="36" />
+            <text class="co-chip-text hf" x="486" y="64" text-anchor="middle">HF Δ: (name, HF idx, new value)</text>
+            <line class="load-arrow" x1="726" y1="56" x2="764" y2="56" />
+            <path class="load-head" d="M 762 50 L 772 56 L 762 62 Z" />
+            <rect class="co-chip" x="782" y="20" width="320" height="72" rx="36" />
+            <text class="co-chip-text" x="942" y="64" text-anchor="middle">gather → rank 0</text>
+            <line class="load-arrow" x1="1112" y1="56" x2="1150" y2="56" />
+            <path class="load-head" d="M 1148 50 L 1158 56 L 1148 62 Z" />
+            <rect class="co-chip" x="1168" y="20" width="236" height="72" rx="36" />
+            <text class="co-chip-text" x="1286" y="64" text-anchor="middle">broadcast</text>
+          </svg>
+        </section>
+      </section>
+
+      <!-- ============================== 10 · Delta sync: summary & insights ============================== -->
+      <section class="slide content wrap" aria-label="Delta weight sync: summary and insights">
+        <header class="slide-header">
+          <p class="section-label">01</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 1 · Delta Weight Sync for verl</p>
+            <h2>Summary &amp; Insights</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <section class="gcard sum-card" style="left: 70px; top: 164px; width: 640px; height: 706px">
+          <p class="glabel">Summary</p>
+          <ol class="sum-steps">
+            <li><b>Problem</b><span>Off the RDMA fabric, weight synchronization becomes a bottleneck.</span></li>
+            <li><b>Observation</b><span>In BF16 or FP8, weight updates in RL are sparse.</span></li>
+            <li><b>Naive implementation</b><span>CPU RAM bottleneck, AllGather bottleneck.</span></li>
+            <li><b>Optimization</b><span>3.1× faster on 72B, lossless, works for both FSDP and Megatron.</span></li>
+          </ol>
+        </section>
+
+        <section class="gcard ins-card" style="left: 740px; top: 164px; width: 790px; height: 340px" data-step="1">
+          <p class="glabel rust">Insight 1 · Why it matters</p>
+          <h3>Cross-cluster rollout becomes practical</h3>
+          <p>With weight sync no longer a bottleneck, trainer and rollout placement become independent choices: external rollout decouples training from inference.</p>
+        </section>
+        <section class="gcard ins-card" style="left: 740px; top: 530px; width: 790px; height: 340px" data-step="2">
+          <p class="glabel rust">Insight 2 · System design</p>
+          <h3>Leverage the distributed setting of RL systems</h3>
+          <p>Don't send all data to rank 0 or put all compute on rank 0: avoid the full gather, and reduce before any bytes move.</p>
+        </section>
+      </section>
+
+      <!-- ============================== Outline (Part 2 next) ============================== -->
+      <section class="slide content outline outline-next" aria-label="Outline: Part 2 next">
+        <header class="slide-header">
+          <p class="section-label"></p>
+          <div class="slide-title">
+            <p class="eyebrow">Today's talk</p>
+            <h2>Outline</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <div class="outline-list">
+          <section class="outline-item part-1 is-dim">
+            <span class="outline-num">01</span>
+            <div>
+              <p class="outline-kicker">Part 1 · Past project</p>
+              <h3>Delta Weight Synchronization for verl</h3>
+              <p class="outline-sub">Speed up weight synchronization in the RL pipeline through sparse weight updates</p>
+            </div>
+          </section>
+
+          <section class="outline-item part-2 is-next">
+            <span class="outline-num">02</span>
+            <div>
+              <p class="outline-kicker">Part 2 · Take-home</p>
+              <h3>Trajectory Representation and Tokenization</h3>
+              <p class="outline-sub">for multi-turn agentic RL at scale</p>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ============================== Part 2: architecture ============================== -->
+      <section class="slide content arch" aria-label="Part 2: overall architecture">
+        <header class="slide-header">
+          <p class="section-label">02</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 2 · Trajectory Representation &amp; Tokenization</p>
+            <h2>Overall Architecture of the RL Stack Involved</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <svg class="arch-svg" data-hl="8" viewBox="0 0 1460 700" role="img" aria-label="Miles creates a session through the Agent Server Router and injects the replica URL into the agent harness; the harness sends text to its replica, whose trajectory manager calls an SGLang engine that tokenizes; trajectories go back to Miles; engines and the trainer download multimodal objects from object storage">
+          <defs>
+            <marker id="a-arrow" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+              <path d="M 0 1 L 13 7 L 0 13 Z" fill="#6f6258" />
+            </marker>
+            <marker id="a-arrow-teal" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+              <path d="M 0 1 L 13 7 L 0 13 Z" fill="#1d5a57" />
+            </marker>
+            <marker id="a-arrow-rust" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" refX="13" refY="8" orient="auto">
+              <path d="M 0 1 L 15 8 L 0 15 Z" fill="#b4523b" />
+            </marker>
+            <marker id="a-arrow-ochre" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" refX="13" refY="8" orient="auto">
+              <path d="M 0 1 L 15 8 L 0 15 Z" fill="#a8782f" />
+            </marker>
+          </defs>
+
+          <!-- 0 · Miles -->
+          <g class="ae">
+            <rect class="arch-box" x="0" y="20" width="292" height="100" rx="14" />
+            <text class="arch-title" x="146" y="64" text-anchor="middle">Miles</text>
+            <text class="arch-sub" x="146" y="96" text-anchor="middle">Driver</text>
+          </g>
+
+          <!-- 1 · agent server: router + replicas -->
+          <g class="ae" data-step="1" data-hl="8">
+            <path class="arch-zone server" d="M 556 0 H 1444 Q 1460 0 1460 16 V 374 Q 1460 390 1444 390 H 380 Q 364 390 364 374 V 196 Q 364 180 380 180 H 540 V 16 Q 540 0 556 0 Z" />
+            <text class="arch-zone-label" x="1440" y="30" text-anchor="end">AGENT SERVER</text>
+          </g>
+          <g class="ae" data-step="1" data-hl="8">
+            <rect class="arch-box router hl-target" x="560" y="10" width="600" height="100" rx="14" />
+            <text class="arch-title" x="860" y="54" text-anchor="middle">Agent Server Router</text>
+            <text class="arch-sub mono" x="860" y="86" text-anchor="middle">registry · session placement</text>
+          </g>
+          <g class="ae" data-step="1">
+            <rect class="arch-box" x="380" y="200" width="340" height="170" rx="14" />
+            <text class="arch-name" x="402" y="234">Replica 01</text>
+            <text class="arch-tag" x="700" y="234" text-anchor="end">assigned</text>
+          </g>
+          <g class="ae" data-step="1" data-hl="8">
+            <rect class="arch-inner hl-target" x="420" y="262" width="260" height="80" rx="10" />
+            <text class="arch-inner-text" x="550" y="309" text-anchor="middle">Trajectory Manager</text>
+          </g>
+          <g class="ae" data-step="1">
+            <rect class="arch-box" x="740" y="200" width="340" height="170" rx="14" />
+            <text class="arch-name" x="762" y="234">Replica 02</text>
+            <text class="arch-tag" x="1060" y="234" text-anchor="end">registered</text>
+          </g>
+          <g class="ae" data-step="1" data-hl="8">
+            <rect class="arch-inner hl-target" x="780" y="262" width="260" height="80" rx="10" />
+            <text class="arch-inner-text" x="910" y="309" text-anchor="middle">Trajectory Manager</text>
+          </g>
+          <g class="ae" data-step="1">
+            <rect class="arch-box" x="1100" y="200" width="340" height="170" rx="14" />
+            <text class="arch-name" x="1122" y="234">Replica 03</text>
+            <text class="arch-tag" x="1420" y="234" text-anchor="end">registered</text>
+          </g>
+          <g class="ae" data-step="1" data-hl="8">
+            <rect class="arch-inner hl-target" x="1140" y="262" width="260" height="80" rx="10" />
+            <text class="arch-inner-text" x="1270" y="309" text-anchor="middle">Trajectory Manager</text>
+          </g>
+          <g class="ae" data-step="1">
+            <path class="arch-line dashed" d="M 550 198 V 156 H 760 V 114" marker-end="url(#a-arrow)" />
+            <path class="arch-line dashed" d="M 910 198 V 114" marker-end="url(#a-arrow)" />
+            <path class="arch-line dashed" d="M 1270 198 V 156 H 1060 V 114" marker-end="url(#a-arrow)" />
+            <text class="arch-label" x="1120" y="148">register</text>
+          </g>
+
+          <!-- 2 · create session -->
+          <g class="ae" data-step="2">
+            <path class="arch-line" d="M 294 44 H 556" marker-end="url(#a-arrow)" />
+            <text class="arch-label" x="425" y="32" text-anchor="middle">create session</text>
+            <path class="arch-line dashed" d="M 558 88 H 298" marker-end="url(#a-arrow)" />
+            <text class="arch-label" x="425" y="76" text-anchor="middle">session ID + replica URL</text>
+          </g>
+
+          <!-- 3 · inject the replica URL into the harness -->
+          <g class="ae" data-step="3">
+            <path class="arch-line dashed" d="M 146 122 V 244" marker-end="url(#a-arrow)" />
+            <text class="arch-label" x="160" y="176">inject</text>
+            <text class="arch-label" x="160" y="198">replica URL</text>
+            <rect class="arch-box" x="0" y="250" width="292" height="100" rx="14" />
+            <text class="arch-title" x="146" y="310" text-anchor="middle">Agent Harness</text>
+          </g>
+
+          <!-- 4 · harness talks to its replica -->
+          <g class="ae" data-step="4">
+            <path class="arch-line teal" d="M 294 300 H 376" marker-end="url(#a-arrow-teal)" />
+            <text class="arch-label teal" x="335" y="288" text-anchor="middle">text</text>
+          </g>
+
+          <!-- 5 · SGLang engines -->
+          <g class="ae" data-step="5">
+            <rect class="arch-zone gpu" x="364" y="410" width="1096" height="160" rx="18" />
+            <text class="arch-zone-label" x="1440" y="558" text-anchor="end">INFERENCE CLUSTER</text>
+          </g>
+          <g class="ae" data-step="5">
+            <rect class="arch-box gpu" x="400" y="428" width="300" height="104" rx="12" />
+            <text class="arch-name" x="550" y="516" text-anchor="middle">SGLang Engine</text>
+          </g>
+          <g class="ae" data-step="5" data-hl="8">
+            <rect class="arch-inner hl-target" x="420" y="440" width="260" height="38" rx="8" />
+            <text class="arch-inner-text small" x="550" y="466" text-anchor="middle">Tokenization</text>
+          </g>
+          <g class="ae" data-step="5">
+            <rect class="arch-box gpu" x="760" y="428" width="300" height="104" rx="12" />
+            <text class="arch-name" x="910" y="516" text-anchor="middle">SGLang Engine</text>
+          </g>
+          <g class="ae" data-step="5" data-hl="8">
+            <rect class="arch-inner hl-target" x="780" y="440" width="260" height="38" rx="8" />
+            <text class="arch-inner-text small" x="910" y="466" text-anchor="middle">Tokenization</text>
+          </g>
+          <g class="ae" data-step="5">
+            <rect class="arch-box gpu" x="1120" y="428" width="300" height="104" rx="12" />
+            <text class="arch-name" x="1270" y="516" text-anchor="middle">SGLang Engine</text>
+          </g>
+          <g class="ae" data-step="5" data-hl="8">
+            <rect class="arch-inner hl-target" x="1140" y="440" width="260" height="38" rx="8" />
+            <text class="arch-inner-text small" x="1270" y="466" text-anchor="middle">Tokenization</text>
+          </g>
+          <g class="ae" data-step="5">
+            <path class="arch-line teal" d="M 530 372 V 424" marker-end="url(#a-arrow-teal)" />
+            <path class="arch-line" d="M 570 424 V 374" marker-end="url(#a-arrow)" />
+            <text class="arch-label teal" x="518" y="403" text-anchor="end">text</text>
+            <text class="arch-label" x="582" y="403">token IDs</text>
+            <path class="arch-line teal" d="M 890 372 V 424" marker-end="url(#a-arrow-teal)" />
+            <path class="arch-line" d="M 930 424 V 374" marker-end="url(#a-arrow)" />
+            <path class="arch-line teal" d="M 1250 372 V 424" marker-end="url(#a-arrow-teal)" />
+            <path class="arch-line" d="M 1290 424 V 374" marker-end="url(#a-arrow)" />
+          </g>
+
+          <!-- 6 · trajectory back to Miles -->
+          <g class="ae" data-step="6" data-hl="8">
+            <path class="arch-line rust traj" d="M 400 198 V 140 Q 400 112 372 112 H 298" marker-end="url(#a-arrow-rust)" />
+            <text class="arch-label rust" x="414" y="162">trajectory</text>
+          </g>
+
+          <!-- 7 · multimodal objects -->
+          <g class="ae" data-step="7">
+            <rect class="arch-box trainer" x="0" y="446" width="292" height="88" rx="14" />
+            <text class="arch-title" x="146" y="500" text-anchor="middle">Trainer</text>
+          </g>
+          <g class="ae" data-step="7">
+            <rect class="arch-box store" x="120" y="616" width="460" height="70" rx="14" />
+            <text class="arch-title" x="350" y="661" text-anchor="middle">Object Storage</text>
+          </g>
+          <g class="ae" data-step="7" data-hl="8">
+            <path class="arch-line ochre" d="M 146 614 V 540" marker-end="url(#a-arrow-ochre)" />
+            <path class="arch-line ochre" d="M 480 614 V 538" marker-end="url(#a-arrow-ochre)" />
+            <text class="arch-label ochre" x="160" y="584">download multimodal objects</text>
+            <text class="arch-label ochre" x="494" y="584">download multimodal objects</text>
+          </g>
+        </svg>
+      </section>
+
+      <!-- ============================== 12 · Trajectory manager: granularity ============================== -->
+      <section class="slide content gran" aria-label="Trajectory manager: granularity design choice">
+        <header class="slide-header">
+          <p class="section-label">02</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 2 · Trajectory Manager</p>
+            <h2>Granularity: Per-Turn vs. Turn Merge</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <section class="gran-track">
+          <strong>One task,<br />multiple turns</strong>
+          <div class="track">
+            <div class="tcard ctx"><small>CONTEXT</small><b>System</b></div><i></i>
+            <div class="tcard ctx"><small>INPUT</small><b>User</b></div><i></i>
+            <div class="tcard asst"><small>TURN 01</small><b>Assistant 1</b></div><i></i>
+            <div class="tcard tool"><small>OBSERVATION</small><b>Tool result</b></div><i></i>
+            <div class="tcard asst"><small>TURN 02</small><b>Assistant 2</b></div><i></i>
+            <div class="tcard tool"><small>OBSERVATION</small><b>Tool result 2</b></div><i></i>
+            <div class="tcard asst"><small>TURN 03</small><b>Assistant 3</b></div>
+          </div>
+        </section>
+
+        <section class="gcard gran-card" style="left: 70px; top: 318px; width: 710px; height: 552px" data-step="1">
+          <div class="gran-head"><div><p class="glabel muted">Baseline</p><h3>One sample per turn</h3></div><span>T turns → T samples</span></div>
+          <div class="lrows">
+                <div class="lrow "><span class="lname">sample 01</span><div class="run prefix "><span>SYS</span><span>U</span></div><div class="run target "><span>A1</span></div></div>
+                <div class="lrow "><span class="lname">sample 02</span><div class="run prefix "><span>SYS</span><span>U</span><span>A1</span><span>T1</span></div><div class="run target "><span>A2</span></div></div>
+                <div class="lrow "><span class="lname">sample 03</span><div class="run prefix "><span>SYS</span><span>U</span><span>A1</span><span>T1</span><span>A2</span><span>T2</span></div><div class="run target "><span>A3</span></div></div>
+                <div class="lrow sub"><span class="lname">sample 04<small>sub-agent</small></span><div class="run prefix subp"><span>S-SYS</span><span>S-U</span></div><div class="run target subt"><span>SA1</span></div></div>
+          </div>
+          <p class="gran-note">Every sample repeats the shared history: <b>Σ L<sub>t</sub></b> tokens for T turns.</p>
+        </section>
+
+        <section class="gcard gran-card merge" style="left: 820px; top: 318px; width: 710px; height: 552px" data-step="2">
+          <div class="gran-head"><div><p class="glabel">Best-effort turn merge</p><h3>Turn merge</h3></div><span>4 requests → 2 trajectories</span></div>
+          <div class="merge-stage" data-hl="3">
+            <div class="lrow msrc src-a"><span class="lname">request 01</span><div class="run prefix"><span>SYS</span><span>U</span></div><div class="run target"><span>A1</span></div></div>
+            <div class="lrow msrc src-b"><span class="lname">request 02</span><div class="run prefix"><span>SYS</span><span>U</span><span>A1</span><span>T1</span></div><div class="run target"><span>A2</span></div></div>
+            <div class="lrow msrc src-c"><span class="lname">request 03</span><div class="run prefix"><span>SYS</span><span>U</span><span>A1</span><span>T1</span><span>A2</span><span>T2</span></div><div class="run target"><span>A3</span></div></div>
+            <div class="lrow msub"><span class="lname"><b class="before">request 04</b><b class="after">trajectory 02</b><small>sub-agent</small></span><div class="run prefix subp"><span>S-SYS</span><span>S-U</span></div><div class="run target subt"><span>SA1</span></div></div>
+            <div class="lrow mmerged"><span class="lname">trajectory 01<small>main agent</small></span><div class="mrun"><span class="m ctx">SYS</span><span class="m ctx">U</span><span class="m asst">A1</span><span class="m tool">T1</span><span class="m asst">A2</span><span class="m tool">T2</span><span class="m asst">A3</span></div></div>
+          </div>
+          <p class="gran-note">A turn that extends a stored turn continues its tokens: one root-to-leaf sample of <b>L<sub>T</sub></b> tokens.</p>
+        </section>
+      </section>
+
+      <!-- ============================== 13 · Granularity: results ============================== -->
+      <section class="slide content gres" aria-label="Turn merge vs per turn results">
+        <header class="slide-header">
+          <p class="section-label">02</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 2 · Trajectory Manager</p>
+            <h2>Turn Merge: Same Loss Tokens, 38.8× Fewer Tokens</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <section class="gcard gres-table-card" style="left: 70px; top: 168px; width: 1460px; height: 560px">
+          <p class="glabel muted">One rollout batch, trained both ways for one step</p>
+          <table class="gres-table">
+            <thead><tr><th></th><th>Per turn</th><th>Turn merge</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Samples</td><td>4,439</td><td class="win">64</td><td></td></tr>
+              <tr><td>Training tokens</td><td>105.3 M</td><td class="win">2.71 M</td><td><span class="gain">38.8× fewer</span></td></tr>
+              <tr><td>Training time</td><td>5,164 s</td><td class="win">596 s</td><td><span class="gain">8.7× faster</span></td></tr>
+              <tr><td>Rollout + training</td><td>5,890 s</td><td class="win">1,322 s</td><td><span class="gain">4.5× faster</span></td></tr>
+              <tr class="same" data-step="1"><td>Loss tokens</td><td>698,954</td><td>698,954</td><td class="eq">identical</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+
+        <p class="gres-setup">64 Claude Code sessions on SWE-Gym (4 tasks × 16) · Qwen3.5-4B · 8×H100 · 64K context</p>
+      </section>
+
+      <!-- ============================== Trajectory manager: representation (from Spindle) ============================== -->
+      <section class="slide content ptrie" aria-label="Trajectory manager: multi-linear chains vs prefix trie">
+        <header class="slide-header">
+          <p class="section-label">02</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 2 · Trajectory Manager</p>
+            <h2>Representation: Multi-Linear Chains vs. Prefix Trie</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <p class="detail-lead">Data structure for trajectories: Multi-linear chains vs Prefix trie</p>
+
+        <div class="prefix-trie-canvas">
+          <section class="storage-method linear-storage" aria-label="Multiple linear chain storage">
+            <header class="storage-method-header">
+              <div>
+                <span>FLATTENED</span>
+                <h3>Multi-linear chains</h3>
+              </div>
+              <p>four full copies</p>
+            </header>
+
+            <div class="linear-chain-list">
+              <div class="linear-chain-row">
+                <span class="storage-chain-id">chain 01</span>
+                <div class="linear-chain-body">
+                  <span class="storage-node context-node shared-copy prompt-node">Prompt</span>
+                  <i></i>
+                  <span class="storage-node assistant-storage-node shared-copy">A1</span>
+                  <i></i>
+                  <span class="storage-node tool-storage-node shared-copy">T1</span>
+                  <i></i>
+                  <span class="storage-node assistant-storage-node shared-copy">A2</span>
+                  <i></i>
+                  <span class="storage-node tool-storage-node shared-copy">T2</span>
+                  <i></i>
+                  <span class="storage-node chosen-storage-node">A3</span>
+                </div>
+                <span class="linear-chain-kind selected-kind">selected</span>
+              </div>
+              <div class="linear-chain-row">
+                <span class="storage-chain-id">chain 02</span>
+                <div class="linear-chain-body">
+                  <span class="storage-node context-node shared-copy prompt-node">Prompt</span>
+                  <i></i>
+                  <span class="storage-node assistant-storage-node shared-copy">A1</span>
+                  <i></i>
+                  <span class="storage-node tool-storage-node shared-copy">T1</span>
+                  <i></i>
+                  <span class="storage-node discard-storage-node">A2_1</span>
+                </div>
+                <span class="linear-chain-kind bon-kind">Best of N</span>
+              </div>
+              <div class="linear-chain-row">
+                <span class="storage-chain-id">chain 03</span>
+                <div class="linear-chain-body">
+                  <span class="storage-node context-node shared-copy prompt-node">Prompt</span>
+                  <i></i>
+                  <span class="storage-node assistant-storage-node shared-copy">A1</span>
+                  <i></i>
+                  <span class="storage-node tool-storage-node shared-copy">T1</span>
+                  <i></i>
+                  <span class="storage-node discard-storage-node">A2_2</span>
+                </div>
+                <span class="linear-chain-kind bon-kind">Best of N</span>
+              </div>
+              <div class="linear-chain-row subagent-linear-chain">
+                <span class="storage-chain-id">chain 04</span>
+                <div class="linear-chain-body">
+                  <span class="storage-node context-node shared-copy prompt-node">Prompt</span>
+                  <i></i>
+                  <span class="storage-node assistant-storage-node shared-copy">A1</span>
+                  <i></i>
+                  <span class="storage-node subagent-storage-node">Subagent Prompt</span>
+                  <i></i>
+                  <span class="storage-node subagent-storage-node">Subagent A1</span>
+                  <i></i>
+                  <span class="storage-node tool-storage-node">T</span>
+                  <i></i>
+                  <span class="storage-node subagent-storage-node">Subagent A2</span>
+                </div>
+                <span class="linear-chain-kind subagent-kind">subagent</span>
+              </div>
+            </div>
+          </section>
+
+          <ul class="linear-chain-limitations" aria-label="Limitations of multi-linear chains">
+            <li>Time: O(NL), memory: O(NL). N = number of chains; L = average length of chain.</li>
+            <li>Relationships between chains are not clear.</li>
+          </ul>
+
+          <section class="storage-method trie-storage" aria-label="Prefix-trie trajectory storage">
+            <header class="storage-method-header">
+              <div>
+                <span>STRUCTURED</span>
+                <h3>Prefix-trie storage</h3>
+              </div>
+              <p>one shared lineage</p>
+            </header>
+
+            <svg class="trie-storage-connectors" viewBox="0 0 708 520" aria-hidden="true">
+              <path class="trie-edge keep-edge" d="M 104 243 H 128" />
+              <path class="trie-edge keep-edge" d="M 188 243 H 212" />
+              <path class="trie-edge keep-edge" d="M 272 243 H 322" />
+              <path class="trie-edge discard-edge" d="M 296 243 V 130 H 322" />
+              <path class="trie-edge discard-edge" d="M 296 243 V 356 H 322" />
+              <path class="trie-edge keep-edge" d="M 394 243 H 430" />
+              <path class="trie-edge keep-edge" d="M 490 243 H 530" />
+              <path class="trie-edge subagent-edge" d="M 200 243 V 448 H 212" />
+              <path class="trie-edge subagent-edge" d="M 312 448 H 322" />
+              <path class="trie-edge subagent-edge" d="M 412 448 H 430" />
+              <path class="trie-edge subagent-edge" d="M 490 448 H 530" />
+              <circle class="trie-junction" cx="296" cy="243" r="4" />
+              <circle class="trie-junction subagent-junction" cx="200" cy="243" r="4" />
+            </svg>
+
+            <div class="storage-node trie-node context-node prompt-node trie-prompt">Prompt</div>
+            <div class="storage-node trie-node assistant-storage-node trie-a1">A1</div>
+            <div class="storage-node trie-node tool-storage-node trie-t1">T1</div>
+
+            <div class="storage-node trie-node assistant-storage-node chosen-storage-node trie-a2">A2</div>
+            <div class="storage-node trie-node tool-storage-node trie-t2">T2</div>
+            <div class="trie-branch-label trie-bon-label">BEST OF N</div>
+            <div class="trie-branch-label trie-selected-label">SELECTED</div>
+            <div class="storage-node trie-node chosen-storage-node trie-a3">A3</div>
+            <div class="storage-node trie-node discard-storage-node trie-discard-leaf trie-a2-1">A2_1</div>
+            <div class="storage-node trie-node discard-storage-node trie-discard-leaf trie-a2-2">A2_2</div>
+
+            <div class="trie-branch-label trie-subagent-label">SUBAGENT</div>
+            <div class="storage-node trie-node subagent-storage-node trie-sub-prompt">Subagent Prompt</div>
+            <div class="storage-node trie-node subagent-storage-node trie-sub-a1">Subagent A1</div>
+            <div class="storage-node trie-node tool-storage-node trie-sub-tool">T</div>
+            <div class="storage-node trie-node subagent-storage-node trie-sub-a2">Subagent A2</div>
+
+            <div class="leaf-callout a2-1-leaf-callout" data-hl="4">single leaf</div>
+            <div class="leaf-callout a2-2-leaf-callout" data-hl="4">single leaf</div>
+
+            <span class="drop-mark drop-a2-1" data-hl="5">DROP</span>
+            <span class="drop-mark drop-a2-2" data-hl="5">DROP</span>
+          </section>
+
+          <ul class="trie-storage-benefits" aria-label="Benefits of prefix-trie storage">
+            <li>Time: O(L), memory: O(U). U = number of prefix nodes.</li>
+            <li>Relationships between chains are clearer, helpful for special chain discovery and reward assignment.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ============================== 15 · Trajectories on the agent server ============================== -->
+      <section class="slide content state" aria-label="Why trajectories live on the agent server">
+        <header class="slide-header">
+          <p class="section-label">02</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 2 · Trajectory Manager</p>
+            <h2>Why Trajectories Live on the Agent Server, Not in SGLang</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <svg class="state-svg" viewBox="0 0 860 600" role="img" aria-label="The agent server replica holds committed turns; it sends a self-contained request through the SGLang router to an engine; if that engine dies, the same request is retried on a healthy engine">
+          <defs>
+            <marker id="st-arrow" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto"><path d="M 0 1 L 13 7 L 0 13 Z" fill="#1d5a57" /></marker>
+            <marker id="st-arrow-rust" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto"><path d="M 0 1 L 13 7 L 0 13 Z" fill="#b4523b" /></marker>
+          </defs>
+          <rect class="st-zone" x="0" y="0" width="300" height="600" rx="16" />
+          <text class="st-zone-label" x="20" y="40">CPU cluster: <tspan class="ok">stable</tspan></text>
+          <rect class="st-zone gpu" x="470" y="0" width="390" height="600" rx="16" />
+          <text class="st-zone-label" x="490" y="40">GPU cluster: <tspan class="bad">unstable</tspan></text>
+
+          <rect class="st-box" x="24" y="190" width="252" height="220" rx="14" />
+          <text class="st-title" x="150" y="242" text-anchor="middle">Agent server</text>
+          <rect class="st-inner" x="48" y="280" width="204" height="106" rx="10" />
+          <text class="st-inner-text" x="150" y="312" text-anchor="middle">committed turns</text>
+          <circle class="st-dot" cx="88" cy="352" r="9" /><circle class="st-dot" cx="128" cy="352" r="9" /><circle class="st-dot" cx="168" cy="352" r="9" /><circle class="st-dot new" cx="208" cy="352" r="9" />
+          <line class="st-tie" x1="97" y1="352" x2="119" y2="352" /><line class="st-tie" x1="137" y1="352" x2="159" y2="352" /><line class="st-tie dash" x1="177" y1="352" x2="199" y2="352" />
+
+          <rect class="st-box router" x="330" y="262" width="110" height="76" rx="12" />
+          <text class="st-sub dark" x="385" y="296" text-anchor="middle">SGLang</text>
+          <text class="st-sub dark" x="385" y="318" text-anchor="middle">router</text>
+          <path class="st-line" d="M 278 300 H 326" marker-end="url(#st-arrow)" />
+
+          <g class="st-engine" data-hl="1 2"><rect class="st-box eng" x="530" y="80" width="280" height="110" rx="14" /><text class="st-title" x="670" y="130" text-anchor="middle">Engine 1</text><text class="st-sub" x="670" y="158" text-anchor="middle">stateless</text></g>
+          <rect class="st-box eng" x="530" y="245" width="280" height="110" rx="14" /><text class="st-title" x="670" y="295" text-anchor="middle">Engine 2</text><text class="st-sub" x="670" y="323" text-anchor="middle">stateless</text>
+          <rect class="st-box eng" x="530" y="410" width="280" height="110" rx="14" /><text class="st-title" x="670" y="460" text-anchor="middle">Engine 3</text><text class="st-sub" x="670" y="488" text-anchor="middle">stateless</text>
+
+          <path class="st-line" data-only="0" d="M 442 290 C 490 290, 480 135, 526 135" marker-end="url(#st-arrow)" />
+          <g data-step="1">
+            <path class="st-line rust dash" d="M 442 290 C 490 290, 480 135, 526 135" />
+            <path class="st-x" d="M 790 92 L 830 132 M 830 92 L 790 132" />
+            <text class="st-fail" x="670" y="214" text-anchor="middle">dies mid-generation: this turn is lost</text>
+          </g>
+          <path class="st-line" data-step="2" d="M 442 300 H 526" marker-end="url(#st-arrow)" />
+          <text class="st-retry" data-step="2" x="536" y="386">retry</text>
+
+          <text class="st-req" x="150" y="458" text-anchor="middle">each request carries</text>
+          <text class="st-req code" x="150" y="494" text-anchor="middle">full history</text>
+          <text class="st-req code" x="150" y="522" text-anchor="middle">+ new turn</text>
+        </svg>
+
+        <div class="state-points">
+          <b>Rollout engine should be stateless for better fault tolerance</b>
+          <span>Every request carries everything an engine needs.</span>
+        </div>
+      </section>
+
+      <!-- ============================== 16 · Tokenization principles ============================== -->
+      <section class="slide content tokp" aria-label="Zero-drift multi-turn tokenization: principles">
+        <header class="slide-header">
+          <p class="section-label">02</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 2 · Zero-Drift Multi-Turn Tokenization</p>
+            <h2>Tokenization: Three Principles</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <section class="gcard tok-card" style="left: 70px; top: 166px; width: 460px; height: 704px">
+          <p class="tok-num">01</p>
+          <h3>Token in, token out</h3>
+          <p class="gtext">SGLang consumes and returns token IDs, and the trainer gets exactly the sampled IDs. Text is never re-tokenized.</p>
+          <p class="tok-why"><b>Why?</b> Because decode-encode is not round-trip equal.</p>
+          <div class="tito-demo">
+            <p class="demo-label">model generates</p>
+            <div class="demo-row"><span class="tid">826</span><span class="tid">4172</span></div>
+            <p class="demo-label">decode</p>
+            <div class="demo-row"><span class="txt">"he"</span><i>+</i><span class="txt">"llo"</span></div>
+            <p class="demo-label">encode again</p>
+            <div class="demo-row"><span class="tid bad">15339</span><em>≠ the sampled IDs</em></div>
+          </div>
+        </section>
+
+        <section class="gcard tok-card" style="left: 570px; top: 166px; width: 460px; height: 704px" data-step="1">
+          <p class="tok-num">02</p>
+          <h3>Append-only encoding</h3>
+          <p class="gtext">Each prompt is the parent's tokens plus only the new messages. Parent tokens are reused as-is and never decoded.</p>
+          <div class="append-demo">
+            <div class="ap-bar"><span class="ap-old">parent tokens · reused</span><span class="ap-new">new</span></div>
+            <div class="ap-labels"><span><code>input_ids</code></span><span><code>encode(messages[k:])</code></span></div>
+          </div>
+        </section>
+
+        <section class="gcard tok-card" style="left: 1070px; top: 166px; width: 460px; height: 704px" data-step="2">
+          <p class="tok-num">03</p>
+          <h3>Model-specific boundary adapters</h3>
+          <p class="gtext">Turn-by-turn must equal one render of the whole conversation.</p>
+          <p class="inv"><code>append(history, turn)</code><br /><b>=</b><code>apply_chat_template(all)</code></p>
+          <p class="tok-why">Need a model-specific adapter to fix the boundary.</p>
+          <div class="adapter"><span class="ad-name">Qwen</span><span class="ad-chip">… &lt;|im_end|&gt;</span><span class="ad-fix add">+ \n</span></div>
+          <div class="adapter"><span class="ad-name">GLM</span><span class="ad-chip">… &lt;|observation|&gt;</span><span class="ad-fix keep">keep one</span></div>
+        </section>
+      </section>
+
+      <!-- ============================== Multimodality at scale: two designs ============================== -->
+      <section class="slide content mmcmp" aria-label="How to support multimodality at scale: two designs">
+        <header class="slide-header">
+          <p class="section-label">02</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 2 · Zero-Drift Multi-Turn Tokenization</p>
+            <h2>How to Support Multimodality at Scale</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <section class="gcard mm-card bad" style="left: 70px; top: 160px; width: 710px; height: 700px">
+          <p class="glabel rust">verl / Miles: tokenize in the controller</p>
+          <svg class="mm-svg" data-hl="1 2" viewBox="0 0 680 400" role="img" aria-label="Miles or the agent server downloads multimodal objects, tokenizes them, and sends token IDs plus big multimodal tensors to both SGLang and the trainer">
+            <defs>
+              <marker id="mm-arrow-rust" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="14" refY="9" orient="auto"><path d="M 0 1 L 17 9 L 0 17 Z" fill="#b4523b" /></marker>
+            </defs>
+            <g class="le" data-hl="1">
+              <rect class="mm-box store" x="220" y="0" width="240" height="52" rx="12" />
+              <text class="mm-t" x="340" y="33" text-anchor="middle">Object Storage</text>
+            </g>
+            <g class="le" data-hl="1">
+              <path class="mm-fat" d="M 340 54 V 110" marker-end="url(#mm-arrow-rust)" />
+              <text class="mm-l rust" x="360" y="88">download multimodal objects</text>
+              <circle class="mm-badge rust" cx="312" cy="84" r="14" /><text class="mm-badge-t" x="312" y="89" text-anchor="middle">1</text>
+            </g>
+
+            <g class="le" data-hl="1 2">
+              <rect class="mm-box hub" x="150" y="116" width="380" height="98" rx="14" />
+              <text class="mm-t" x="340" y="152" text-anchor="middle">Miles / agent server</text>
+              <rect class="mm-chip" x="268" y="166" width="144" height="34" rx="17" />
+              <text class="mm-chip-t" x="340" y="188" text-anchor="middle">tokenization</text>
+              <g data-step="1">
+                <rect class="mm-tag" x="376" y="96" width="206" height="38" rx="19" />
+                <text class="mm-tag-t" x="479" y="121" text-anchor="middle">not distributed</text>
+              </g>
+            </g>
+
+            <g class="le" data-hl="2">
+              <path class="mm-fat" d="M 240 216 C 222 258, 160 262, 150 296" marker-end="url(#mm-arrow-rust)" />
+              <path class="mm-fat" d="M 440 216 C 458 258, 520 262, 530 296" marker-end="url(#mm-arrow-rust)" />
+              <text class="mm-l rust" x="340" y="262" text-anchor="middle">token IDs +</text>
+              <text class="mm-l rust" x="340" y="284" text-anchor="middle">multimodal tensors (big)</text>
+              <circle class="mm-badge rust" cx="560" cy="166" r="14" /><text class="mm-badge-t" x="560" y="171" text-anchor="middle">2</text>
+            </g>
+
+            <g class="le" data-hl="2">
+              <rect class="mm-box gpu back" x="32" y="300" width="250" height="76" rx="12" /><rect class="mm-box gpu back" x="26" y="306" width="250" height="76" rx="12" /><rect class="mm-box gpu" x="20" y="312" width="250" height="76" rx="12" />
+              <text class="mm-t" x="145" y="358" text-anchor="middle">SGLang engines</text>
+            </g>
+            <g class="le" data-hl="2">
+              <rect class="mm-box trn back" x="412" y="300" width="250" height="76" rx="12" /><rect class="mm-box trn back" x="406" y="306" width="250" height="76" rx="12" /><rect class="mm-box trn" x="400" y="312" width="250" height="76" rx="12" />
+              <text class="mm-t" x="525" y="358" text-anchor="middle">Trainer</text>
+            </g>
+          </svg>
+          <ol class="mm-points bad">
+            <li data-step="1"><span>1</span>Low parallelism: fetching big multimodal objects through Miles / agent server hits a <b>bandwidth bottleneck</b>.</li>
+            <li data-step="2"><span>2</span>Big tensors hop across three processes, and Miles / agent server becomes a <b>transfer bottleneck</b>.</li>
+          </ol>
+        </section>
+
+        <section class="gcard mm-card good" style="left: 820px; top: 160px; width: 710px; height: 700px" data-step="3">
+          <p class="glabel">This design: tokenize inside SGLang</p>
+          <svg class="mm-svg" viewBox="0 0 680 400" role="img" aria-label="Miles or the agent server sends only text and object URLs to SGLang and token IDs to the trainer; SGLang engines and the trainer each download multimodal objects from object storage">
+            <defs>
+              <marker id="mm-arrow-teal" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" refX="13" refY="8" orient="auto"><path d="M 0 1 L 15 8 L 0 15 Z" fill="#1d5a57" /></marker>
+              <marker id="mm-arrow-ink" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M 0 1 L 11 6 L 0 11 Z" fill="#6f6258" /></marker>
+            </defs>
+            <rect class="mm-box" x="150" y="0" width="380" height="84" rx="14" />
+            <text class="mm-t" x="340" y="36" text-anchor="middle">Miles / agent server</text>
+            <text class="mm-s" x="340" y="64" text-anchor="middle">only light data passes through</text>
+            <circle class="mm-badge teal" cx="560" cy="42" r="14" /><text class="mm-badge-t" x="560" y="47" text-anchor="middle">2</text>
+
+            <path class="mm-thin" d="M 190 86 V 160" marker-end="url(#mm-arrow-ink)" />
+            <text class="mm-l" x="178" y="120" text-anchor="end">text +</text>
+            <text class="mm-l" x="178" y="140" text-anchor="end">object URLs</text>
+            <path class="mm-thin" d="M 244 160 V 88" marker-end="url(#mm-arrow-ink)" />
+            <text class="mm-l" x="256" y="130">token IDs</text>
+            <path class="mm-thin" d="M 470 86 V 160" marker-end="url(#mm-arrow-ink)" />
+            <text class="mm-l" x="482" y="130">token IDs</text>
+
+            <rect class="mm-box gpu back" x="32" y="164" width="250" height="100" rx="12" /><rect class="mm-box gpu back" x="26" y="170" width="250" height="100" rx="12" /><rect class="mm-box gpu" x="20" y="176" width="250" height="100" rx="12" />
+            <text class="mm-t" x="145" y="214" text-anchor="middle">SGLang engines</text>
+            <rect class="mm-chip" x="45" y="230" width="200" height="34" rx="17" />
+            <text class="mm-chip-t" x="145" y="252" text-anchor="middle">download + tokenize</text>
+            <rect class="mm-box trn back" x="412" y="164" width="250" height="100" rx="12" /><rect class="mm-box trn back" x="406" y="170" width="250" height="100" rx="12" /><rect class="mm-box trn" x="400" y="176" width="250" height="100" rx="12" />
+            <text class="mm-t" x="525" y="214" text-anchor="middle">Trainer</text>
+            <rect class="mm-chip" x="465" y="230" width="120" height="34" rx="17" />
+            <text class="mm-chip-t" x="525" y="252" text-anchor="middle">download</text>
+
+            <rect class="mm-box store" x="160" y="346" width="360" height="52" rx="12" />
+            <text class="mm-t" x="340" y="379" text-anchor="middle">Object Storage</text>
+            <path class="mm-med" d="M 200 344 V 284" marker-end="url(#mm-arrow-teal)" />
+            <path class="mm-med" d="M 480 344 V 284" marker-end="url(#mm-arrow-teal)" />
+            <text class="mm-l teal" x="212" y="320">download</text>
+            <text class="mm-l teal" x="492" y="320">download</text>
+            <circle class="mm-badge teal" cx="172" cy="316" r="14" /><text class="mm-badge-t" x="172" y="321" text-anchor="middle">1</text>
+          </svg>
+          <ol class="mm-points good">
+            <li><span>1</span>Distributed rollout / trainer ranks fetch objects in parallel: <b>no bandwidth bottleneck</b>.</li>
+            <li><span>2</span>Only light data passes through Miles / agent server: <b>big tensors are fetched where they are consumed, not moved between processes</b>.</li>
+          </ol>
+        </section>
+
+      </section>
+
+      <!-- ============================== 19 · Part 2 insights ============================== -->
+      <section class="slide content ins2" aria-label="Part 2 insights">
+        <header class="slide-header">
+          <p class="section-label">02</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 2 · Trajectory Representation &amp; Tokenization</p>
+            <h2>Insights</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <section class="gcard ins2-card" style="left: 70px; top: 166px; width: 460px; height: 704px">
+          <p class="tok-num">01</p>
+          <h3>Trajectory representation</h3>
+          <p class="gtext">should be:</p>
+          <ol class="ins2-list">
+            <li><b>Efficient</b></li>
+            <li><b>Lossless</b>: keep sub-agents, compaction, retries, etc.</li>
+            <li><b>Lineage-aware</b>: the data structure represents the lineage between trajectories, for customized reward assignment</li>
+          </ol>
+        </section>
+
+        <section class="gcard ins2-card" style="left: 570px; top: 166px; width: 460px; height: 704px" data-step="1">
+          <p class="tok-num">02</p>
+          <h3>Tokenization details decide training quality</h3>
+          <p class="gtext">It is important to implement zero-drift multi-turn tokenization to reduce training–inference mismatch.</p>
+        </section>
+
+        <section class="gcard ins2-card" style="left: 1070px; top: 166px; width: 460px; height: 704px" data-step="2">
+          <p class="tok-num">03</p>
+          <h3>Scale RL systems by separating control and data planes</h3>
+          <p class="gtext">RL systems are built around a single controller (a single driver). Large data should bypass it and be fetched where it is consumed, to avoid a transfer bottleneck.</p>
+        </section>
+      </section>
+
+      <!-- ============================== Experiments ============================== -->
+      <section class="slide content exps" aria-label="End-to-end experiments">
+        <header class="slide-header">
+          <p class="section-label">02</p>
+          <div class="slide-title">
+            <p class="eyebrow">Part 2 · Trajectory Representation &amp; Tokenization</p>
+            <h2>End-to-End Experiments</h2>
+          </div>
+          <p class="page-number"></p>
+        </header>
+
+        <section class="gcard exp-card" style="left: 70px; top: 160px; width: 600px; height: 700px">
+          <p class="glabel">DeepEyes · multimodal tool use</p>
+          <p class="exp-setup">Qwen2.5-VL-7B · 30 steps</p>
+          <img class="exp-img" src="assets/deepeyes_v1_rollout_reward.png" alt="DeepEyes rollout reward over 30 steps" />
+          <img class="exp-img" src="assets/deepeyes_v1_eval.png" alt="DeepEyes V* Bench accuracy and held-out reward over training" />
+        </section>
+
+        <section class="gcard exp-card" style="left: 700px; top: 160px; width: 830px; height: 700px">
+          <p class="glabel">Claude Code on SWE-Gym · E2B sandboxes</p>
+          <p class="exp-setup">Qwen3.5-4B · 40 steps</p>
+          <img class="exp-img" src="assets/swegym_raw_reward.png" alt="SWE-Gym rollout raw reward over 40 steps" />
+          <div class="exp-pair">
+            <img class="exp-img" src="assets/swegym_total_lengths.png" alt="SWE-Gym mean context length per episode" />
+            <img class="exp-img" src="assets/swegym_mean_turns.png" alt="SWE-Gym mean turns per session" />
+          </div>
+        </section>
+      </section>
+
+    </main>
+
+    <div class="progress-track" aria-hidden="true">
+      <span id="progress-fill"></span>
+    </div>
+
+    <script src="slides.js"></script>
+  </body>
+</html>
