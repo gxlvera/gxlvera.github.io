@@ -1051,10 +1051,10 @@
             <marker id="s-arrow-teal" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
               <path d="M 0 1 L 13 7 L 0 13 Z" fill="#1d5a57" />
             </marker>
-            <path id="s-g-0" d="M 625 432 V 462" />
-            <path id="s-g-1" d="M 330 179 C 410 179, 400 490, 456 490" />
-            <path id="s-g-2" d="M 330 409 C 400 409, 410 502, 456 502" />
-            <path id="s-g-3" d="M 330 639 C 410 639, 400 514, 456 514" />
+            <path id="s-g-0" d="M 625 380 V 410" />
+            <path id="s-g-1" d="M 330 179 C 410 179, 400 438, 456 438" />
+            <path id="s-g-2" d="M 330 409 C 400 409, 410 450, 456 450" />
+            <path id="s-g-3" d="M 330 639 C 410 639, 400 462, 456 462" />
           </defs>
 
 
@@ -1113,23 +1113,23 @@
             </g>
           </g>
           <g class="shard-node">
-            <rect class="pipe-box" x="450" y="240" width="350" height="190" rx="12" />
-            <text class="pipe-name" x="472" y="278">PP0 · Node 0</text>
-              <rect class="rank-pill" x="686" y="256" width="96" height="28" rx="14" />
-              <text class="rank-pill-text" x="734" y="276" text-anchor="middle">RANK 0</text>
+            <rect class="pipe-box" x="450" y="188" width="350" height="190" rx="12" />
+            <text class="pipe-name" x="472" y="226">PP0 · Node 0</text>
+              <rect class="rank-pill" x="686" y="204" width="96" height="28" rx="14" />
+              <text class="rank-pill-text" x="734" y="224" text-anchor="middle">RANK 0</text>
             <g class="pipe-node mini">
-              <rect class="pipe-box" x="470" y="296" width="150" height="72" rx="8" />
-              <text class="pipe-tag" x="484" y="318">GPU</text>
-              <text class="mini-text new" x="545" y="352" text-anchor="middle">θₜ₊₁ shard</text>
+              <rect class="pipe-box" x="470" y="244" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="484" y="266">GPU</text>
+              <text class="mini-text new" x="545" y="300" text-anchor="middle">θₜ₊₁ shard</text>
             </g>
             <g class="pipe-node mini" data-hl="1">
-              <rect class="pipe-box" x="630" y="296" width="150" height="72" rx="8" />
-              <text class="pipe-tag" x="644" y="318">CPU · PINNED</text>
-              <text class="mini-text" x="705" y="352" text-anchor="middle">θₜ shard</text>
+              <rect class="pipe-box" x="630" y="244" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="644" y="266">CPU · PINNED</text>
+              <text class="mini-text" x="705" y="300" text-anchor="middle">θₜ shard</text>
             </g>
             <g class="pipe-node">
-              <rect class="pipe-box chip" x="470" y="380" width="310" height="38" rx="19" />
-              <text class="mini-chip" x="625" y="405" text-anchor="middle">bitwise diff → Δ</text>
+              <rect class="pipe-box chip" x="470" y="328" width="310" height="38" rx="19" />
+              <text class="mini-chip" x="625" y="353" text-anchor="middle">bitwise diff → Δ</text>
             </g>
           </g>
 
@@ -1138,8 +1138,8 @@
             <use href="#s-g-0" /><use href="#s-g-1" /><use href="#s-g-2" /><use href="#s-g-3" />
           </g>
           <g class="pipe-node" data-hl="2">
-            <rect class="pipe-box chip" x="460" y="470" width="330" height="64" rx="32" />
-            <text class="pipe-chip-text" x="625" y="510" text-anchor="middle">sparse gather Δ</text>
+            <rect class="pipe-box chip" x="460" y="418" width="330" height="64" rx="32" />
+            <text class="pipe-chip-text" x="625" y="458" text-anchor="middle">sparse gather Δ</text>
           </g>
         </svg>
 
@@ -1395,7 +1395,7 @@
             <li><b>Problem</b><span>Off the RDMA fabric, weight synchronization becomes a bottleneck.</span></li>
             <li><b>Observation</b><span>Weight updates in RL are sparse.</span></li>
             <li><b>Naive implementation</b><span>CPU RAM bottleneck, AllGather bottleneck.</span></li>
-            <li><b>Optimization</b><span>3.1× faster on 72B, lossless, works for both FSDP and Megatron.</span></li>
+            <li><b>Optimization</b><span>Sharded delta solves both. 3.1× faster on 72B, lossless, works for both FSDP and Megatron.</span></li>
           </ol>
         </section>
 
@@ -2058,21 +2058,21 @@
           <p class="gtext">should be:</p>
           <ol class="ins2-list">
             <li><b>Efficient</b></li>
-            <li><b>Lossless</b>: keep sub-agents, compaction, retries, etc.</li>
-            <li><b>Lineage-aware</b>: the data structure represents the lineage between trajectories, for customized reward assignment</li>
+            <li><b>Lossless</b></li>
+            <li><b>Lineage-aware</b></li>
           </ol>
         </section>
 
         <section class="gcard ins2-card" style="left: 570px; top: 166px; width: 460px; height: 704px" data-step="1">
           <p class="tok-num">02</p>
           <h3>Tokenization details decide training quality</h3>
-          <p class="gtext">It is important to implement zero-drift multi-turn tokenization to reduce training–inference mismatch.</p>
+          <p class="gtext">Zero-drift multi-turn tokenization to reduce training–inference mismatch.</p>
         </section>
 
         <section class="gcard ins2-card" style="left: 1070px; top: 166px; width: 460px; height: 704px" data-step="2">
           <p class="tok-num">03</p>
           <h3>Scale RL systems by separating control and data planes</h3>
-          <p class="gtext">RL systems are built around a single controller (a single driver). Large data should bypass it and be fetched where it is consumed, to avoid a transfer bottleneck.</p>
+          <p class="gtext">Large data should bypass it and be fetched where it is consumed, to avoid a transfer bottleneck.</p>
         </section>
       </section>
 
