@@ -1840,7 +1840,7 @@
           <p class="page-number"></p>
         </header>
 
-        <svg class="state-svg" viewBox="0 0 860 600" role="img" aria-label="The agent server replica holds committed turns; it sends a self-contained request through the SGLang router to an engine; if that engine dies, the same request is retried on a healthy engine">
+        <svg class="state-svg" data-step="1" viewBox="0 0 860 600" role="img" aria-label="The agent server replica holds committed turns; it sends a self-contained request through the SGLang router to an engine; if that engine dies, the same request is retried on a healthy engine">
           <defs>
             <marker id="st-arrow" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto"><path d="M 0 1 L 13 7 L 0 13 Z" fill="#1d5a57" /></marker>
             <marker id="st-arrow-rust" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto"><path d="M 0 1 L 13 7 L 0 13 Z" fill="#b4523b" /></marker>
@@ -1862,25 +1862,25 @@
           <text class="st-sub dark" x="385" y="318" text-anchor="middle">router</text>
           <path class="st-line" d="M 278 300 H 326" marker-end="url(#st-arrow)" />
 
-          <g class="st-engine" data-hl="1 2"><rect class="st-box eng" x="530" y="80" width="280" height="110" rx="14" /><text class="st-title" x="670" y="130" text-anchor="middle">Engine 1</text><text class="st-sub" x="670" y="158" text-anchor="middle">stateless</text></g>
+          <g class="st-engine" data-hl="2 3"><rect class="st-box eng" x="530" y="80" width="280" height="110" rx="14" /><text class="st-title" x="670" y="130" text-anchor="middle">Engine 1</text><text class="st-sub" x="670" y="158" text-anchor="middle">stateless</text></g>
           <rect class="st-box eng" x="530" y="245" width="280" height="110" rx="14" /><text class="st-title" x="670" y="295" text-anchor="middle">Engine 2</text><text class="st-sub" x="670" y="323" text-anchor="middle">stateless</text>
           <rect class="st-box eng" x="530" y="410" width="280" height="110" rx="14" /><text class="st-title" x="670" y="460" text-anchor="middle">Engine 3</text><text class="st-sub" x="670" y="488" text-anchor="middle">stateless</text>
 
-          <path class="st-line" data-only="0" d="M 442 290 C 490 290, 480 135, 526 135" marker-end="url(#st-arrow)" />
-          <g data-step="1">
+          <path class="st-line" data-only="1" d="M 442 290 C 490 290, 480 135, 526 135" marker-end="url(#st-arrow)" />
+          <g data-step="2">
             <path class="st-line rust dash" d="M 442 290 C 490 290, 480 135, 526 135" />
             <path class="st-x" d="M 790 92 L 830 132 M 830 92 L 790 132" />
             <text class="st-fail" x="670" y="214" text-anchor="middle">dies mid-generation: this turn is lost</text>
           </g>
-          <path class="st-line" data-step="2" d="M 442 300 H 526" marker-end="url(#st-arrow)" />
-          <text class="st-retry" data-step="2" x="536" y="386">retry</text>
+          <path class="st-line" data-step="3" d="M 442 300 H 526" marker-end="url(#st-arrow)" />
+          <text class="st-retry" data-step="3" x="536" y="386">retry</text>
 
           <text class="st-req" x="150" y="458" text-anchor="middle">each request carries</text>
           <text class="st-req code" x="150" y="494" text-anchor="middle">full history</text>
           <text class="st-req code" x="150" y="522" text-anchor="middle">+ new turn</text>
         </svg>
 
-        <div class="state-points">
+        <div class="state-points" data-step="1">
           <b>Rollout engine should be stateless for better fault tolerance</b>
           <span>Every request carries everything an engine needs.</span>
         </div>
