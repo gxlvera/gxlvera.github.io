@@ -3943,8 +3943,7 @@ b {
 
 /* ============================== Slide: tokenization principles ============================== */
 
-.tok-card,
-.ins2-card {
+.tok-card {
   border-top: 4px solid var(--teal);
 }
 
@@ -3956,8 +3955,7 @@ b {
   font-weight: 500;
 }
 
-.tok-card h3,
-.ins2-card h3 {
+.tok-card h3 {
   margin-top: 6px !important;
 }
 
@@ -3965,36 +3963,7 @@ b {
   font-size: 21px !important;
 }
 
-.ins2-card .gtext {
-  margin-top: 18px !important;
-  font-size: 24px !important;
-  line-height: 1.45 !important;
-}
-
-.ins2-list {
-  margin: 14px 0 0;
-  padding-left: 30px;
-  color: var(--ink-soft);
-  font-size: 23px;
-  line-height: 1.42;
-}
-
-.ins2-list li + li {
-  margin-top: 14px;
-}
-
-.ins2-list li::marker {
-  color: var(--teal);
-  font-family: var(--mono);
-  font-weight: 600;
-}
-
-.ins2-list b {
-  color: var(--ink);
-}
-
-.tok-foot,
-.ins2-foot {
+.tok-foot {
   position: absolute;
   left: 30px;
   right: 30px;
@@ -4008,8 +3977,62 @@ b {
   font-weight: 600;
 }
 
-.ins2-foot b {
-  font-size: 18px;
+/* ============================== Slide: Part 2 insights (rows) ============================== */
+
+.ins2-row {
+  left: 70px;
+  width: 1460px;
+  height: 216px;
+  display: grid;
+  grid-template-columns: 96px 480px 1fr;
+  align-items: center;
+  column-gap: 36px;
+  padding: 0 44px;
+  border-left: 5px solid var(--teal);
+}
+
+.ins2-row .tok-num {
+  font-size: 44px;
+}
+
+.ins2-row h3 {
+  margin: 0 !important;
+  font-size: 34px !important;
+  line-height: 1.2 !important;
+}
+
+.ins2-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 26px;
+  line-height: 1.42;
+}
+
+p.ins2-body {
+  display: block;
+}
+
+.ins2-lead {
+  color: var(--muted);
+  font-size: 24px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.ins2-chip {
+  padding: 10px 18px;
+  border: 1.5px solid rgba(29, 90, 87, 0.45);
+  border-radius: 999px;
+  background: var(--teal-soft);
+  color: var(--teal);
+  font-size: 26px;
+  font-weight: 650;
 }
 
 .tok-why {

@@ -196,8 +196,7 @@
               <rect class="topo-node" x="458" y="20" width="180" height="64" rx="8" />
               <text class="topo-text" x="548" y="59" text-anchor="middle">Rollout GPUs</text>
               <line class="topo-link-fast" x1="204" y1="52" x2="446" y2="52" marker-end="url(#arrow-teal)" />
-              <text class="topo-label" x="325" y="36" text-anchor="middle">InfiniBand</text>
-              <text class="topo-label sub" x="325" y="82" text-anchor="middle">NCCL Broadcast</text>
+              <text class="topo-label" x="325" y="36" text-anchor="middle">RDMA</text>
             </svg>
 
             <div class="panel-bottom" data-step="2">
@@ -263,7 +262,7 @@
           <p class="setting-label">Setting</p>
           <ul class="setting-list">
             <li><span>lr</span><b>1e-6</b></li>
-            <li><span>rollout</span><b>with quantization</b></li>
+            <li><span>rollout</span><b>low precision</b></li>
           </ul>
         </section>
 
@@ -1181,7 +1180,7 @@
 
         <p class="co-lead">How to transform <b>local position</b> to <b>global HF position</b>?</p>
 
-        <section class="co-card co-fsdp">
+        <section class="co-card co-fsdp" data-step="1">
           <p class="rep-label"><span>1</span>FSDP: one fixed formula</p>
           <svg class="co-fsdp-svg" viewBox="0 0 380 210" role="img" aria-label="A weight matrix split into four contiguous row blocks, one per rank; a changed element in rank 2's block">
             <line class="co-band-line" x1="74" y1="64" x2="356" y2="64" />
@@ -1292,7 +1291,7 @@
           <p class="co-formula-sub">rank 2: 48 + 16 = 64</p>
         </section>
 
-        <section class="co-card co-mcore" data-step="1">
+        <section class="co-card co-mcore" data-step="2">
           <p class="rep-label teal"><span>2</span>Megatron: also needs mcore → HF conversion</p>
           <svg class="co-mcore-svg" viewBox="0 0 900 305" role="img" aria-label="megatron_to_hf all-gathers the full tensor before converting; the patched version fakes the gather with NaN for other ranks, runs the same conversion, and the surviving non-NaN entries are this rank's changes at global HF positions">
             <!-- as is: real all-gather, then convert -->
@@ -1309,13 +1308,13 @@
             <text class="co-box-text" x="396" y="85" text-anchor="middle">mcore → HF</text>
             <line class="load-arrow" x1="506" y1="78" x2="546" y2="78" />
             <path class="load-head" d="M 544 72 L 554 78 L 544 84 Z" />
-            <g data-step="2">
+            <g data-step="3">
               <text class="co-bad" x="566" y="74">✗ full all-gather</text>
               <text class="co-bad-sub" x="566" y="102">the cost we want to avoid</text>
             </g>
 
             <!-- patched: fake the gather with NaN, same conversion -->
-            <g data-step="3">
+            <g data-step="4">
               <text class="co-row-cap teal" x="0" y="178">patched: fake the gather</text>
               <rect class="co-box ok" x="0" y="190" width="230" height="96" rx="10" />
               <text class="co-box-title ok" x="115" y="217" text-anchor="middle">NaN + my shard</text>
@@ -1351,10 +1350,10 @@
               <text class="co-tensor-name" x="810" y="298" text-anchor="middle">up_proj</text>
             </g>
           </svg>
-          <p class="co-mcore-note" data-step="3">We got <b>delta at global HF positions</b> without the cost of all-gathering full weights.</p>
+          <p class="co-mcore-note" data-step="4">We got <b>delta at global HF positions</b> without the cost of all-gathering full weights.</p>
         </section>
 
-        <section class="co-card co-unify" data-step="4">
+        <section class="co-card co-unify" data-step="5">
           <p class="rep-label"><span>3</span>One clean interface at rank 0: HF deltas from any backend</p>
           <svg class="co-unify-svg" viewBox="0 0 1404 112" role="img" aria-label="FSDP and Megatron deltas both become HF deltas (name, HF index, new value), are sparsely gathered to rank 0, then bucketed and broadcast exactly as before">
             <rect class="co-src" x="0" y="4" width="180" height="44" rx="22" />
@@ -1395,7 +1394,7 @@
             <li><b>Problem</b><span>Off the RDMA fabric, weight synchronization becomes a bottleneck.</span></li>
             <li><b>Observation</b><span>Weight updates in RL are sparse.</span></li>
             <li><b>Naive implementation</b><span>CPU RAM bottleneck, AllGather bottleneck.</span></li>
-            <li><b>Optimization</b><span>Sharded delta solves both. 3.1× faster on 72B, lossless, works for both FSDP and Megatron.</span></li>
+            <li><b>Optimization</b><span>Sharded delta solves both.</span></li>
           </ol>
         </section>
 
@@ -1672,7 +1671,6 @@
               <tr><td>Samples</td><td>4,439</td><td class="win">64</td><td></td></tr>
               <tr><td>Training tokens</td><td>105.3 M</td><td class="win">2.71 M</td><td><span class="gain">38.8× fewer</span></td></tr>
               <tr><td>Training time</td><td>5,164 s</td><td class="win">596 s</td><td><span class="gain">8.7× faster</span></td></tr>
-              <tr><td>Rollout + training</td><td>5,890 s</td><td class="win">1,322 s</td><td><span class="gain">4.5× faster</span></td></tr>
               <tr class="same" data-step="1"><td>Loss tokens</td><td>698,954</td><td>698,954</td><td class="eq">identical</td></tr>
             </tbody>
           </table>
@@ -1902,7 +1900,6 @@
         <section class="gcard tok-card" style="left: 70px; top: 166px; width: 460px; height: 704px">
           <p class="tok-num">01</p>
           <h3>Token in, token out</h3>
-          <p class="gtext">SGLang consumes and returns token IDs, and the trainer gets exactly the sampled IDs. Text is never re-tokenized.</p>
           <p class="tok-why"><b>Why?</b> Because decode-encode is not round-trip equal.</p>
           <div class="tito-demo">
             <p class="demo-label">model generates</p>
@@ -2052,27 +2049,27 @@
           <p class="page-number"></p>
         </header>
 
-        <section class="gcard ins2-card" style="left: 70px; top: 166px; width: 460px; height: 704px">
+        <section class="gcard ins2-row" style="top: 168px">
           <p class="tok-num">01</p>
           <h3>Trajectory representation</h3>
-          <p class="gtext">should be:</p>
-          <ol class="ins2-list">
-            <li><b>Efficient</b></li>
-            <li><b>Lossless</b></li>
-            <li><b>Lineage-aware</b></li>
-          </ol>
+          <div class="ins2-body">
+            <span class="ins2-lead">should be</span>
+            <span class="ins2-chip">Efficient</span>
+            <span class="ins2-chip">Lossless</span>
+            <span class="ins2-chip">Lineage-aware</span>
+          </div>
         </section>
 
-        <section class="gcard ins2-card" style="left: 570px; top: 166px; width: 460px; height: 704px" data-step="1">
+        <section class="gcard ins2-row" style="top: 404px" data-step="1">
           <p class="tok-num">02</p>
           <h3>Tokenization details decide training quality</h3>
-          <p class="gtext">Zero-drift multi-turn tokenization to reduce training–inference mismatch.</p>
+          <p class="ins2-body">Zero-drift multi-turn tokenization to reduce <span class="nowrap">training–inference</span> mismatch.</p>
         </section>
 
-        <section class="gcard ins2-card" style="left: 1070px; top: 166px; width: 460px; height: 704px" data-step="2">
+        <section class="gcard ins2-row" style="top: 640px" data-step="2">
           <p class="tok-num">03</p>
           <h3>Scale RL systems by separating control and data planes</h3>
-          <p class="gtext">Large data should bypass it and be fetched where it is consumed, to avoid a transfer bottleneck.</p>
+          <p class="ins2-body">Large data should bypass it and be fetched where it is consumed, to avoid a transfer bottleneck.</p>
         </section>
       </section>
 
