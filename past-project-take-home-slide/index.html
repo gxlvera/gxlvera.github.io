@@ -171,10 +171,9 @@
 
           <ul class="wsync-points">
             <li>
-              <b>Traditional method:</b> payload is the full model
+              <b>Default method:</b> payload is the full model
               <span class="point-sub">e.g. GLM-5: 744B params × 2 B (BF16) ≈ 1.5 TB per sync</span>
             </li>
-            <li><b>On the critical path:</b> Either the next rollout waits for the sync, or stale weights keep generating</li>
           </ul>
         </div>
 
@@ -201,15 +200,17 @@
               <text class="topo-label sub" x="325" y="82" text-anchor="middle">NCCL Broadcast</text>
             </svg>
 
-            <div class="panel-facts">
-              <div><span>effective bandwidth</span><strong>~25 GB/s</strong></div>
-              <div><span>sync 1.5 TB</span><strong>≈ 1 min</strong></div>
+            <div class="panel-bottom" data-step="2">
+              <div class="panel-facts">
+                <div><span>effective bandwidth</span><strong>~25 GB/s</strong></div>
+                <div><span>sync 1.5 TB</span><strong>≈ 1 min</strong></div>
+              </div>
+              <div class="time-bar" style="--w: 1.1%"><i></i></div>
+              <p class="panel-note">~1 min vs. tens of minutes per RL step → <b>not the bottleneck</b></p>
             </div>
-            <div class="time-bar" style="--w: 1.1%"><i></i></div>
-            <p class="panel-note">~1 min vs. tens of minutes per RL step → <b>not the bottleneck</b></p>
           </section>
 
-          <section class="net-panel panel-slow" data-step="2">
+          <section class="net-panel panel-slow" data-step="3">
             <p class="scenario">Scenario 2</p>
             <div class="panel-head">
               <h3>External Rollout</h3>
@@ -234,12 +235,14 @@
               <text class="topo-label sub" x="326" y="82" text-anchor="middle">no RDMA</text>
             </svg>
 
-            <div class="panel-facts">
-              <div><span>effective bandwidth</span><strong>~300 MB/s</strong></div>
-              <div><span>sync 1.5 TB</span><strong class="coral">≈ 83 min</strong></div>
+            <div class="panel-bottom" data-step="4">
+              <div class="panel-facts">
+                <div><span>effective bandwidth</span><strong>~300 MB/s</strong></div>
+                <div><span>sync 1.5 TB</span><strong class="coral">≈ 83 min</strong></div>
+              </div>
+              <div class="time-bar" style="--w: 92%"><i></i></div>
+              <p class="panel-note">→ <b>Rollout GPUs sit idle, or generation goes stale</b></p>
             </div>
-            <div class="time-bar" style="--w: 92%"><i></i></div>
-            <p class="panel-note">→ <b>Rollout GPUs sit idle, or generation goes stale</b></p>
           </section>
         </div>
 
@@ -256,17 +259,31 @@
           <p class="page-number"></p>
         </header>
 
-        <section class="sparse-card">
-          <p class="card-label">θₜ vs θₜ₊₁ · bitwise diff (per element) <span>(illustration)</span></p>
-          <div class="sparse-grid" data-cols="40" data-rows="12" data-changed="10" aria-hidden="true"></div>
-          <p class="sparse-legend">
-            <span class="legend-swatch same"></span>bit-identical
-            <span class="legend-swatch changed"></span>changed this step (~2%)
-          </p>
+        <section class="sparse-card setting-card">
+          <p class="setting-label">Setting</p>
+          <ul class="setting-list">
+            <li><span>lr</span><b>1e-6</b></li>
+            <li><span>rollout</span><b>with quantization</b></li>
+          </ul>
         </section>
 
         <section class="why-card" data-step="1">
-          <h3><span>Why?</span> BF16 rounding absorbs tiny updates</h3>
+          <h3><span>Why?</span> Low-precision rounding absorbs tiny updates</h3>
+          <svg class="ulp-line" viewBox="0 0 620 150" role="img" aria-label="A weight w and the next representable value one ULP away; the rounding boundary sits at half an ULP; an update smaller than half an ULP stays below it and rounds back to w">
+            <defs>
+              <marker id="ulp-arrow" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" refX="14" refY="8" orient="auto"><path d="M 0 1 L 15 8 L 0 15 Z" fill="#1d5a57" /></marker>
+            </defs>
+            <line class="ulp-axis" x1="30" y1="90" x2="610" y2="90" />
+            <line class="ulp-tick" x1="60" y1="72" x2="60" y2="108" />
+            <line class="ulp-tick" x1="580" y1="72" x2="580" y2="108" />
+            <line class="ulp-boundary" x1="320" y1="34" x2="320" y2="112" />
+            <text class="ulp-bound-label" x="320" y="22" text-anchor="middle">½ ULP · rounding boundary</text>
+            <line class="ulp-step" x1="60" y1="90" x2="210" y2="90" marker-end="url(#ulp-arrow)" />
+            <text class="ulp-step-label" x="70" y="62">update &lt; ½ ULP</text>
+            <text class="ulp-tick-label" x="60" y="142" text-anchor="middle">w</text>
+            <text class="ulp-step-label" x="90" y="142">→ rounds back to w</text>
+            <text class="ulp-tick-label" x="612" y="142" text-anchor="end">w + 1 ULP</text>
+          </svg>
         </section>
 
         <section class="evidence-card">
@@ -292,12 +309,10 @@
               <em>&lt;1%</em>
             </li>
           </ol>
-          <p class="evidence-source">Compiled in Changyi Yang, “Delta Weight Sync for RL” (changyi.fun)</p>
         </section>
 
         <section class="implication-card" data-step="2">
-          <h3><span>→</span> Basis for delta sync</h3>
-          <p class="impl-lead">Send only the changed <b>(position, value)</b> pairs.</p>
+          <p class="impl-lead"><span>→</span> Send only the <b>changed weights</b>.</p>
           <div class="impl-bars">
             <div class="impl-row">
               <span class="impl-name">Full</span>
@@ -310,7 +325,7 @@
               <span class="impl-val delta">60–90 GB · 3–5 min</span>
             </div>
           </div>
-          <p class="impl-foot"><b>Lossless:</b> rollout overwrites exact BF16 bytes, so no drift.</p>
+          <p class="impl-foot"><b>Lossless:</b> rollout overwrites exact bytes, so no drift.</p>
         </section>
       </section>
       <!-- ============================== 05 · Delta representation ============================== -->
@@ -319,7 +334,7 @@
           <p class="section-label">01</p>
           <div class="slide-title">
             <p class="eyebrow">Part 1 · Delta Weight Sync for verl</p>
-            <h2>Representing the Delta: One Parameter's Lifecycle</h2>
+            <h2>Representing the Delta Param</h2>
           </div>
           <p class="page-number"></p>
         </header>
@@ -759,8 +774,7 @@
               <text class="tp-label" x="494" y="48">TP0</text>
               <text class="tp-label" x="494" y="160">TP1</text>
           </svg>
-          <p class="rep-patch"><code>dst = torch.where(torch.isnan(src), dst, src)</code></p>
-          <p class="rep-note"><b>Non-invasive:</b> SGLang's TP split and fusion run as-is; we only patch the final <code>copy_</code> to skip NaN.</p>
+          <p class="rep-note">The rollout engine's TP split and fusion run as-is; we only patch the final <code>copy_</code> to skip NaN.</p>
         </section>
       </section>
 
@@ -770,7 +784,7 @@
           <p class="section-label">01</p>
           <div class="slide-title">
             <p class="eyebrow">Part 1 · Delta Weight Sync for verl</p>
-            <h2>Delta Sync Pipeline<span class="title-reveal" data-step="7">: The Naive Version</span></h2>
+            <h2>Delta Weight Sync Pipeline</h2>
           </div>
           <p class="page-number"></p>
         </header>
@@ -870,31 +884,26 @@
             </g>
             <g class="pipe-node" data-hl="3">
               <rect class="pipe-box chip" x="702" y="156" width="246" height="68" rx="34" />
-              <text class="pipe-chip-text" x="825" y="187" text-anchor="middle">bitwise diff</text>
-              <text class="pipe-chip-sub" x="825" y="211" text-anchor="middle">(per element)</text>
+              <text class="pipe-chip-text" x="825" y="198" text-anchor="middle">bitwise diff</text>
             </g>
-            <text class="pipe-caption" x="825" y="252" text-anchor="middle">compare bits → (idx, val)</text>
           </g>
 
           <!-- 4 · encode -->
           <g data-step="4">
             <g class="pipe-link">
-              <line x1="825" y1="264" x2="825" y2="292" marker-end="url(#pipe-arrow)" />
-              <line x1="825" y1="364" x2="825" y2="396" marker-end="url(#pipe-arrow)" />
+              <line x1="825" y1="230" x2="825" y2="290" marker-end="url(#pipe-arrow)" />
+              <line x1="825" y1="368" x2="825" y2="394" marker-end="url(#pipe-arrow)" />
             </g>
             <g class="pipe-node" data-hl="4">
               <rect class="pipe-box chip" x="702" y="296" width="246" height="68" rx="34" />
-              <text class="pipe-chip-text" x="825" y="338" text-anchor="middle">encode · indices</text>
+              <text class="pipe-chip-text" x="825" y="338" text-anchor="middle">encode</text>
             </g>
             <g class="pipe-node" data-hl="4 5">
               <rect class="pipe-box" x="702" y="400" width="246" height="170" rx="12" />
-              <text class="pipe-tag" x="722" y="432">Δ FLUSH</text>
-              <rect class="flush-row meta" x="722" y="452" width="206" height="30" rx="4" />
-              <text class="flush-text" x="736" y="473">manifest</text>
-              <rect class="flush-row pos" x="722" y="490" width="206" height="30" rx="4" />
-              <text class="flush-text" x="736" y="511">positions · int32</text>
-              <rect class="flush-row val" x="722" y="528" width="206" height="30" rx="4" />
-              <text class="flush-text" x="736" y="549">values · bf16</text>
+              <rect class="flush-row pos" x="722" y="433" width="206" height="44" rx="6" />
+              <text class="flush-text big" x="825" y="461" text-anchor="middle">positions · int32</text>
+              <rect class="flush-row val" x="722" y="493" width="206" height="44" rx="6" />
+              <text class="flush-text big" x="825" y="521" text-anchor="middle">values · bf16</text>
             </g>
           </g>
 
@@ -922,7 +931,7 @@
             <g class="pipe-flow bcast">
               <use href="#b-path-0" /><use href="#b-path-1" /><use href="#b-path-2" />
             </g>
-            <text class="pipe-flow-label teal" x="1260" y="590" text-anchor="middle">NCCL broadcast Δ only</text>
+            <text class="pipe-flow-label teal" x="1260" y="590" text-anchor="middle">broadcast Δ only</text>
           </g>
           <g class="pipe-packets" data-only="5">
             <circle class="pkt-small" r="6"><animateMotion dur="1.2s" repeatCount="indefinite"><mpath href="#b-path-0" /></animateMotion></circle>
@@ -930,15 +939,6 @@
             <circle class="pkt-small" r="6"><animateMotion dur="1.2s" begin="0.4s" repeatCount="indefinite"><mpath href="#b-path-2" /></animateMotion></circle>
           </g>
 
-          <!-- 6 · load -->
-          <g data-step="6">
-            <rect class="loader-pill" x="1290" y="172" width="150" height="32" rx="16" />
-            <text class="loader-text" x="1365" y="194" text-anchor="middle">delta_loader</text>
-            <rect class="loader-pill" x="1290" y="322" width="150" height="32" rx="16" />
-            <text class="loader-text" x="1365" y="344" text-anchor="middle">delta_loader</text>
-            <rect class="loader-pill" x="1290" y="472" width="150" height="32" rx="16" />
-            <text class="loader-text" x="1365" y="494" text-anchor="middle">delta_loader</text>
-          </g>
         </svg>
       </section>
       <!-- ============================== 07 · Delta sync: engineering challenges ============================== -->
@@ -947,7 +947,7 @@
           <p class="section-label">01</p>
           <div class="slide-title">
             <p class="eyebrow">Part 1 · Delta Weight Sync for verl</p>
-            <h2>Delta Weight Sync: Engineering Challenges</h2>
+            <h2>Engineering Challenges</h2>
           </div>
           <p class="page-number"></p>
         </header>
@@ -955,7 +955,6 @@
         <section class="chal-card chal-mem">
           <p class="chal-label">Challenge 1 · Memory</p>
           <h3>One node's CPU RAM can't hold full weights</h3>
-          <p class="chal-sub">A single node pins a full-model snapshot.</p>
           <p class="chal-eg">e.g. GLM-5 (744B, BF16) ≈ <b>1.5 TB</b> vs. <b>2 TB</b> CPU RAM per DGX H100 node</p>
         </section>
 
@@ -973,7 +972,6 @@
               <tr><td>Qwen3-0.6B</td><td>0.78 s</td><td>0.75 s</td><td>−4.6%</td></tr>
             </tbody>
           </table>
-          <p class="chal-cite">per-step weight sync · A100, FSDP2, offload off · my profiling in verl PR #6974</p>
         </section>
 
         <section class="chal-card chal-pipe" data-step="2">
@@ -981,7 +979,6 @@
 
           <div class="gantt-area">
             <div class="gantt">
-              <p class="gantt-title"><span>gather ≈ broadcast per bucket</span></p>
               <div class="lane">
                 <span class="lane-label">gather → rank 0</span>
                 <div class="track">
@@ -1028,7 +1025,7 @@
               </div>
             </div>
 
-            <i class="gantt-end" data-step="3"><span>≈ same end time</span></i>
+            <i class="gantt-end" data-step="3"></i>
           </div>
 
           <p class="gantt-legend">
@@ -1049,94 +1046,90 @@
           <p class="page-number"></p>
         </header>
 
-        <svg class="shard-diagram" viewBox="-10 -10 1480 372" role="img" aria-label="Every PP node keeps its own shard snapshot and diffs locally; only the sparse deltas are gathered to rank 0, which encodes and broadcasts them as before">
+        <svg class="shard-diagram" viewBox="0 0 800 710" role="img" aria-label="PP1 to PP3 each keep their own shard snapshot and diff locally; only the sparse deltas are gathered into node 0, where PP0 also diffs its own shard">
           <defs>
-            <marker id="s-arrow" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
-              <path d="M 0 1 L 13 7 L 0 13 Z" fill="#8b7e72" />
-            </marker>
             <marker id="s-arrow-teal" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
               <path d="M 0 1 L 13 7 L 0 13 Z" fill="#1d5a57" />
             </marker>
-            <path id="s-g-0" d="M 175 180 C 175 222, 468 214, 468 248" />
-            <path id="s-g-1" d="M 545 180 C 545 222, 480 214, 480 248" />
-            <path id="s-g-2" d="M 915 180 C 915 224, 492 210, 492 248" />
-            <path id="s-g-3" d="M 1285 180 C 1285 226, 504 206, 504 248" />
+            <path id="s-g-0" d="M 625 432 V 462" />
+            <path id="s-g-1" d="M 330 179 C 410 179, 400 490, 456 490" />
+            <path id="s-g-2" d="M 330 409 C 400 409, 410 502, 456 502" />
+            <path id="s-g-3" d="M 330 639 C 410 639, 400 514, 456 514" />
           </defs>
 
-          <path class="node0-outline" d="M -6 -6 H 356 V 226 H 660 V 352 H -6 Z" />
 
           <g class="shard-node">
-            <rect class="pipe-box" x="0" y="0" width="350" height="190" rx="12" />
-            <text class="pipe-name" x="22" y="38">PP0 · Node 0</text>
-              <rect class="rank-pill" x="236" y="16" width="96" height="28" rx="14" />
-              <text class="rank-pill-text" x="284" y="36" text-anchor="middle">RANK 0</text>
+            <rect class="pipe-box" x="0" y="10" width="350" height="190" rx="12" />
+            <text class="pipe-name" x="22" y="48">PP1 · Node 1</text>
             <g class="pipe-node mini">
-              <rect class="pipe-box" x="20" y="56" width="150" height="72" rx="8" />
-              <text class="pipe-tag" x="34" y="78">GPU</text>
-              <text class="mini-text new" x="95" y="112" text-anchor="middle">θₜ₊₁ shard</text>
+              <rect class="pipe-box" x="20" y="66" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="34" y="88">GPU</text>
+              <text class="mini-text new" x="95" y="122" text-anchor="middle">θₜ₊₁ shard</text>
             </g>
             <g class="pipe-node mini" data-hl="1">
-              <rect class="pipe-box" x="180" y="56" width="150" height="72" rx="8" />
-              <text class="pipe-tag" x="194" y="78">CPU · PINNED</text>
-              <text class="mini-text" x="255" y="112" text-anchor="middle">θₜ shard</text>
+              <rect class="pipe-box" x="180" y="66" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="194" y="88">CPU · PINNED</text>
+              <text class="mini-text" x="255" y="122" text-anchor="middle">θₜ shard</text>
             </g>
             <g class="pipe-node">
-              <rect class="pipe-box chip" x="20" y="140" width="310" height="38" rx="19" />
-              <text class="mini-chip" x="175" y="165" text-anchor="middle">bitwise diff → Δ</text>
+              <rect class="pipe-box chip" x="20" y="150" width="310" height="38" rx="19" />
+              <text class="mini-chip" x="175" y="175" text-anchor="middle">bitwise diff → Δ</text>
             </g>
           </g>
           <g class="shard-node">
-            <rect class="pipe-box" x="370" y="0" width="350" height="190" rx="12" />
-            <text class="pipe-name" x="392" y="38">PP1 · Node 1</text>
+            <rect class="pipe-box" x="0" y="240" width="350" height="190" rx="12" />
+            <text class="pipe-name" x="22" y="278">PP2 · Node 2</text>
             <g class="pipe-node mini">
-              <rect class="pipe-box" x="390" y="56" width="150" height="72" rx="8" />
-              <text class="pipe-tag" x="404" y="78">GPU</text>
-              <text class="mini-text new" x="465" y="112" text-anchor="middle">θₜ₊₁ shard</text>
+              <rect class="pipe-box" x="20" y="296" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="34" y="318">GPU</text>
+              <text class="mini-text new" x="95" y="352" text-anchor="middle">θₜ₊₁ shard</text>
             </g>
             <g class="pipe-node mini" data-hl="1">
-              <rect class="pipe-box" x="550" y="56" width="150" height="72" rx="8" />
-              <text class="pipe-tag" x="564" y="78">CPU · PINNED</text>
-              <text class="mini-text" x="625" y="112" text-anchor="middle">θₜ shard</text>
+              <rect class="pipe-box" x="180" y="296" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="194" y="318">CPU · PINNED</text>
+              <text class="mini-text" x="255" y="352" text-anchor="middle">θₜ shard</text>
             </g>
             <g class="pipe-node">
-              <rect class="pipe-box chip" x="390" y="140" width="310" height="38" rx="19" />
-              <text class="mini-chip" x="545" y="165" text-anchor="middle">bitwise diff → Δ</text>
+              <rect class="pipe-box chip" x="20" y="380" width="310" height="38" rx="19" />
+              <text class="mini-chip" x="175" y="405" text-anchor="middle">bitwise diff → Δ</text>
             </g>
           </g>
           <g class="shard-node">
-            <rect class="pipe-box" x="740" y="0" width="350" height="190" rx="12" />
-            <text class="pipe-name" x="762" y="38">PP2 · Node 2</text>
+            <rect class="pipe-box" x="0" y="470" width="350" height="190" rx="12" />
+            <text class="pipe-name" x="22" y="508">PP3 · Node 3</text>
             <g class="pipe-node mini">
-              <rect class="pipe-box" x="760" y="56" width="150" height="72" rx="8" />
-              <text class="pipe-tag" x="774" y="78">GPU</text>
-              <text class="mini-text new" x="835" y="112" text-anchor="middle">θₜ₊₁ shard</text>
+              <rect class="pipe-box" x="20" y="526" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="34" y="548">GPU</text>
+              <text class="mini-text new" x="95" y="582" text-anchor="middle">θₜ₊₁ shard</text>
             </g>
             <g class="pipe-node mini" data-hl="1">
-              <rect class="pipe-box" x="920" y="56" width="150" height="72" rx="8" />
-              <text class="pipe-tag" x="934" y="78">CPU · PINNED</text>
-              <text class="mini-text" x="995" y="112" text-anchor="middle">θₜ shard</text>
+              <rect class="pipe-box" x="180" y="526" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="194" y="548">CPU · PINNED</text>
+              <text class="mini-text" x="255" y="582" text-anchor="middle">θₜ shard</text>
             </g>
             <g class="pipe-node">
-              <rect class="pipe-box chip" x="760" y="140" width="310" height="38" rx="19" />
-              <text class="mini-chip" x="915" y="165" text-anchor="middle">bitwise diff → Δ</text>
+              <rect class="pipe-box chip" x="20" y="610" width="310" height="38" rx="19" />
+              <text class="mini-chip" x="175" y="635" text-anchor="middle">bitwise diff → Δ</text>
             </g>
           </g>
           <g class="shard-node">
-            <rect class="pipe-box" x="1110" y="0" width="350" height="190" rx="12" />
-            <text class="pipe-name" x="1132" y="38">PP3 · Node 3</text>
+            <rect class="pipe-box" x="450" y="240" width="350" height="190" rx="12" />
+            <text class="pipe-name" x="472" y="278">PP0 · Node 0</text>
+              <rect class="rank-pill" x="686" y="256" width="96" height="28" rx="14" />
+              <text class="rank-pill-text" x="734" y="276" text-anchor="middle">RANK 0</text>
             <g class="pipe-node mini">
-              <rect class="pipe-box" x="1130" y="56" width="150" height="72" rx="8" />
-              <text class="pipe-tag" x="1144" y="78">GPU</text>
-              <text class="mini-text new" x="1205" y="112" text-anchor="middle">θₜ₊₁ shard</text>
+              <rect class="pipe-box" x="470" y="296" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="484" y="318">GPU</text>
+              <text class="mini-text new" x="545" y="352" text-anchor="middle">θₜ₊₁ shard</text>
             </g>
             <g class="pipe-node mini" data-hl="1">
-              <rect class="pipe-box" x="1290" y="56" width="150" height="72" rx="8" />
-              <text class="pipe-tag" x="1304" y="78">CPU · PINNED</text>
-              <text class="mini-text" x="1365" y="112" text-anchor="middle">θₜ shard</text>
+              <rect class="pipe-box" x="630" y="296" width="150" height="72" rx="8" />
+              <text class="pipe-tag" x="644" y="318">CPU · PINNED</text>
+              <text class="mini-text" x="705" y="352" text-anchor="middle">θₜ shard</text>
             </g>
             <g class="pipe-node">
-              <rect class="pipe-box chip" x="1130" y="140" width="310" height="38" rx="19" />
-              <text class="mini-chip" x="1285" y="165" text-anchor="middle">bitwise diff → Δ</text>
+              <rect class="pipe-box chip" x="470" y="380" width="310" height="38" rx="19" />
+              <text class="mini-chip" x="625" y="405" text-anchor="middle">bitwise diff → Δ</text>
             </g>
           </g>
 
@@ -1144,14 +1137,9 @@
           <g class="shard-flow" data-hl="2">
             <use href="#s-g-0" /><use href="#s-g-1" /><use href="#s-g-2" /><use href="#s-g-3" />
           </g>
-
-          <!-- rank 0 strip: everything after the gather is unchanged -->
-          <text class="pipe-col-title node0" x="16" y="282">NODE 0 · ACTOR RANK 0</text>
-          <text class="pipe-meta" x="16" y="312">no full-model copy</text>
           <g class="pipe-node" data-hl="2">
-            <rect class="pipe-box chip" x="330" y="252" width="300" height="80" rx="40" />
-            <text class="pipe-chip-text" x="480" y="286" text-anchor="middle">sparse gather Δ</text>
-            <text class="pipe-chip-sub" x="480" y="312" text-anchor="middle">only changed elements</text>
+            <rect class="pipe-box chip" x="460" y="470" width="330" height="64" rx="32" />
+            <text class="pipe-chip-text" x="625" y="510" text-anchor="middle">sparse gather Δ</text>
           </g>
         </svg>
 
@@ -1163,11 +1151,6 @@
         <section class="fix-card fix-pipe" data-step="2">
           <p class="fix-label">Challenge 2 · solved</p>
           <h3>The gather is sparse too</h3>
-          <p class="fix-sub">Diff before gather, so the gather stage shrinks with the broadcast.</p>
-          <div class="mini-bars">
-            <div class="mini-row"><span>full gather</span><div class="mini-track"><i class="mb-full"></i></div><em>2.7–3.0 s</em></div>
-            <div class="mini-row"><span>sparse gather</span><div class="mini-track"><i class="mb-sparse"></i></div><em class="teal">0.75–1.0 s</em></div>
-          </div>
         </section>
 
         <section class="fix-card fix-result" data-step="3">
@@ -1191,12 +1174,12 @@
           <p class="section-label">01</p>
           <div class="slide-title">
             <p class="eyebrow">Part 1 · Delta Weight Sync for verl</p>
-            <h2>Engineering Challenge: How to Transform from Global Diff to Sharded Diff?</h2>
+            <h2>Challenges of Sharded Delta</h2>
           </div>
           <p class="page-number"></p>
         </header>
 
-        <p class="co-lead">Each rank diffs its <b>own shard</b>, so positions are <b>local</b>. How do we get <b>global HF</b> positions?</p>
+        <p class="co-lead">How to transform <b>local position</b> to <b>global HF position</b>?</p>
 
         <section class="co-card co-fsdp">
           <p class="rep-label"><span>1</span>FSDP: one fixed formula</p>
@@ -1326,11 +1309,13 @@
             <text class="co-box-text" x="396" y="85" text-anchor="middle">mcore → HF</text>
             <line class="load-arrow" x1="506" y1="78" x2="546" y2="78" />
             <path class="load-head" d="M 544 72 L 554 78 L 544 84 Z" />
-            <text class="co-bad" x="566" y="74">✗ full all-gather</text>
-            <text class="co-bad-sub" x="566" y="102">the cost we want to avoid</text>
+            <g data-step="2">
+              <text class="co-bad" x="566" y="74">✗ full all-gather</text>
+              <text class="co-bad-sub" x="566" y="102">the cost we want to avoid</text>
+            </g>
 
             <!-- patched: fake the gather with NaN, same conversion -->
-            <g data-step="2">
+            <g data-step="3">
               <text class="co-row-cap teal" x="0" y="178">patched: fake the gather</text>
               <rect class="co-box ok" x="0" y="190" width="230" height="96" rx="10" />
               <text class="co-box-title ok" x="115" y="217" text-anchor="middle">NaN + my shard</text>
@@ -1366,10 +1351,10 @@
               <text class="co-tensor-name" x="810" y="298" text-anchor="middle">up_proj</text>
             </g>
           </svg>
-          <p class="co-mcore-note" data-step="2">We got <b>delta at global HF positions</b> without the cost of all-gathering full weights.</p>
+          <p class="co-mcore-note" data-step="3">We got <b>delta at global HF positions</b> without the cost of all-gathering full weights.</p>
         </section>
 
-        <section class="co-card co-unify" data-step="3">
+        <section class="co-card co-unify" data-step="4">
           <p class="rep-label"><span>3</span>One clean interface at rank 0: HF deltas from any backend</p>
           <svg class="co-unify-svg" viewBox="0 0 1404 112" role="img" aria-label="FSDP and Megatron deltas both become HF deltas (name, HF index, new value), are sparsely gathered to rank 0, then bucketed and broadcast exactly as before">
             <rect class="co-src" x="0" y="4" width="180" height="44" rx="22" />
@@ -1404,28 +1389,23 @@
           <p class="page-number"></p>
         </header>
 
-        <section class="gcard sum-card" style="left: 70px; top: 164px; width: 640px; height: 646px">
+        <section class="gcard sum-card" style="left: 70px; top: 164px; width: 640px; height: 706px">
           <p class="glabel">Summary</p>
           <ol class="sum-steps">
             <li><b>Problem</b><span>Off the RDMA fabric, weight synchronization becomes a bottleneck.</span></li>
-            <li><b>Observation</b><span>In BF16 or FP8, weight updates in RL are sparse.</span></li>
+            <li><b>Observation</b><span>Weight updates in RL are sparse.</span></li>
             <li><b>Naive implementation</b><span>CPU RAM bottleneck, AllGather bottleneck.</span></li>
             <li><b>Optimization</b><span>3.1× faster on 72B, lossless, works for both FSDP and Megatron.</span></li>
           </ol>
         </section>
 
-        <section class="gcard ins-card" style="left: 740px; top: 164px; width: 790px; height: 310px" data-step="1">
-          <p class="glabel rust">Insight 1 · Why it matters</p>
-          <h3>Cross-cluster rollout becomes practical</h3>
-          <p>With weight sync no longer a bottleneck, trainer and rollout placement become independent choices: external rollout decouples training from inference.</p>
+        <section class="gcard ins-card" style="left: 740px; top: 164px; width: 790px; height: 340px" data-step="1">
+          <h3>Cross-cluster rollout becomes possible</h3>
         </section>
-        <section class="gcard ins-card" style="left: 740px; top: 500px; width: 790px; height: 310px" data-step="2">
-          <p class="glabel rust">Insight 2 · System design</p>
+        <section class="gcard ins-card" style="left: 740px; top: 530px; width: 790px; height: 340px" data-step="2">
           <h3>Leverage the distributed setting of RL systems</h3>
-          <p>Don't send all data to rank 0 or put all compute on rank 0: avoid the full gather, and reduce before any bytes move.</p>
         </section>
 
-        <p class="credits"><span>Credits</span>Changyi Yang <i>@ Liquid AI</i> · Xibin Wu <i>@ ByteDance</i></p>
       </section>
 
       <!-- ============================== Outline (Part 2 next) ============================== -->
